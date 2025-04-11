@@ -1,7 +1,6 @@
-// src/stores/GameStore.ts
 import { makeAutoObservable } from "mobx";
 
-export class GameStore {
+export class Store {
   arenaOpened = false;
 
   constructor() {
@@ -17,4 +16,4 @@ export class GameStore {
   }
 }
 
-export const gameStore = new GameStore();
+export const gameStore = new Store();

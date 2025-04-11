@@ -1,12 +1,14 @@
 import { useState } from "react"
-import styles from "./Arena.module.css"
+import { observer } from "mobx-react-lite"
+import userStore from "../../stores/UserStore"
 
+import styles from "./Arena.module.css"
 import MainCharacter from "../../components/MainCharacter"
 import BottomMenu from "../../components/BottomMenu"
 import Pets from "../../components/Pets"
 import Header from "../../components/Header"
 
-const Arena = () => {
+const Arena = observer(() => {
   const [count, setCount] = useState(0)
 
   return (
@@ -14,9 +16,11 @@ const Arena = () => {
       <Header />
 
       <main className={styles.mainContent}>
-        {/* Логотип */}
+        {/* ARENA */}
         <div className={styles.logoWrapper}>
-          <div className={styles.logoPlaceholder}>Logo</div>
+          <div className={styles.logoPlaceholder}>
+            ARENA — Привет, {userStore.user?.name ?? "Гость"}!
+          </div>
         </div>
 
         <MainCharacter />
@@ -32,6 +36,6 @@ const Arena = () => {
       <BottomMenu />
     </div>
   )
-}
+})
 
 export default Arena
