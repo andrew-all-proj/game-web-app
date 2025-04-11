@@ -16,7 +16,7 @@ const CreateUser = observer(() => {
   const handleCreateUser = () => {
     if (name.trim()) {
       userStore.setUser({ id: "123", name }) 
-      navigate("/arena")
+      navigate("/laboratory")
     }
   }
 

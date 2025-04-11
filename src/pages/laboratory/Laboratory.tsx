@@ -1,20 +1,20 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
 import { observer } from "mobx-react-lite"
 import userStore from "../../stores/UserStore"
+import { useNavigate } from "react-router-dom"
 
-import styles from "./Arena.module.css"
+import styles from "./Laboratory.module.css"
 import MainCharacter from "../../components/MainCharacter"
 import BottomMenu from "../../components/BottomMenu"
 import Pets from "../../components/Pets"
 import Header from "../../components/Header"
 
-const Arena = observer(() => {
+const Laboratory = observer(() => {
   const [count, setCount] = useState(0)
   const navigate = useNavigate()
 
-  const handleGoToLab = () => {
-    navigate("/laboratory")
+  const handleGoToArena = () => {
+    navigate("/arena")
   }
 
   return (
@@ -22,10 +22,10 @@ const Arena = observer(() => {
       <Header />
 
       <main className={styles.mainContent}>
-        {/* ARENA */}
+
         <div className={styles.logoWrapper}>
           <div className={styles.logoPlaceholder}>
-            ARENA — Привет, {userStore.user?.name ?? "Гость"}!
+           Ваша лаборатория, профессор {userStore.user?.name ?? "Гость"}!
           </div>
         </div>
 
@@ -36,9 +36,8 @@ const Arena = observer(() => {
           <button className={styles.counterButton} onClick={() => setCount((c) => c + 1)}>
             count is {count}
           </button>
-
-          <button className={styles.counterButton} onClick={handleGoToLab}>
-            Перейти в лабораторию
+          <button className={styles.counterButton} onClick={handleGoToArena}>
+            Перейти на арену
           </button>
         </div>
       </main>
@@ -48,4 +47,4 @@ const Arena = observer(() => {
   )
 })
 
-export default Arena
+export default Laboratory

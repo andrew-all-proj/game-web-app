@@ -10,7 +10,7 @@ const StartApp = observer(() => {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (userStore.isAuthenticated) {
-        navigate("/arena")
+        navigate("/laboratory")
       } else {
         navigate("/create-user")
       }
