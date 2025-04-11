@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import "../App.css";
+import "../app/App.css";
 
 export default function MainCharacter() {
   return (

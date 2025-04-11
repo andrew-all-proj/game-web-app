@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "framer-motion": "^12.6.3",
+    "mobx": "^6.13.7",
+    "mobx-react-lite": "^4.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
