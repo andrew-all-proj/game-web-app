@@ -15,9 +15,6 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: false,
     minify: "esbuild",
-    rollupOptions: {
-      input: path.resolve(__dirname, "index.html"),
-    },
   },
   server: {
     port: 3000,
