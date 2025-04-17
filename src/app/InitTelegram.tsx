@@ -5,16 +5,19 @@ import userStore from "../stores/UserStore";
 const InitTelegram = () => {
   useEffect(() => {
     WebApp.ready();
+    
     if (WebApp.initDataUnsafe?.user) {
       const tgUser = WebApp.initDataUnsafe.user;
       userStore.setUser({
         id: String(tgUser.id),
-        name: tgUser.username || tgUser.first_name || "Unknown",
+        name: tgUser.first_name || tgUser.username || "Unknown",
       });
     }
+
+    WebApp.expand();
   }, []);
 
-  return null;
+  return null; 
 };
 
 export default InitTelegram;
