@@ -542,6 +542,18 @@
   resolved "https://registry.yarnpkg.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.39.0.tgz#bfe0214e163f70c4fec1c8f7bb8ce266f4c05b7e"
   integrity sha512-yAkUOkIKZlK5dl7u6dg897doBgLXmUHhIINM2c+sND3DZwnrdQkkSiDh7N75Ll4mM4dxSkYfXqU9fW3lLkMFug==
 
+"@twa-dev/sdk@^8.0.2":
+  version "8.0.2"
+  resolved "https://registry.yarnpkg.com/@twa-dev/sdk/-/sdk-8.0.2.tgz#72efd41b5b5878b5e9cd8896673b8708a045d2f5"
+  integrity sha512-Pp5GxnxP2blboVZFiM9aWjs4cb8IpW3x2jP3kLOMvIqy0jzNUTuFHkwHtx+zEvh/UcF2F+wmS8G6ebIA0XPXcg==
+  dependencies:
+    "@twa-dev/types" "^8.0.1"
+
+"@twa-dev/types@^8.0.1":
+  version "8.0.2"
+  resolved "https://registry.yarnpkg.com/@twa-dev/types/-/types-8.0.2.tgz#118620c1ff8724de82063b1318a8749bd40b0d8b"
+  integrity sha512-ICQ6n4NaUPPzV3/GzflVQS6Nnu5QX2vr9OlOG8ZkFf3rSJXzRKazrLAbZlVhCPPWkIW3MMuELPsE6tByrA49qA==
+
 "@types/babel__core@^7.20.5":
   version "7.20.5"
   resolved "https://registry.npmjs.org/@types/babel__core/-/babel__core-7.20.5.tgz"
