@@ -25,7 +25,7 @@ const Laboratory = observer(() => {
 
         <div className={styles.logoWrapper}>
           <div className={styles.logoPlaceholder}>
-           Ваша лаборатория, профессор {userStore.user?.name ?? "Гость"}!
+           Ваша лаборатория, профессор {userStore.user?.nameProfessor ?? "Гость"}!
           </div>
         </div>
 

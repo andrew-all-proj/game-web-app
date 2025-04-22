@@ -25,7 +25,7 @@ const Arena = observer(() => {
         {/* ARENA */}
         <div className={styles.logoWrapper}>
           <div className={styles.logoPlaceholder}>
-            ARENA — Привет, {userStore.user?.name ?? "Гость"}!
+            ARENA — Привет, {userStore.user?.nameProfessor ?? "Гость"}!
           </div>
         </div>
 

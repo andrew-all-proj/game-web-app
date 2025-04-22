@@ -3,6 +3,7 @@ import CreateUser from "../pages/create-user/CreateUser";
 import Arena from "../pages/arena/Arena";
 import StartApp from "../pages/start-app/StartApp";
 import Laboratory from "../pages/laboratory/Laboratory";
+import ErrorPage from "../pages/error/ErrorPage";
 
 const routes: RouteObject[] = [
   {
@@ -20,6 +21,10 @@ const routes: RouteObject[] = [
   {
     path: "/create-user",
     element: <CreateUser />,
+  },
+  {
+    path: "/error",
+    element: <ErrorPage />,
   },
 ];
 

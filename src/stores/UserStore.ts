@@ -3,6 +3,8 @@ import { makeAutoObservable } from "mobx";
 export interface User {
   id: string;
   name: string;
+  token?: string;
+  nameProfessor?: string;
 }
 
 class UserStore {
@@ -21,7 +23,7 @@ class UserStore {
   }
 
   get isAuthenticated() {
-    return this.user !== null;
+    return this.user?.token !== null;
   }
 }
 
