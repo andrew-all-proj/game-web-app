@@ -3,13 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import errorStore from "../../stores/ErrorStore";
 import userStore from "../../stores/UserStore";
-import InitTelegram from "./InitTelegram";
+import { initTelegram } from "../../functions/init-telegram";
+import client from "../../api/apolloClient";
 import Loading from "../loading/Loading";
 
 const StartApp = observer(() => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!userStore.isAuthenticated) {
+      initTelegram(client)
+    }
+
     const timer = setTimeout(() => {
       if (errorStore.error?.error) {
         navigate("/error");
@@ -23,12 +28,7 @@ const StartApp = observer(() => {
     return () => clearTimeout(timer);
   }, [navigate]);
 
-  return (
-    <>
-      <InitTelegram />
-      <Loading />
-    </>
-  );
+  return <Loading />;
 });
 
 export default StartApp;

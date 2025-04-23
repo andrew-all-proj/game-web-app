@@ -23,7 +23,7 @@ class UserStore {
   }
 
   get isAuthenticated() {
-    return this.user?.token !== null;
+    return this.user?.token;
   }
 }
 
