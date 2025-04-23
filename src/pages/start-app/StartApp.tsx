@@ -11,9 +11,17 @@ const StartApp = observer(() => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!userStore.isAuthenticated) {
-      initTelegram(client)
-    }
+    const runInitTelegram = async () => {
+      if (!userStore.isAuthenticated) {
+        const initTlg = await initTelegram(client);
+        if (!initTlg) {
+          navigate("/error");
+          return;
+        }
+      }
+    };
+
+    runInitTelegram();
 
     const timer = setTimeout(() => {
       if (errorStore.error?.error) {
