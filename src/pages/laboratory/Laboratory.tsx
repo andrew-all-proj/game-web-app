@@ -4,29 +4,25 @@ import userStore from "../../stores/UserStore"
 import { useNavigate } from "react-router-dom"
 
 import styles from "./Laboratory.module.css"
-import MainCharacter from "../../components/MainCharacter"
-import BottomMenu from "../../components/BottomMenu"
-import Pets from "../../components/Pets"
-import Header from "../../components/Header"
+import MainCharacter from "../../components/MainCharacter/MainCharacter"
+import Pets from "../../components/Pets/Pets"
+import Header from "../../components/Header/Header"
 import { initTelegram } from "../../functions/init-telegram"
-import client from "../../api/apolloClient"
 import Loading from "../loading/Loading"
 
 const Laboratory = observer(() => {
   const [count, setCount] = useState(0)
   const navigate = useNavigate()
-  const [isInitChecked, setIsInitChecked] = useState(false);
 
   useEffect(() => {
     const runInitTelegram = async () => {
       if (!userStore.isAuthenticated) {
-        const initTlg = await initTelegram(client);
+        const initTlg = await initTelegram();
         if (!initTlg) {
           navigate("/error");
           return;
         }
       }
-      setIsInitChecked(true);
     };
 
     runInitTelegram();
@@ -36,7 +32,7 @@ const Laboratory = observer(() => {
     navigate("/arena")
   }
 
-  if (!userStore.isAuthenticated && !isInitChecked) {
+  if (!userStore.isAuthenticated) {
     return <Loading />
   }
 
@@ -63,8 +59,6 @@ const Laboratory = observer(() => {
           </button>
         </div>
       </main>
-
-      <BottomMenu />
     </div>
   )
 })

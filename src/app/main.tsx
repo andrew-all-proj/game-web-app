@@ -2,7 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, useRoutes } from "react-router-dom";
 import routes from "../routes";
-import ApolloProvider from "./ApolloProvider";
+import ApolloProvider from "../api/ApolloProvider";
+import '../assets/styles/global.css'
 
 const AppRouter = () => useRoutes(routes);
 

@@ -32,20 +32,22 @@
 
 body {
   margin: 0;
-  display: flex;
-  align-items: center;    
-  justify-content: center;  
+  padding: 0;
   min-width: 320px;
   min-height: 100vh;
   color: var(--color-text);
   background-color: var(--color-bg);
+  font-family: var(--font-base);
+  line-height: 1.5;
+  font-weight: 400;
+  display: block;
+  overflow-x: hidden;
 }
-
 
 a {
   font-weight: 500;
   color: var(--color-link);
-  text-decoration: inherit;
+  text-decoration: none;
 }
 a:hover {
   color: var(--color-link-hover);
@@ -53,9 +55,17 @@ a:hover {
 
 button {
   background-color: var(--color-button-bg);
+  color: inherit;
+  font: inherit;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
 }
 
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  font-size: 2rem;
+  margin: 0;
+  padding: 0;
+  line-height: 1.2;
 }

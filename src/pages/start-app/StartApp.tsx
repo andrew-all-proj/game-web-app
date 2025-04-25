@@ -4,7 +4,6 @@ import { observer } from "mobx-react-lite";
 import errorStore from "../../stores/ErrorStore";
 import userStore from "../../stores/UserStore";
 import { initTelegram } from "../../functions/init-telegram";
-import client from "../../api/apolloClient";
 import Loading from "../loading/Loading";
 
 const StartApp = observer(() => {
@@ -13,7 +12,7 @@ const StartApp = observer(() => {
   useEffect(() => {
     const runInitTelegram = async () => {
       if (!userStore.isAuthenticated) {
-        const initTlg = await initTelegram(client);
+        const initTlg = await initTelegram();
         if (!initTlg) {
           navigate("/error");
           return;

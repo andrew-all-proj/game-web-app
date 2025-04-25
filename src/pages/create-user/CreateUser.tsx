@@ -4,21 +4,11 @@ import { observer } from "mobx-react-lite"
 import userStore from "../../stores/UserStore"
 
 import styles from "./CreateUser.module.css"
-import MainCharacter from "../../components/MainCharacter"
-import BottomMenu from "../../components/BottomMenu"
-import Pets from "../../components/Pets"
-import Header from "../../components/Header"
-import { gql, useMutation } from "@apollo/client";
-
-const USER_UPDATE = gql`
-  mutation UpdateUser($id: String!, $nameProfessor: String!) {
-    UserUpdate(id: $id, nameProfessor: $nameProfessor) {
-      id
-      name
-      nameProfessor
-    }
-  }
-`;
+import MainCharacter from "../../components/MainCharacter/MainCharacter"
+import Pets from "../../components/Pets/Pets"
+import Header from "../../components/Header/Header"
+import { useMutation } from "@apollo/client";
+import { USER_UPDATE } from "../../api/graphql/mutation"
 
 const CreateUser = observer(() => {
   const [name, setName] = useState("")
@@ -71,7 +61,6 @@ const CreateUser = observer(() => {
           </button>
         </div>
       </main>
-      <BottomMenu />
     </div>
   )
 })

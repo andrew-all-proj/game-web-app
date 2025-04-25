@@ -1,21 +1,8 @@
 import WebApp from "@twa-dev/sdk";
 import userStore from "../stores/UserStore";
 import errorStore from "../stores/ErrorStore";
-import { gql, ApolloClient } from "@apollo/client";
 
-const USER_LOGIN = gql`
-  mutation Login($initData: String!, $telegramId: String!) {
-    UserLogin(initData: $initData, telegramId: $telegramId) {
-      id
-      token
-      nameProfessor
-    }
-  }
-`;
-
-export const initTelegram = async (
-  client: ApolloClient<any>
-): Promise<boolean> => {
+export const initTelegram = async (): Promise<boolean> => {
   WebApp.ready();
 
   let tgUser = WebApp.initDataUnsafe?.user;
@@ -39,23 +26,8 @@ export const initTelegram = async (
 
   if (tgUser && initData) {
     try {
-      const response = await client.mutate({
-        mutation: USER_LOGIN,
-        variables: {
-          initData,
-          telegramId: String(tgUser.id),
-        },
-      });
-
-      const user = response.data?.UserLogin;
-      if (user?.id) {
-        userStore.setUser({
-          id: user.id,
-          name: tgUser.first_name || tgUser.username || "Unknown",
-          nameProfessor: user.nameProfessor,
-          token: user.token,
-        });
-      } else {
+      const userLogin = await userStore.loginUser(initData, tgUser);
+      if (!userLogin) {
         errorStore.setError({ error: true, message: "Ошибка регистрации" });
         return false;
       }
@@ -63,6 +35,12 @@ export const initTelegram = async (
       errorStore.setError({ error: true, message: "Ошибка регистрации" });
       return false;
     }
+  } else {
+    errorStore.setError({
+      error: true,
+      message: "Игра работает только в телеграме",
+    });
+    return false;
   }
 
   WebApp.expand();
