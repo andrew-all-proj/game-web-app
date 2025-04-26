@@ -3,29 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import errorStore from "../../stores/ErrorStore";
 import userStore from "../../stores/UserStore";
-import { initTelegram } from "../../functions/init-telegram";
+import { authorizationAndInitTelegram } from "../../functions/authorization-and-init-telegram";
 import Loading from "../loading/Loading";
 
 const StartApp = observer(() => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const runInitTelegram = async () => {
-      if (!userStore.isAuthenticated) {
-        const initTlg = await initTelegram();
-        if (!initTlg) {
-          navigate("/error");
-          return;
-        }
-      }
-    };
-
-    runInitTelegram();
+    authorizationAndInitTelegram(navigate);
 
     const timer = setTimeout(() => {
       if (errorStore.error?.error) {
         navigate("/error");
-      } else if (userStore.user?.nameProfessor) {
+      } else if (userStore.user?.isRegistered) {
         navigate("/laboratory");
       } else {
         navigate("/create-user");

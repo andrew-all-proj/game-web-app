@@ -4,10 +4,8 @@ import { observer } from "mobx-react-lite"
 import userStore from "../../stores/UserStore"
 
 import styles from "./Arena.module.css"
-import MainCharacter from "../../components/MainCharacter/MainCharacter"
-import Pets from "../../components/Pets/Pets"
 import Header from "../../components/Header/Header"
-import { initTelegram } from "../../functions/init-telegram"
+import { authorizationAndInitTelegram } from "../../functions/authorization-and-init-telegram"
 import Loading from "../loading/Loading"
 
 const Arena = observer(() => {
@@ -18,17 +16,7 @@ const Arena = observer(() => {
   };
 
   useEffect(() => {
-    const runInitTelegram = async () => {
-      if (!userStore.isAuthenticated) {
-        const initTlg = await initTelegram();
-        if (!initTlg) {
-          navigate("/error");
-          return;
-        }
-      }
-    };
-
-    runInitTelegram();
+    authorizationAndInitTelegram(navigate);
   }, []);
 
   if (!userStore.isAuthenticated) {
@@ -36,18 +24,12 @@ const Arena = observer(() => {
   }
 
   return (
-    <div className={styles.app}>
+    <div className={styles.arena}>
       <Header />
-
-      <main className={styles.mainContent}>
-        <div className={styles.logoWrapper}>
+      <main className={styles.main}>
           <div className={styles.logoPlaceholder}>
             ARENA — Привет, {userStore.user?.nameProfessor ?? "Гость"}!
           </div>
-        </div>
-
-        <MainCharacter />
-        <Pets />
 
         <div className={styles.counterWrapper}>
 
