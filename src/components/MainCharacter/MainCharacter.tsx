@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import "../app/App.css";
+import styles from "./MainCharacter.module.css";
 
 export default function MainCharacter() {
   return (
@@ -7,29 +7,29 @@ export default function MainCharacter() {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="main-character"
+      className={styles.mainCharacter}
     >
       {/* Верхние кнопки */}
-      <div className="main-buttons">
+      <div className={styles.mainButtons}>
         <div />
         <div />
       </div>
 
       {/* Характеристики и персонаж */}
-      <div className="character-wrapper">
-        <div className="character-stats">
+      <div className={styles.characterWrapper}>
+        <div className={styles.characterStats}>
           <div />
           <div />
         </div>
-        <div className="character-image" />
-        <div className="character-stats">
+        <div className={styles.characterImage} />
+        <div className={styles.characterStats}>
           <div />
           <div />
         </div>
       </div>
 
       {/* Кнопка создать */}
-      <div className="create-button" />
+      <div className={styles.createButton} />
     </motion.div>
   );
 }

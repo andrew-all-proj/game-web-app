@@ -1,19 +1,14 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { observer } from "mobx-react-lite"
 import userStore from "../../stores/UserStore"
 
 import styles from "./Arena.module.css"
-import MainCharacter from "../../components/MainCharacter"
-import BottomMenu from "../../components/BottomMenu"
-import Pets from "../../components/Pets"
-import Header from "../../components/Header"
-import { initTelegram } from "../../functions/init-telegram"
-import client from "../../api/apolloClient"
+import Header from "../../components/Header/Header"
+import { authorizationAndInitTelegram } from "../../functions/authorization-and-init-telegram"
 import Loading from "../loading/Loading"
 
 const Arena = observer(() => {
-  const [isInitChecked, setIsInitChecked] = useState(false);
   const navigate = useNavigate();
 
   const handleGoToLab = () => {
@@ -21,37 +16,20 @@ const Arena = observer(() => {
   };
 
   useEffect(() => {
-    const runInitTelegram = async () => {
-      if (!userStore.isAuthenticated) {
-        const initTlg = await initTelegram(client);
-        if (!initTlg) {
-          navigate("/error");
-          return;
-        }
-      }
-      setIsInitChecked(true);
-    };
-
-    runInitTelegram();
+    authorizationAndInitTelegram(navigate);
   }, []);
 
-  if (!userStore.isAuthenticated && !isInitChecked) {
+  if (!userStore.isAuthenticated) {
     return <Loading />
   }
 
   return (
-    <div className={styles.app}>
+    <div className={styles.arena}>
       <Header />
-
-      <main className={styles.mainContent}>
-        <div className={styles.logoWrapper}>
+      <main className={styles.main}>
           <div className={styles.logoPlaceholder}>
             ARENA — Привет, {userStore.user?.nameProfessor ?? "Гость"}!
           </div>
-        </div>
-
-        <MainCharacter />
-        <Pets />
 
         <div className={styles.counterWrapper}>
 
@@ -60,8 +38,6 @@ const Arena = observer(() => {
           </button>
         </div>
       </main>
-
-      <BottomMenu />
     </div>
   );
 });

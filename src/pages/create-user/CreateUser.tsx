@@ -2,39 +2,29 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { observer } from "mobx-react-lite"
 import userStore from "../../stores/UserStore"
-
 import styles from "./CreateUser.module.css"
-import MainCharacter from "../../components/MainCharacter"
-import BottomMenu from "../../components/BottomMenu"
-import Pets from "../../components/Pets"
-import Header from "../../components/Header"
-import { gql, useMutation } from "@apollo/client";
-
-const USER_UPDATE = gql`
-  mutation UpdateUser($id: String!, $nameProfessor: String!) {
-    UserUpdate(id: $id, nameProfessor: $nameProfessor) {
-      id
-      name
-      nameProfessor
-    }
-  }
-`;
+import Header from "../../components/Header/Header"
+import { useMutation } from "@apollo/client";
+import { USER_UPDATE } from "../../api/graphql/mutation"
 
 const CreateUser = observer(() => {
   const [name, setName] = useState("")
   const [userUpdate] = useMutation(USER_UPDATE)
   const navigate = useNavigate()
+ 
+  if(!userStore.user?.id){
+    navigate("/")
+  }
 
   const handleCreateUser = async () => {
     if (!name.trim()) return
 
     try {
-      const userId = userStore.user?.id
-
       const { data } = await userUpdate({
         variables: {
-          id: userId,
+          id: userStore.user?.id,
           nameProfessor: name,
+          isRegistered: true
         },
       })
 
@@ -48,30 +38,24 @@ const CreateUser = observer(() => {
   }
 
   return (
-    <div className={styles.app}>
+    <div className={styles.createUser}>
       <Header />
-      <main className={styles.mainContent}>
+      <main className={styles.main}>
         <div className={styles.logoWrapper}>
-          <div className={styles.logoPlaceholder}>Создание пользователя</div>
+          <div>Создание пользователя</div>
         </div>
-
-        <MainCharacter />
-        <Pets />
-
-        <div className={styles.formWrapper}>
+        <div>
           <input
-            className={styles.nameInput}
             type="text"
             value={name}
             placeholder="Введите Ваше имя Профессор"
             onChange={(e) => setName(e.target.value)}
           />
-          <button className={styles.createButton} onClick={handleCreateUser}>
+          <button onClick={handleCreateUser}>
             Создать
           </button>
         </div>
       </main>
-      <BottomMenu />
     </div>
   )
 })

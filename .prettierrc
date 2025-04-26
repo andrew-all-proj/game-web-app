@@ -1,0 +1,19 @@
+{
+    "singleQuote": true,
+    "trailingComma": "all",
+    "printWidth": 120,
+    "semi": false,
+    "useTabs": true,
+    "overrides": [
+      {
+        "files": ".prettierrc",
+        "options": { "parser": "babylon" }
+      },
+      {
+        "files": ["**/*.css", "**/*.scss", "**/*.html"],
+        "options": {
+            "singleQuote": false
+        }
+      }
+    ]
+  }

@@ -1,31 +1,60 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable } from 'mobx'
+import client from '../api/apolloClient'
+import { USER_LOGIN } from '../api/graphql/mutation'
 
 export interface User {
-  id: string;
-  name: string;
-  token?: string;
-  nameProfessor?: string;
+	id: string
+	name: string
+	token?: string
+	nameProfessor?: string
+	isRegistered?: boolean
 }
 
 class UserStore {
-  user: User | null = null;
+	user: User | null = null
 
-  constructor() {
-    makeAutoObservable(this);
-  }
+	constructor() {
+		makeAutoObservable(this)
+	}
 
-  setUser(user: User) {
-    this.user = user;
-  }
+	async loginUser(initData: any, tgUser: any): Promise<User | null> {
+		const response = await client.mutate({
+			mutation: USER_LOGIN,
+			variables: {
+				initData,
+				telegramId: String(tgUser.id),
+			},
+		})
 
-  clearUser() {
-    this.user = null;
-  }
+		const user = response.data?.UserLogin
 
-  get isAuthenticated() {
-    return this.user?.token;
-  }
+		if (!user?.id) {
+			return null
+		}
+
+		this.setUser({
+			id: user.id,
+			name: tgUser.first_name || tgUser.username || 'Unknown',
+			nameProfessor: user.nameProfessor || tgUser.first_name || tgUser.username || 'Unknown',
+			token: user.token,
+			isRegistered: user.isRegistered,
+		})
+
+		return user
+	}
+
+	setUser(user: User) {
+		this.user = user
+	}
+
+	clearUser() {
+		this.user = null
+	}
+
+	get isAuthenticated() {
+		return this.user?.token
+	}
 }
 
-const userStore = new UserStore();
-export default userStore;
+const userStore = new UserStore()
+export default userStore
