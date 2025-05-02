@@ -8,7 +8,7 @@ const Loading = observer(() => {
   return (
     <div className={styles.loadingPage}>
       <div className={styles.spinner} />
-      <p>{user ? `${user.nameProfessor }` : 'Loading user...'}</p>
+      <p>{user ? `${user.nameProfessor }` : 'Загрузка...'}</p>
     </div>
   );
 });
