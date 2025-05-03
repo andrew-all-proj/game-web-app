@@ -7,7 +7,7 @@ import styles from "./Arena.module.css"
 import Header from "../../components/Header/Header"
 import { authorizationAndInitTelegram } from "../../functions/authorization-and-init-telegram"
 import Loading from "../loading/Loading"
-import AnimatedMonster from "./TestFight"
+import TestFight from "./TestFight"
 
 const Arena = observer(() => {
   const navigate = useNavigate();
@@ -29,17 +29,14 @@ const Arena = observer(() => {
       <Header />
       <main className={styles.main}>
           <div className={styles.logoPlaceholder}>
-            ARENA — Привет, {userStore.user?.nameProfessor ?? "Гость"}!
+            ARENA — Привет, профессор {userStore.user?.nameProfessor ?? "Гость"}!
           </div>
 
-        <AnimatedMonster />
+        <TestFight/>
+        <button className={styles.comeBackButton} onClick={handleGoToLab}>
+          Перейти в лабораторию
+        </button>
 
-        <div className={styles.counterWrapper}>
-
-          <button className={styles.counterButton} onClick={handleGoToLab}>
-            Перейти в лабораторию
-          </button>
-        </div>
       </main>
     </div>
   );

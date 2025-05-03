@@ -1,132 +1,189 @@
 import { useEffect, useRef, useState } from 'react';
-import monsterImage from '../../assets/images/monster.png';
+import opponentMonster from '../../assets/images/opponent-monster.png';
+import yourMonster from '../../assets/images/your-monster.png';
+import styles from './TestFight.module.css'
 
-export default function AnimatedMonster() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const requestRef = useRef<number>(null);
-  const angle = useRef(0);
-  const isAnimationRunning = useRef(true);
+export default function TestFight() {
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const yourImgRef = useRef<HTMLImageElement | null>(null);
+    const opponentImgRef = useRef<HTMLImageElement | null>(null);
+    const [yourHealth, setYourHealth] = useState(100);
+    const [opponentHealth, setOpponentHealth] = useState(100);
 
-  const [health, setHealth] = useState(100);
-  const [isHit, setIsHit] = useState(false);
-  const [showRestart, setShowRestart] = useState(false);
+    const [isHit, setIsHit] = useState(false);
+  
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas?.getContext('2d');
+        if (!ctx || !canvas) return;
+      
+        const yourImg = new Image();
+        const opponentImg = new Image();
+      
+        yourImgRef.current = yourImg;
+        opponentImgRef.current = opponentImg;
+      
+        let loadedCount = 0;
+      
+        const tryDraw = () => {
+          loadedCount += 1;
+          if (loadedCount === 2) draw();
+        };
+      
+        yourImg.onload = tryDraw;
+        opponentImg.onload = tryDraw;
+      
+        yourImg.src = yourMonster;
+        opponentImg.src = opponentMonster;
+      
+        const draw = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+          const scale = 0.5;
+          const imgWidth = 300;
+          const imgHeight = 300;
+      
+          const yourX = 10;
+          const yourY = canvas.height / 2 - (imgHeight * scale) / 2;
+      
+          const opponentX = canvas.width - imgWidth * scale - 10;
+          const opponentY = canvas.height / 2 - (imgHeight * scale) / 2;
+      
+          ctx.drawImage(yourImg, yourX, yourY, imgWidth * scale, imgHeight * scale);
+      
+          ctx.save();
+          ctx.translate(opponentX + imgWidth * scale, opponentY);
+          ctx.scale(-1, 1);
+          ctx.drawImage(opponentImg, 0, 0, imgWidth * scale, imgHeight * scale);
+          ctx.restore();
+        };
+      }, []);
+      
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
-    const img = new Image();
-    img.src = monsterImage;
 
-    const width = 300;
-    const height = 300;
-    const amplitude = (width - 100) / 2;
-    const offset = amplitude;
+    const handleAttack = (damage: number) => {
+        setOpponentHealth(prev => Math.max(prev - damage, 0));
+        setIsHit(true);
 
-    const draw = () => {
-      if (!ctx) return;
+        setTimeout(() => setIsHit(false), 300);
 
-      ctx.clearRect(0, 0, width, height);
+        setYourHealth(prev => Math.max(prev - 5, 0))
+    };
 
-      const x = Math.sin(angle.current) * amplitude + offset;
-      const shakeX = isHit && health > 0 ? Math.random() * 10 - 5 : 0;
-      const shakeY = isHit && health > 0 ? Math.random() * 10 - 5 : 0;
-
-      if (isHit && health > 0) {
-        ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
-        ctx.fillRect(0, 0, width, height);
-      }
-
-      if (health > 0) {
-        ctx.drawImage(img, x + shakeX, 80 + shakeY, 100, 100);
-        angle.current += 0.03;
-      } else {
-        // Game Over: монстр лежит
+    useEffect(() => {
+        if (!isHit) return;
+      
+        const canvas = canvasRef.current;
+        const ctx = canvas?.getContext('2d');
+        if (!ctx || !canvas || !yourImgRef.current || !opponentImgRef.current) return;
+      
+        const scale = 0.5;
+        const imgWidth = 300;
+        const imgHeight = 300;
+      
+        const draw = (shake = 0) => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+          const yourX = 10;
+          const yourY = canvas.height / 2 - (imgHeight * scale) / 2;
+          const opponentX = canvas.width - imgWidth * scale - 10 + shake;
+          const opponentY = canvas.height / 2 - (imgHeight * scale) / 2;
+      
+          // красный фон
+          ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+          ctx.fillRect(opponentX - 10, opponentY - 10, imgWidth * scale + 20, imgHeight * scale + 20);
+      
+          ctx.drawImage(yourImgRef.current!, yourX, yourY, imgWidth * scale, imgHeight * scale);
+      
+          ctx.save();
+          ctx.translate(opponentX + imgWidth * scale, opponentY);
+          ctx.scale(-1, 1);
+          ctx.drawImage(opponentImgRef.current!, 0, 0, imgWidth * scale, imgHeight * scale);
+          ctx.restore();
+        };
+      
+        const interval = setInterval(() => {
+          const shake = Math.random() * 8 - 4;
+          draw(shake);
+        }, 50);
+      
+        const timeout = setTimeout(() => {
+          clearInterval(interval);
+          setIsHit(false);
+        }, 300);
+      
+        return () => {
+          clearInterval(interval);
+          clearTimeout(timeout);
+        };
+      }, [isHit]);
+      
+      useEffect(() => {
+        if (isHit) return;
+      
+        const canvas = canvasRef.current;
+        const ctx = canvas?.getContext('2d');
+        if (!ctx || !canvas || !yourImgRef.current || !opponentImgRef.current) return;
+      
+        const scale = 0.5;
+        const imgWidth = 300;
+        const imgHeight = 300;
+      
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+        const yourX = 10;
+        const yourY = canvas.height / 2 - (imgHeight * scale) / 2;
+        const opponentX = canvas.width - imgWidth * scale - 10;
+        const opponentY = canvas.height / 2 - (imgHeight * scale) / 2;
+      
+        ctx.drawImage(yourImgRef.current!, yourX, yourY, imgWidth * scale, imgHeight * scale);
+      
         ctx.save();
-        ctx.translate(x + 50, 130);
-        ctx.rotate(Math.PI / 2);
-        ctx.drawImage(img, -50, -50, 100, 100);
+        if (opponentHealth <= 0) {
+          // Поворот на 270° (монстр падает на левый бок)
+          ctx.translate(opponentX, opponentY + imgWidth * scale); // смещаем влево и вниз
+          ctx.rotate(Math.PI * 1.5); // 270 градусов
+          ctx.drawImage(opponentImgRef.current!, 0, 0, imgWidth * scale, imgHeight * scale);
+        } else {
+          // Обычная отрисовка (стоящий зеркальный монстр)
+          ctx.translate(opponentX + imgWidth * scale, opponentY);
+          ctx.scale(-1, 1);
+          ctx.drawImage(opponentImgRef.current!, 0, 0, imgWidth * scale, imgHeight * scale);
+        }
+        
         ctx.restore();
-
-        // Текст Game Over
-        ctx.fillStyle = 'red';
-        ctx.font = 'bold 24px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('💀 GAME OVER 💀', width / 2, 50);
-
-        isAnimationRunning.current = false;
-        setShowRestart(true);
-        return; // стоп отрисовку
-      }
-
-      if (isAnimationRunning.current) {
-        requestRef.current = requestAnimationFrame(draw);
-      }
-    };
-
-    img.onload = () => {
-      isAnimationRunning.current = true;
-      draw();
-    };
-
-    return () => {
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
-    };
-  }, [isHit, health]);
-
-  const handleHit = () => {
-    if (health <= 0) return;
-    setHealth((prev) => Math.max(0, prev - 10));
-    setIsHit(true);
-    setTimeout(() => setIsHit(false), 200);
-  };
-
-  const handleRestart = () => {
-    setHealth(100);
-    angle.current = 0;
-    setIsHit(false);
-    setShowRestart(false);
-    isAnimationRunning.current = true;
-    const img = new Image();
-    img.src = monsterImage;
-    img.onload = () => {
-      const ctx = canvasRef.current?.getContext('2d');
-      if (ctx) requestRef.current = requestAnimationFrame(() => drawFrame(ctx, img));
-    };
-  };
-
-  const drawFrame = (ctx: CanvasRenderingContext2D, img: HTMLImageElement) => {
-    const width = 300;
-    const height = 300;
-    const amplitude = (width - 100) / 2;
-    const offset = amplitude;
-
-    ctx.clearRect(0, 0, width, height);
-
-    const x = Math.sin(angle.current) * amplitude + offset;
-
-    const shakeX = isHit ? Math.random() * 10 - 5 : 0;
-    const shakeY = isHit ? Math.random() * 10 - 5 : 0;
-
-    ctx.drawImage(img, x + shakeX, 80 + shakeY, 100, 100);
-    angle.current += 0.03;
-
-    if (isAnimationRunning.current) {
-      requestRef.current = requestAnimationFrame(() => drawFrame(ctx, img));
-    }
-  };
-
-  return (
-    <div style={{ textAlign: 'center' }}>
-      <canvas ref={canvasRef} width={300} height={300} />
-      <div style={{ marginTop: 10 }}>
-        <button onClick={handleHit} disabled={health <= 0}>Ударить</button>
-        <p>❤️ Здоровье: {health}</p>
-        {showRestart && (
-          <button onClick={handleRestart} style={{ marginTop: 10 }}>
-            🔁 Сыграть снова
-          </button>
-        )}
+      
+        if (opponentHealth <= 0) {
+          ctx.fillStyle = 'red';
+          ctx.font = 'bold 24px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText('GAME OVER', canvas.width / 2, 40);
+        }
+      }, [isHit, opponentHealth]);
+      
+  
+    return (
+      <div className={styles.main}>
+        <div style={{ marginTop: '70px', position: 'relative', width: 370, height: 290 }}>
+          {/* Прогресс-бар твоего монстра */}
+          <div className={styles.healthBar} style={{ top: 10, left: 20 }}>
+            <div className={styles.healthFill} style={{ width: `${yourHealth}%`, backgroundColor: '#4caf50' }} />
+          </div>
+  
+          {/* Прогресс-бар соперника */}
+          <div className={styles.healthBar} style={{ top: 10, right: 20 }}>
+            <div className={styles.healthFill} style={{ width: `${opponentHealth}%`, backgroundColor: '#f44336' }} />
+          </div>
+  
+          <canvas ref={canvasRef} width={370} height={290} />
+        </div>
+  
+        <div className={styles.wrapperButton}>
+          <button className={styles.attackButton} onClick={() => handleAttack(10)}>Укусить</button>
+          <button className={styles.attackButton} onClick={() => handleAttack(15)}>Удар рукой</button>
+          <button className={styles.attackButton} onClick={() => handleAttack(20)}>Удар ногой</button>
+          <button className={styles.attackButton} onClick={() => handleAttack(25)}>Удар хвостом</button>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
