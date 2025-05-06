@@ -7,7 +7,7 @@ import styles from "./Laboratory.module.css"
 import Header from "../../components/Header/Header"
 import { authorizationAndInitTelegram } from "../../functions/authorization-and-init-telegram"
 import Loading from "../loading/Loading"
-import AnimatedMonster from "./AnimatedMonster"
+import ConstructorMonster from "./ConstructorMonster"
 
 const Laboratory = observer(() => {
   const navigate = useNavigate()
@@ -32,7 +32,7 @@ const Laboratory = observer(() => {
            Laboratory — Привет, {userStore.user?.nameProfessor ?? "Гость"}!
           </div>
 
-          <AnimatedMonster />
+          <ConstructorMonster />
 
         <div className={styles.counterWrapper}>
 
