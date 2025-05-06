@@ -4,9 +4,9 @@ import monsterSprite from '../../assets/images/parts_monster.svg';
 const controlStyle: React.CSSProperties = {
     display: 'flex',
     justifyContent: 'center',
-    gap: '10px',
+    gap: '5px',
     flexWrap: 'wrap',
-    margin: '10px'
+    margin: '5px'
   };
 
 const selectedButtonStyle: React.CSSProperties = {
@@ -37,34 +37,34 @@ type Part = {
 
 const listParts: Record<PartName, Part[]> = {
   head: [
-    { sx: 37, sy: 375, sw: 100, sh: 60, dx: 150, dy: 48, dw: 100, dh: 60 },
-    { sx: 160, sy: 375, sw: 100, sh: 60, dx: 150, dy: 48, dw: 100, dh: 60 },
-    { sx: 302, sy: 375, sw: 100, sh: 60, dx: 150, dy: 48, dw: 100, dh: 60 }
+    { sx: 37, sy: 375, sw: 100, sh: 60, dx: 130, dy: 28, dw: 100, dh: 60 },
+    { sx: 160, sy: 375, sw: 100, sh: 60, dx: 130, dy: 28, dw: 100, dh: 60 },
+    { sx: 302, sy: 375, sw: 100, sh: 60, dx: 130, dy: 28, dw: 100, dh: 60 }
   ],
   body: [
-    { sx: 37, sy: 85, sw: 100, sh: 190, dx: 150, dy: 100, dw: 100, dh: 190 },
-    { sx: 160, sy: 85, sw: 100, sh: 190, dx: 140, dy: 100, dw: 100, dh: 190 },
-    { sx: 302, sy: 85, sw: 100, sh: 190, dx: 150, dy: 100, dw: 100, dh: 190 }
+    { sx: 37, sy: 85, sw: 100, sh: 190, dx: 130, dy: 80, dw: 100, dh: 190 },
+    { sx: 160, sy: 85, sw: 100, sh: 190, dx: 120, dy: 80, dw: 100, dh: 190 },
+    { sx: 302, sy: 85, sw: 100, sh: 190, dx: 130, dy: 80, dw: 100, dh: 190 }
   ],
   leftArm: [
-    { sx: 37, sy: 490, sw: 100, sh: 160, dx: 100, dy: 130, dw: 100, dh: 160, rotate: Math.PI / 6 },
-    { sx: 160, sy: 490, sw: 100, sh: 160, dx: 100, dy: 140, dw: 100, dh: 160, rotate: Math.PI / 6 },
-    { sx: 302, sy: 490, sw: 100, sh: 160, dx: 100, dy: 130, dw: 100, dh: 160, rotate: Math.PI / 6 }
+    { sx: 37, sy: 490, sw: 100, sh: 160, dx: 80, dy: 110, dw: 100, dh: 160, rotate: Math.PI / 6 },
+    { sx: 160, sy: 490, sw: 100, sh: 160, dx: 80, dy: 120, dw: 100, dh: 160, rotate: Math.PI / 6 },
+    { sx: 302, sy: 490, sw: 100, sh: 160, dx: 80, dy: 110, dw: 100, dh: 160, rotate: Math.PI / 6 }
   ],
   rightArm: [
-    { sx: 37, sy: 490, sw: 100, sh: 160, dx: 250, dy: 100, dw: 100, dh: 160, rotate: -Math.PI / 6 },
-    { sx: 160, sy: 490, sw: 100, sh: 160, dx: 250, dy: 100, dw: 100, dh: 160, rotate: -Math.PI / 6 },
-    { sx: 302, sy: 490, sw: 100, sh: 160, dx: 250, dy: 100, dw: 100, dh: 160, rotate: -Math.PI / 6 }
+    { sx: 37, sy: 490, sw: 100, sh: 160, dx: 230, dy: 80, dw: 100, dh: 160, rotate: -Math.PI / 6 },
+    { sx: 160, sy: 490, sw: 100, sh: 160, dx: 230, dy: 80, dw: 100, dh: 160, rotate: -Math.PI / 6 },
+    { sx: 302, sy: 490, sw: 100, sh: 160, dx: 230, dy: 80, dw: 100, dh: 160, rotate: -Math.PI / 6 }
   ],
   rightLeg: [
-    { sx: 37, sy: 700, sw: 100, sh: 160, dx: 160, dy: 260, dw: 100, dh: 160 },
-    { sx: 160, sy: 700, sw: 100, sh: 160, dx: 160, dy: 260, dw: 100, dh: 160 },
-    { sx: 302, sy: 700, sw: 100, sh: 160, dx: 160, dy: 260, dw: 100, dh: 160 }
+    { sx: 37, sy: 700, sw: 100, sh: 160, dx: 140, dy: 240, dw: 100, dh: 160 },
+    { sx: 160, sy: 700, sw: 100, sh: 160, dx: 140, dy: 240, dw: 100, dh: 160 },
+    { sx: 302, sy: 700, sw: 100, sh: 160, dx: 140, dy: 240, dw: 100, dh: 160 }
   ],
   leftLeg: [
-    { sx: 37, sy: 700, sw: 100, sh: 160, dx: 210, dy: 260, dw: 100, dh: 160 },
-    { sx: 160, sy: 700, sw: 100, sh: 160, dx: 210, dy: 260, dw: 100, dh: 160 },
-    { sx: 302, sy: 700, sw: 100, sh: 160, dx: 210, dy: 260, dw: 100, dh: 160 }
+    { sx: 37, sy: 700, sw: 100, sh: 160, dx: 190, dy: 240, dw: 100, dh: 160 },
+    { sx: 160, sy: 700, sw: 100, sh: 160, dx: 190, dy: 240, dw: 100, dh: 160 },
+    { sx: 302, sy: 700, sw: 100, sh: 160, dx: 190, dy: 240, dw: 100, dh: 160 }
   ]
 };
 
@@ -137,7 +137,7 @@ export default function ConstructorMonster() {
 
   return (
     <>
-      <canvas ref={canvasRef} width={600} height={450} style={{ border: '1px solid #333', margin: '20px auto', display: 'block', backgroundColor: '#f0f0f0' }} />
+      <canvas ref={canvasRef} width={300} height={400} style={{ border: '1px solid #333', margin: '20px auto', display: 'block', backgroundColor: '#f0f0f0' }} />
       
       <div className="controls" style={controlStyle}>
       {(['head', 'body', 'leftArm', 'rightArm', 'rightLeg', 'leftLeg'] as PartName[]).map(part => (
