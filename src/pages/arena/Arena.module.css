@@ -1,9 +1,15 @@
 .arena {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100dvh; 
   background-color: var(--color-bg);
   color: var(--color-text);
+  background-image: url('../../assets/images/background-arena.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative; 
+  overflow: hidden;
 }
 
 .main {
@@ -12,6 +18,49 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 16px;
   text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.comeBackButton {
+  width: 90%;
+  max-width: 300px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 16px;
+  font-weight: bold;
+  color: rgb(87, 86, 63);
+  background: #dbdd45;
+  border: 2px solid #d2dbd6;
+  border-radius: 12px;
+
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.logoPlaceholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 60px;
+  padding-top: 100px;
+  box-sizing: border-box;
+
+  color: rgb(227, 231, 233);
+  font-size: 16px;
+  font-weight: bold;
 }

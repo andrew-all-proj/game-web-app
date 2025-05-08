@@ -5,6 +5,14 @@ header {
   padding: 16px;
   background-color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-size: 20px;
+  font-size: 26px;
   font-weight: bold;
+  color: #1c9e1c;
+  text-shadow:
+  -1px -1px 0 #201e1e,
+   1px -1px 0 #201e1e,
+  -1px  1px 0 #201e1e,
+   1px  1px 0 #201e1e;
+   letter-spacing: 3px;
+   background: radial-gradient(circle, #0B5EA3 0%, #0B5EA3 40%, #2c2d42 80%);
 }
