@@ -8,6 +8,7 @@ export interface User {
 	token?: string
 	nameProfessor?: string
 	isRegistered?: boolean
+	avatar?: { id: string; url: string } | null
 }
 
 class UserStore {
@@ -38,6 +39,7 @@ class UserStore {
 			nameProfessor: user.nameProfessor || tgUser.first_name || tgUser.username || 'Unknown',
 			token: user.token,
 			isRegistered: user.isRegistered,
+			avatar: user.avatar ? { id: user.avatar.id, url: user.avatar.url } : null,
 		})
 
 		return user

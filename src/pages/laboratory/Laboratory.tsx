@@ -26,7 +26,7 @@ const Laboratory = observer(() => {
 
   return (
     <div className={styles.laboratory}>
-      <Header />
+      <Header avatarUrl={userStore.user?.avatar?.url} />
       <main className={styles.main}>
           <div className={styles.logoPlaceholder}>
            Laboratory — Привет, {userStore.user?.nameProfessor ?? "Гость"}!

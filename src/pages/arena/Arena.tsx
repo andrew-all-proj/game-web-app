@@ -26,7 +26,7 @@ const Arena = observer(() => {
 
   return (
     <div className={styles.arena}>
-      <Header />
+      <Header avatarUrl={userStore.user?.avatar?.url} />
       <main className={styles.main}>
           <div className={styles.logoPlaceholder}>
             ARENA — Привет, профессор {userStore.user?.nameProfessor ?? "Гость"}!

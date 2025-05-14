@@ -7,17 +7,26 @@ export const USER_LOGIN = gql`
 			token
 			nameProfessor
 			isRegistered
+			avatar {
+				id
+				url
+			}
 		}
 	}
 `
 
 export const USER_UPDATE = gql`
-	mutation UpdateUser($id: String!, $nameProfessor: String!, $isRegistered: Boolean!) {
-		UserUpdate(id: $id, nameProfessor: $nameProfessor, isRegistered: $isRegistered) {
+	mutation UpdateUser($id: String!, $nameProfessor: String!, $isRegistered: Boolean!, $avatarFileId: String) {
+		UserUpdate(id: $id, nameProfessor: $nameProfessor, isRegistered: $isRegistered, avatarFileId: $avatarFileId) {
 			id
 			name
 			nameProfessor
 			isRegistered
+			avatarFileId
+			avatar {
+				id
+				url
+			}
 		}
 	}
 `
