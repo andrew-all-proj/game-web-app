@@ -16,3 +16,24 @@ export const FILES = gql`
 		}
 	}
 `
+
+export const MONSTERS = gql`
+	query Monsters($limit: Float!, $offset: Float!, $userId: UuidFilter) {
+		Monsters(limit: $limit, offset: $offset, userId: $userId) {
+			totalCount
+			items {
+				id
+				name
+				level
+				files {
+					id
+					url
+					name
+					contentType
+					fileType
+				}
+				userId
+			}
+		}
+	}
+`

@@ -7,13 +7,19 @@ import styles from "./Laboratory.module.css"
 import Header from "../../components/Header/Header"
 import { authorizationAndInitTelegram } from "../../functions/authorization-and-init-telegram"
 import Loading from "../loading/Loading"
-import ConstructorMonster from "./ConstructorMonster"
+import monsterStore from "../../stores/MonsterStore"
+import noAvatarMonster from '../../assets/images/no-avatar-monster.jpg'
 
 const Laboratory = observer(() => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    authorizationAndInitTelegram(navigate);
+    (async () => {
+      const success = await authorizationAndInitTelegram(navigate);
+      if (success && userStore.user?.id) {
+        await monsterStore.fetchMonsters(userStore.user?.id)
+      }
+    })();
   }, []);
 
   const handleGoToArena = () => {
@@ -28,18 +34,27 @@ const Laboratory = observer(() => {
     <div className={styles.laboratory}>
       <Header avatarUrl={userStore.user?.avatar?.url} />
       <main className={styles.main}>
-          <div className={styles.logoPlaceholder}>
+        <div className={styles.logoPlaceholder}>
            Laboratory — Привет, {userStore.user?.nameProfessor ?? "Гость"}!
-          </div>
-
-          <ConstructorMonster />
-
-        <div className={styles.counterWrapper}>
-
-          <button className={styles.counterButton} onClick={handleGoToArena}>
-            Перейти на арену
-          </button>
         </div>
+        <div>
+          Ваши питомцы:
+        </div>
+        <div className={styles.petsList}>
+          {monsterStore.monsters.map((monster) => (
+            <div key={monster.id} className={styles.petCard}>
+              <img src={monster.files?.find((file) => file.contentType === "AVATAR_MONSTER")?.url || noAvatarMonster} alt={monster.name} className={styles.petImage} />
+              <div>{monster.name}</div>
+            </div>
+          ))}
+
+          <div className={`${styles.petCard} ${styles.createPetCard}`} onClick={() => navigate("/create-pet")}>
+            ➕ Создать питомца
+          </div>
+        </div>
+        <button className={styles.counterButton} onClick={handleGoToArena}>
+          Перейти на арену
+        </button>
       </main>
     </div>
 
