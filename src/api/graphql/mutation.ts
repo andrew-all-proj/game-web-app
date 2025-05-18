@@ -30,3 +30,20 @@ export const USER_UPDATE = gql`
 		}
 	}
 `
+
+export const MONSTER_CREATE = gql`
+	mutation MonsterCreate($name: String!, $fileId: String!) {
+		MonsterCreate(name: $name, fileId: $fileId) {
+			id
+			name
+			level
+			bodyMass
+			updatedAt
+			userId
+			files {
+				id
+				url
+			}
+		}
+	}
+`

@@ -1,13 +1,34 @@
 import { useEffect, useRef, useState } from 'react';
 import monsterSprite from '../../assets/images/parts_monster.svg';
+import userStore from "../../stores/UserStore"
+import { uploadFile } from '../../api/upload-file';
+import { useNavigate } from 'react-router-dom';
+import client from '../../api/apolloClient';
+import { MONSTER_CREATE } from '../../api/graphql/mutation';
+import monsterStore from '../../stores/MonsterStore';
 
-const controlStyle: React.CSSProperties = {
+const controlStyleBody: React.CSSProperties = {
     display: 'flex',
     justifyContent: 'center',
+    flexDirection: 'column',
     gap: '5px',
     flexWrap: 'wrap',
     margin: '5px'
   };
+
+const controlStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'center',
+  gap: '5px',
+  flexWrap: 'wrap',
+  margin: '5px'
+};
+
+const buttonRowStyle: React.CSSProperties = {
+  display: 'flex',
+  justifyContent: 'center',
+  gap: '10px',
+}
 
 const selectedButtonStyle: React.CSSProperties = {
   backgroundColor: '#4caf50',
@@ -73,7 +94,10 @@ export default function ConstructorMonster() {
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [typePart, setTypePart] = useState<PartName | ''>('');
   const [count, setCount] = useState(0);
+  const [errorMsg, setErrorMsg] = useState('');
   const [selectedParts, setSelectedParts] = useState<Partial<Record<PartName, Part>>>({});
+  const [monsterName, setMonsterName] = useState('');
+  const navigate = useNavigate()
 
   const draw = () => {
     const canvas = canvasRef.current;
@@ -122,6 +146,63 @@ export default function ConstructorMonster() {
     setSelectedParts((prev) => ({ ...prev, [part]: listParts[part][0] }));
   };
 
+  const handleSaveImage = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    if (
+      !selectedParts.head ||
+      !selectedParts.body ||
+      !selectedParts.leftArm ||
+      !selectedParts.rightArm ||
+      !selectedParts.leftLeg ||
+      !selectedParts.rightLeg
+    ) {
+      setErrorMsg('Выбери все части тела'); 
+      return;
+    }
+
+    if(!monsterName) {
+      setErrorMsg('Введите имя монстра');
+      return;
+    }
+  
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+  
+      const file = new File([blob], 'monster.png', { type: 'image/png' });
+  
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('name', 'monster');
+      formData.append('fileType', 'IMAGE');
+      formData.append('contentType', 'AVATAR_MONSTER');
+  
+      try {
+        const result = await uploadFile({
+          url:  `${import.meta.env.VITE_API_FILE}/upload`,
+          formData,
+          token: userStore.user?.token,
+        });
+      
+        await client.mutate({
+          mutation: MONSTER_CREATE,
+          variables: {
+            name: monsterName,
+            fileId: result.id,
+          },
+        });
+
+        if(userStore.user?.id){
+          await monsterStore.fetchMonsters(userStore.user?.id)
+        }
+      } catch (err) {
+        console.error('Upload error:', err);
+      }
+    }, 'image/png');
+    navigate("/laboratory")
+  };
+
   useEffect(() => {
     const img = new Image();
     img.src = monsterSprite;
@@ -137,25 +218,81 @@ export default function ConstructorMonster() {
 
   return (
     <>
-      <canvas ref={canvasRef} width={300} height={400} style={{ border: '1px solid #333', margin: '20px auto', display: 'block', backgroundColor: '#f0f0f0' }} />
-      
-      <div className="controls" style={controlStyle}>
-      {(['head', 'body', 'leftArm', 'rightArm', 'rightLeg', 'leftLeg'] as PartName[]).map(part => (
-        <button
-          key={part}
-          onClick={() => handleTypeChange(part)}
-          style={typePart === part ? selectedButtonStyle : undefined}
-        >
-          {part}
-        </button>
-      ))}
-
+      <div style={{ color: 'red' }}>
+        {errorMsg}
       </div>
+
+      <canvas ref={canvasRef} width={300} height={400} style={{ border: '1px solid #333', margin: '20px auto', display: 'block', backgroundColor: '#f0f0f0' }} />
+
+      <div className="controls" style={controlStyleBody}>
+        <div style={buttonRowStyle}>
+          <button
+            onClick={() => handleTypeChange('head')}
+            style={typePart === 'head' ? selectedButtonStyle : {}}
+          >
+            head
+          </button>
+        </div>
+
+        <div style={buttonRowStyle}>
+          <button
+            onClick={() => handleTypeChange('leftArm')}
+            style={typePart === 'leftArm' ? selectedButtonStyle : {}}
+          >
+            leftArm
+          </button>
+          <button
+            onClick={() => handleTypeChange('body')}
+            style={typePart === 'body' ? selectedButtonStyle : {}}
+          >
+            body
+          </button>
+          <button
+            onClick={() => handleTypeChange('rightArm')}
+            style={typePart === 'rightArm' ? selectedButtonStyle : {}}
+          >
+            rightArm
+          </button>
+        </div>
+
+        <div style={buttonRowStyle}>
+          <button
+            onClick={() => handleTypeChange('leftLeg')}
+            style={typePart === 'leftLeg' ? selectedButtonStyle : {}}
+          >
+            leftLeg
+          </button>
+          <button
+            onClick={() => handleTypeChange('rightLeg')}
+            style={typePart === 'rightLeg' ? selectedButtonStyle : {}}
+          >
+            rightLeg
+          </button>
+        </div>
+      </div>
+
 
       <div className="controls" style={controlStyle}>
         <button onClick={() => selectPart('left')}>Left</button>
         <button onClick={() => selectPart('right')}>Right</button>
       </div>
+
+      <div className="controls" style={controlStyle}>
+      <input
+        type="text"
+        placeholder="Monster name"
+        value={monsterName}
+        onChange={(e) => setMonsterName(e.target.value)}
+        style={{
+          padding: '8px',
+          marginRight: '10px',
+          borderRadius: '6px',
+          border: '1px solid #ccc',
+        }}
+      />
+      <button onClick={handleSaveImage}>Save Monster</button>
+    </div>
+      
     </>
   );
 }
