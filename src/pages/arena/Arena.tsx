@@ -34,7 +34,7 @@ const Arena = observer(() => {
 
         <TestFight/>
         <button className={styles.comeBackButton} onClick={handleGoToLab}>
-          Перейти в лабораторию
+          Лаборатория
         </button>
 
       </main>

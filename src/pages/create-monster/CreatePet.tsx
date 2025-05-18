@@ -36,7 +36,6 @@ const CreatePet = observer(() => {
           <ConstructorMonster />
 
         <div className={styles.counterWrapper}>
-
           <button className={styles.counterButton} onClick={handleGoToLaboratory}>
             Перейти в лабораторию
           </button>

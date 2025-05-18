@@ -20,6 +20,7 @@ export interface Monster {
 
 class MonsterStore {
 	monsters: Monster[] = []
+	selectedMonster: Monster | null = null
 	error: string | null = null
 
 	constructor() {
@@ -30,8 +31,13 @@ class MonsterStore {
 		this.monsters = monsters
 	}
 
+	setSelectedMonster(monster: Monster) {
+		this.selectedMonster = monster
+	}
+
 	clearMonsters() {
 		this.monsters = []
+		this.selectedMonster = null
 	}
 
 	async fetchMonsters(userId: string) {

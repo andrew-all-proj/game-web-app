@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import opponentMonster from '../../assets/images/opponent-monster.png';
-import yourMonster from '../../assets/images/your-monster.png';
 import styles from './TestFight.module.css'
+import monsterStore from "../../stores/MonsterStore"
 
 export default function TestFight() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -10,6 +10,10 @@ export default function TestFight() {
     const [yourHealth, setYourHealth] = useState(100);
     const [opponentHealth, setOpponentHealth] = useState(100);
 
+    if (!monsterStore.selectedMonster) {
+      return <div style={{ textAlign: 'center', marginTop: '100px', color: 'white', fontSize: '34px' }}>Выберите монстра в лаборатории</div>;
+    }
+    
     const [isHit, setIsHit] = useState(false);
   
     useEffect(() => {
@@ -33,7 +37,10 @@ export default function TestFight() {
         yourImg.onload = tryDraw;
         opponentImg.onload = tryDraw;
       
-        yourImg.src = yourMonster;
+        if (!monsterStore.selectedMonster || !monsterStore.selectedMonster.files?.length) return;
+
+        const avatarFile = monsterStore.selectedMonster.files.find(f => f.contentType === 'AVATAR_MONSTER');
+        yourImg.src = avatarFile?.url || '';
         opponentImg.src = opponentMonster;
       
         const draw = () => {
