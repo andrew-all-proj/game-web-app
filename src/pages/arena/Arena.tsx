@@ -8,6 +8,7 @@ import Header from "../../components/Header/Header"
 import { authorizationAndInitTelegram } from "../../functions/authorization-and-init-telegram"
 import Loading from "../loading/Loading"
 import TestFight from "./TestFight"
+import MainButton from "../../components/Button/MainButton"
 
 const Arena = observer(() => {
   const navigate = useNavigate();
@@ -33,10 +34,7 @@ const Arena = observer(() => {
           </div>
 
         <TestFight/>
-        <button className={styles.comeBackButton} onClick={handleGoToLab}>
-          Лаборатория
-        </button>
-
+        <MainButton onClick={handleGoToLab}>Лаборатория</MainButton>
       </main>
     </div>
   );
