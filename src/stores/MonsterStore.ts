@@ -2,7 +2,6 @@ import { makeAutoObservable, runInAction } from 'mobx'
 import client from '../api/apolloClient'
 import { MONSTERS } from '../api/graphql/query'
 import userStore from './UserStore'
-import { th } from 'framer-motion/client'
 
 export interface File {
 	id: string
