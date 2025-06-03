@@ -4,7 +4,7 @@ import Arena from "../pages/arena/Arena";
 import StartApp from "../pages/start-app/StartApp";
 import Laboratory from "../pages/laboratory/Laboratory";
 import ErrorPage from "../pages/error/ErrorPage";
-import CreatePet from "../pages/create-monster/CreatePet";
+import CreateMonster from "../pages/create-monster/CreateMonster";
 
 const routes: RouteObject[] = [
   {
@@ -25,7 +25,7 @@ const routes: RouteObject[] = [
   },
   {
     path: "/create-monster",
-    element: <CreatePet />,
+    element: <CreateMonster />,
   },
   {
     path: "/error",

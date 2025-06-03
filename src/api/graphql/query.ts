@@ -7,6 +7,7 @@ export const FILES = gql`
 			items {
 				id
 				name
+				version
 				url
 				description
 				fileType

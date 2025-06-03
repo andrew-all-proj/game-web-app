@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 import client from '../api/apolloClient'
 import { MONSTERS } from '../api/graphql/query'
+import userStore from './UserStore'
 
 export interface File {
 	id: string
@@ -31,8 +32,9 @@ class MonsterStore {
 		this.monsters = monsters
 	}
 
-	setSelectedMonster(monster: Monster) {
-		this.selectedMonster = monster
+	setSelectedMonster(monsterId: string) {
+		const monster = this.monsters.find((monster) => monster.id === monsterId)
+		this.selectedMonster = monster || null
 	}
 
 	clearMonsters() {
@@ -40,7 +42,7 @@ class MonsterStore {
 		this.selectedMonster = null
 	}
 
-	async fetchMonsters(userId: string) {
+	async fetchMonsters(userId = userStore.user?.id) {
 		this.error = null
 
 		try {

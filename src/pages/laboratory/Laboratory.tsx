@@ -9,6 +9,7 @@ import { authorizationAndInitTelegram } from "../../functions/authorization-and-
 import Loading from "../loading/Loading"
 import monsterStore, { Monster } from "../../stores/MonsterStore"
 import noAvatarMonster from '../../assets/images/no-avatar-monster.jpg'
+import MainButton from "../../components/Button/MainButton"
 
 const Laboratory = observer(() => {
   const navigate = useNavigate()
@@ -20,7 +21,7 @@ const Laboratory = observer(() => {
       if (success && userStore.user?.id) {
         await monsterStore.fetchMonsters(userStore.user.id);
         if (!monsterStore.selectedMonster && monsterStore.monsters.length > 0) {
-          monsterStore.setSelectedMonster(monsterStore.monsters[0]);
+          monsterStore.setSelectedMonster(monsterStore.monsters[0].id);
         }
       }
     })();
@@ -35,7 +36,7 @@ const Laboratory = observer(() => {
   }
 
   const handleSelectMonster = (monster: Monster) => {
-    monsterStore.setSelectedMonster(monster)
+    monsterStore.setSelectedMonster(monster.id)
   }
 
   if (!userStore.isAuthenticated) {
@@ -47,7 +48,7 @@ const Laboratory = observer(() => {
       <Header avatarUrl={userStore.user?.avatar?.url} />
       <main className={styles.main}>
         <div className={styles.logoPlaceholder}>
-           Laboratory — Привет, {userStore.user?.nameProfessor ?? "Гость"}!
+          Профессор {userStore.user?.nameProfessor}, Ваша Лаборатория!
         </div>
         <div style={{ color: 'red' }}>
           {errorMsg}
@@ -82,9 +83,7 @@ const Laboratory = observer(() => {
             </div>
           </div>
 
-        <button className={styles.counterButton} onClick={handleGoToArena}>
-          Перейти на арену
-        </button>
+        <MainButton onClick={handleGoToArena}>Арена</MainButton>
       </main>
     </div>
 
