@@ -21,7 +21,7 @@ const Laboratory = observer(() => {
       if (success && userStore.user?.id) {
         await monsterStore.fetchMonsters(userStore.user.id);
         if (!monsterStore.selectedMonster && monsterStore.monsters.length > 0) {
-          monsterStore.setSelectedMonster(monsterStore.monsters[0]);
+          monsterStore.setSelectedMonster(monsterStore.monsters[0].id);
         }
       }
     })();
@@ -36,7 +36,7 @@ const Laboratory = observer(() => {
   }
 
   const handleSelectMonster = (monster: Monster) => {
-    monsterStore.setSelectedMonster(monster)
+    monsterStore.setSelectedMonster(monster.id)
   }
 
   if (!userStore.isAuthenticated) {

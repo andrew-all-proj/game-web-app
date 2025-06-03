@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import styles from './ConstructorMonster.module.css';
-import { PartName, PartPreviews } from './ConstructorMonster';
+import { PartPreviews } from './ConstructorMonster';
+import { PartName } from '../../types/sprites';
 
 function SpriteCropper({
     spriteSrc,
