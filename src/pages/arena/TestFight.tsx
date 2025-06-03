@@ -48,7 +48,7 @@ export default function TestFight() {
     if (!atlas || !spriteUrl || !containerRef.current) return;
 
     const config: Phaser.Types.Core.GameConfig = {
-      type: Phaser.AUTO,
+      type: Phaser.CANVAS,
       width: 400,
       height: 300,
       parent: containerRef.current,
@@ -64,9 +64,30 @@ export default function TestFight() {
     let opponentMonsterSprite: Phaser.GameObjects.Sprite;
 
     function preload(this: Phaser.Scene) {
+      const loadingText = this.add.text(200, 150, 'Loading... 0%', {
+        fontSize: '20px',
+        color: '#ffffff',
+      }).setOrigin(0.5);
+    
+      this.load.on('progress', (value: number) => {
+        const percent = Math.floor(value * 100);
+        loadingText.setText(`Loading... ${percent}%`);
+      });
+    
+      this.load.on('complete', () => {
+        console.log('✅ All assets loaded!');
+        loadingText.destroy();
+      });
+    
+      this.load.on('loaderror', (file: Phaser.Loader.File) => {
+        console.error(`❌ Failed to load: ${file.key}`, file);
+        loadingText.setText(`Error loading: ${file.key}`);
+      });
+    
       this.load.atlas('monster', spriteUrl, atlas);
       this.load.image('opponent', opponentMonster);
     }
+    
 
     const scale = 0.12
 
