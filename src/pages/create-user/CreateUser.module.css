@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 174px;
+  padding-top: 118px;
   max-height: 100vh
 }
 
@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0px 4px 0px rgba(0, 0, 0, 0.40);
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);
   background: #FBC94B;
   overflow: hidden;
 }
@@ -37,10 +37,14 @@
   height: 34px;
   border: 5px solid #362F2D;
   border-radius: 15px;
-  box-shadow: 0px 4px 0px rgba(0, 0, 0, 0.40);
-  font-size: 14px;
-  color: #362F2D;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);
+  font-size: 18px;
+  color: #C1C5FE;
   text-align: center;
+  background: none;
+  font-family: var(--font-base);
+  font-weight: 700;
+  line-height: 2;
 }
 
 .selectPart {
@@ -50,6 +54,7 @@
 }
 
 .tabs {
+  padding-top: 30px;
   display: flex;
   justify-content: center;
 }
@@ -77,11 +82,15 @@
 
 .gridWrapper {
   flex-grow: 1;
-  padding-top: 20px;
+  padding-top: 40px;
   padding-bottom: 20px;
   background: #FBC94B;
   display: flex;
   flex-direction: column;
+
+  border-left: 5px solid #362F2D;
+  border-right: 5px solid #362F2D;
+  border-bottom: 5px solid #362F2D;
 }
 
 .grid {
@@ -105,7 +114,7 @@
   align-items: center;
   justify-content: center;
   padding: 6px;
-  box-shadow: 0px 4px 0px rgba(0, 0, 0, 0.40);
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);;
 }
 
 .partItemSvg {
