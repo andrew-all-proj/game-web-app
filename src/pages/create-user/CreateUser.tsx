@@ -142,7 +142,7 @@ const CreateUser = observer(() => {
       const viewBox = symbol.getAttribute("viewBox");
       if (!viewBox) continue;
 
-      const [minX, minY, vbWidth, vbHeight] = viewBox.split(" ").map(Number);
+      const [, , vbWidth, vbHeight] = viewBox.split(" ").map(Number);
 
       const svgContent = `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}">
