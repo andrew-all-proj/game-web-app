@@ -4,7 +4,6 @@ import userStore from "../../stores/UserStore"
 import { useNavigate } from "react-router-dom"
 
 import styles from "./Laboratory.module.css"
-import Header from "../../components/Header/Header"
 import { authorizationAndInitTelegram } from "../../functions/authorization-and-init-telegram"
 import Loading from "../loading/Loading"
 import monsterStore, { Monster } from "../../stores/MonsterStore"
@@ -13,7 +12,8 @@ import MainButton from "../../components/Button/MainButton"
 
 const Laboratory = observer(() => {
   const navigate = useNavigate()
-    const [errorMsg, setErrorMsg] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -24,6 +24,7 @@ const Laboratory = observer(() => {
           monsterStore.setSelectedMonster(monsterStore.monsters[0].id);
         }
       }
+      setIsLoading(false)
     })();
   }, []);
 
@@ -35,20 +36,29 @@ const Laboratory = observer(() => {
     navigate("/arena")
   }
 
+  const handleGoToCreateUser = () => {
+    navigate("/create-user")
+  }
+
   const handleSelectMonster = (monster: Monster) => {
     monsterStore.setSelectedMonster(monster.id)
   }
 
-  if (!userStore.isAuthenticated) {
+  if (isLoading) {
     return <Loading />
   }
 
   return (
     <div className={styles.laboratory}>
-      <Header avatarUrl={userStore.user?.avatar?.url} />
       <main className={styles.main}>
         <div className={styles.logoPlaceholder}>
           Профессор {userStore.user?.nameProfessor}, Ваша Лаборатория!
+        </div>
+        <div className={styles.avatarWrapper}>
+          <img 
+            alt="avatar user" 
+            src={userStore.user?.avatar?.url} 
+          />
         </div>
         <div style={{ color: 'red' }}>
           {errorMsg}
@@ -84,6 +94,7 @@ const Laboratory = observer(() => {
           </div>
 
         <MainButton onClick={handleGoToArena}>Арена</MainButton>
+        <MainButton onClick={handleGoToCreateUser}>Обновить</MainButton>
       </main>
     </div>
 

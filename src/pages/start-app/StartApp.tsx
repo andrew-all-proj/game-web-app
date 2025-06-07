@@ -1,18 +1,23 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import errorStore from "../../stores/ErrorStore";
 import userStore from "../../stores/UserStore";
 import { authorizationAndInitTelegram } from "../../functions/authorization-and-init-telegram";
 import Loading from "../loading/Loading";
+import monsterStore from "../../stores/MonsterStore";
 
 const StartApp = observer(() => {
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    authorizationAndInitTelegram(navigate);
+    (async () => {
+      const resultAuth = await authorizationAndInitTelegram(navigate);
+      if(resultAuth){
+        await monsterStore.fetchMonsters()
+      }
 
-    const timer = setTimeout(() => {
       if (errorStore.error?.error) {
         navigate("/error");
       } else if (userStore.user?.isRegistered) {
@@ -20,12 +25,12 @@ const StartApp = observer(() => {
       } else {
         navigate("/create-user");
       }
-    }, 2000);
 
-    return () => clearTimeout(timer);
+      setIsLoading(false)
+    })();
   }, [navigate]);
 
-  return <Loading />;
+  return isLoading ? <Loading /> : null;
 });
 
 export default StartApp;

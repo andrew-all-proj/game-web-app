@@ -61,3 +61,16 @@
 .createPetCard:hover {
   background: #c8f7c8;
 }
+
+.avatarWrapper {
+  height: 142px;
+  width: 142px;
+  border-radius: 50%;
+  border: 5px solid #362F2D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 4px 0px rgba(0, 0, 0, 0.40);
+  background: #FBC94B;
+  overflow: hidden;
+}
