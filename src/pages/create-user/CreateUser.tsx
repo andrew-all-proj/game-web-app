@@ -37,6 +37,8 @@ const CreateUser = observer(() => {
 
   const [activeTab, setActiveTab] = useState<"head" | "body" | "emotion">("head")
 
+  const [isEditing, setIsEditing] = useState(false);
+
   useEffect(() => {
   const loadSvgSprite = async () => {
     if (!userStore.user?.id) {
@@ -101,6 +103,10 @@ const CreateUser = observer(() => {
         else if (type === "emotion") emotions.push(entry);
       }
 
+      if(userStore.user?.avatar?.url) {
+        setIsEditing(true);
+      }
+
       setHeadParts(heads);
       setBodyParts(bodies);
       setEmotionParts(emotions);
@@ -127,20 +133,37 @@ const CreateUser = observer(() => {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const parts = [
-      { id: bodyParts[bodyIndex]?.part, offsetX: 0, offsetY: 95 },
-      { id: headParts[headIndex]?.part, offsetX: 0, offsetY: 16 },
-      { id: emotionParts[emotionIndex]?.part, offsetX: 7, offsetY: 50 },
-    ];
+    if (isEditing && userStore.user?.avatar?.url) {
+      const avatarImage = new Image();
+      avatarImage.crossOrigin = "anonymous";
+      avatarImage.src = userStore.user.avatar.url;
+      await new Promise<void>((resolve) => {
+        avatarImage.onload = () => {
+          ctx.drawImage(avatarImage, 0, 0, canvas.width, canvas.height);
+          resolve();
+        };
+      });
+      return;
+    }
 
-    for (const { id, offsetX = 0, offsetY = 0 } of parts) {
-      if (!id) continue;
-
+    const serveData = (id: string | undefined, type: string) => {
+      if (!id) return null;
       const symbol = document.getElementById(id) as unknown as SVGSymbolElement;
-      if (!symbol) continue;
+      if (!symbol) return null;
 
       const viewBox = symbol.getAttribute("viewBox");
-      if (!viewBox) continue;
+      const metadataElement = symbol.querySelector("metadata");
+      let metadata: any = null;
+
+      if (metadataElement?.textContent) {
+        try {
+          metadata = JSON.parse(metadataElement.textContent);
+        } catch (err) {
+          console.warn("Ошибка парсинга metadata:", err);
+        }
+      }
+
+      if (!viewBox) return null;
 
       const [, , vbWidth, vbHeight] = viewBox.split(" ").map(Number);
 
@@ -152,34 +175,91 @@ const CreateUser = observer(() => {
       const blob = new Blob([svgContent], { type: "image/svg+xml" });
       const url = URL.createObjectURL(blob);
 
+      return { url, vbWidth, vbHeight, metadata, type };
+    };
+
+    const parts = [
+      serveData(bodyParts[bodyIndex]?.part, "body"),
+      serveData(headParts[headIndex]?.part, "head"),
+      serveData(emotionParts[emotionIndex]?.part, "emotion"),
+    ].filter(Boolean) as {
+      url: string;
+      vbWidth: number;
+      vbHeight: number;
+      metadata: any;
+      type: string;
+    }[];
+
+    let lastDrawn = {
+      x: canvas.width / 2,
+      y: 0,
+      metadata: null as any,
+      type: "",
+    };
+
+    for (const part of parts) {
+      const { url, vbWidth, vbHeight, metadata, type } = part;
+
       await new Promise<void>((resolve) => {
         const img = new Image();
         img.onload = () => {
+          let x = 0, y = 0;
 
-          const drawWidth = vbWidth 
-          const drawHeight = vbHeight 
+          if (!lastDrawn.metadata || type === "body") {
+            x = canvas.width / 2 - vbWidth / 2;
+            y = 95; // is the vertical offset for body parts
+          } else {
+            const attachFrom = lastDrawn.metadata[`attachTo${capitalize(type)}`];
+            const attachTo = metadata?.[`attachTo${capitalize(lastDrawn.type)}`];
 
-          const x = canvas.width / 2 - drawWidth / 2 + offsetX
-          const y = 0 + offsetY
+            if (attachFrom && attachTo) {
+              x = lastDrawn.x + attachFrom.x - attachTo.x;
+              y = lastDrawn.y + attachFrom.y - attachTo.y;
+            } else {
+              x = canvas.width / 2 - vbWidth / 2;
+              y = 0;
+            }
+          }
 
-          ctx.drawImage(img, x, y, drawWidth, drawHeight);
+
+          ctx.drawImage(img, x, y, vbWidth, vbHeight);
+          lastDrawn = { x, y, metadata, type };
+
           URL.revokeObjectURL(url);
           resolve();
         };
         img.src = url;
       });
     }
-  };
+};
+
+function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 
   const handleSaveAvatar = async () => {
-    const trimmedName = name.trim();
+  const trimmedName = name.trim();
 
-    if (!trimmedName) {
-      setMessage("Пожалуйста, введите имя.");
-      return;
-    }
+  if (!trimmedName) {
+    setMessage("Пожалуйста, введите имя.");
+    return;
+  }
 
+  const nameChanged = trimmedName !== userStore.user?.nameProfessor;
+
+  if (isEditing && !nameChanged) {
+    navigate("/laboratory");
+    return;
+  }
+
+  let avatarFileId = null;
+
+  if (!isEditing) {
     if (
+      headIndex === null ||
+      bodyIndex === null ||
+      emotionIndex === null ||
       !headParts[headIndex]?.part ||
       !bodyParts[bodyIndex]?.part ||
       !emotionParts[emotionIndex]?.part
@@ -213,27 +293,37 @@ const CreateUser = observer(() => {
         token: userStore.user?.token,
       });
 
-      const { data } = await client.mutate({
-        mutation: USER_UPDATE,
-        variables: {
-          id: userStore.user?.id,
-          nameProfessor: name,
-          avatarFileId: resultUploadFile.id || null,
-          isRegistered: true,
-        },
-      })
-
-      if (data?.UserUpdate) {
-        userStore.setUser(data.UserUpdate)
-        navigate("/laboratory")
-      } else {
-        setMessage("Аватар загружен, но пользователь не обновлён.");
-      }
+      avatarFileId = resultUploadFile.id || null;
     } catch (error) {
-      console.error("Ошибка при обновлении пользователя:", error);
-      setMessage("Ошибка загрузки. Попробуйте снова.");
+      console.error("Ошибка загрузки изображения:", error);
+      setMessage("Ошибка загрузки изображения.");
+      return;
     }
-  };
+  }
+
+  try {
+    const { data } = await client.mutate({
+      mutation: USER_UPDATE,
+      variables: {
+        id: userStore.user?.id,
+        nameProfessor: trimmedName,
+        avatarFileId: avatarFileId ?? userStore.user?.avatar?.id ?? null,
+        isRegistered: true,
+      },
+    });
+
+    if (data?.UserUpdate) {
+      userStore.setUser(data.UserUpdate);
+      navigate("/laboratory");
+    } else {
+      setMessage("Аватар загружен, но пользователь не обновлён.");
+    }
+  } catch (error) {
+    console.error("Ошибка при обновлении пользователя:", error);
+    setMessage("Ошибка сохранения. Попробуйте снова.");
+  }
+};
+
 
 
   const renderGrid = (
@@ -253,7 +343,7 @@ const CreateUser = observer(() => {
           <div
             key={part?.icon || `empty-${i}`}
             className={`${styles.partItem} ${part && i === selectedIndex ? styles.active : ""}`}
-            onClick={() => part && onSelect(i)}
+            onClick={() => part && (onSelect(i), setIsEditing(false))}
           >
             {part ? (
               <svg xmlns="http://www.w3.org/2000/svg" className={styles.partItemSvg}>
