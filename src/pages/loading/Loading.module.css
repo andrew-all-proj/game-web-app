@@ -1,15 +1,39 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .loadingPage {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  font-family: sans-serif;
-  background-color: #f8f8f8;
+  width: 100%;
+  height: 100vh;
   color: #444;
   padding: 1rem;
   text-align: center;
 }
+
+.loadingTitle {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900; 
+  font-size: 48px;
+  line-height: 1.2;
+  color: #D2FF49;
+  text-align: center;
+  text-shadow:
+  -3px -3px 0 #362F2D,
+   3px -3px 0 #362F2D,
+  -3px  3px 0 #362F2D,
+   3px  3px 0 #362F2D,
+   0px  3px 0 #362F2D,
+   3px  0px 0 #362F2D,
+  -3px  0px 0 #362F2D,
+   0px -3px 0 #362F2D;
+}
+
 
 .spinner {
   width: 10vw;

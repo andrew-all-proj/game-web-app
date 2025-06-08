@@ -1,13 +1,33 @@
+@font-face {
+  font-family: 'Nunito';
+  src: url('/fonts/Nunito-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('/fonts/Nunito-Black.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('/fonts/Nunito-Black.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
 :root {
-  --font-base: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-base: 'Nunito', system-ui, Avenir, Helvetica, Arial, sans-serif;
   --color-text: #213547;
-  --color-bg: #ffffff;
+  --color-bg: #616CFF;
   --color-link: #646cff;
   --color-link-hover: #747bff;
   --color-button-bg: #f9f9f9;
 
   font-family: var(--font-base);
-  line-height: 1.5;
   font-weight: 400;
 
   color: var(--color-text);
@@ -26,22 +46,4 @@ body {
   color: var(--color-text);
   font-family: var(--font-base);
   display: block;
-}
-
-a {
-  font-weight: 500;
-  color: var(--color-link);
-  text-decoration: inherit;
-}
-a:hover {
-  color: var(--color-link-hover);
-}
-
-button {
-  background-color: var(--color-button-bg);
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
 }
