@@ -1,57 +1,52 @@
-import { useEffect, useRef } from 'react';
-import styles from './ConstructorMonster.module.css';
-import { PartPreviews } from './ConstructorMonster';
-import { PartName } from '../../types/sprites';
+import { useEffect, useRef } from 'react'
+import styles from './ConstructorMonster.module.css'
+import { PartPreviews } from './ConstructorMonster'
+import { PartName } from '../../types/sprites'
 
 function SpriteCropper({
-    spriteSrc,
-    frame,
-    width = 64,
-    height = 64
-  }: {
-    spriteSrc: string;
-    frame: { x: number; y: number; w: number; h: number };
-    width?: number;
-    height?: number;
-  }) {
-    const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  
-    useEffect(() => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-  
-      const ctx = canvas.getContext('2d');
-      const img = new Image();
-      img.src = spriteSrc;
-  
-      const draw = () => {
-        if (ctx) {
-          ctx.clearRect(0, 0, width, height);
-          ctx.drawImage(
-            img,
-            frame.x, frame.y, frame.w, frame.h,
-            0, 0, width, height
-          );
-        }
-      };
-  
-      if (img.complete) {
-        draw();
-      } else {
-        img.onload = draw;
+  spriteSrc,
+  frame,
+  width = 64,
+  height = 64,
+}: {
+  spriteSrc: string
+  frame: { x: number; y: number; w: number; h: number }
+  width?: number
+  height?: number
+}) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    const img = new Image()
+    img.src = spriteSrc
+
+    const draw = () => {
+      if (ctx) {
+        ctx.clearRect(0, 0, width, height)
+        ctx.drawImage(img, frame.x, frame.y, frame.w, frame.h, 0, 0, width, height)
       }
-    }, [spriteSrc, frame, width, height]);
-  
-    return <canvas ref={canvasRef} width={width} height={height} />;
-  }
-  
+    }
+
+    if (img.complete) {
+      draw()
+    } else {
+      img.onload = draw
+    }
+  }, [spriteSrc, frame, width, height])
+
+  return <canvas ref={canvasRef} width={width} height={height} />
+}
 
 interface PartCarouselProps {
-  partPreviews: PartPreviews;
-  typePart: PartName;
-  count: number;
-  handleSelectedPart: (index: number) => void;
-  spriteSheets: string;
+  partPreviews: PartPreviews
+  typePart: PartName
+  count: number
+  handleSelectedPart: (index: number) => void
+  spriteSheets: string
 }
 
 export default function PartCarousel({
@@ -78,7 +73,7 @@ export default function PartCarousel({
                   height={64}
                 />
               </div>
-            ) : null
+            ) : null,
           )
         : partPreviews[typePart]?.map((frameData, index) => (
             <div
@@ -95,5 +90,5 @@ export default function PartCarousel({
             </div>
           ))}
     </div>
-  );
+  )
 }

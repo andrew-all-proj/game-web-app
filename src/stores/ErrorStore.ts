@@ -1,29 +1,29 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable } from 'mobx'
 
 export interface ErrorInterface {
-  error: boolean;
-  message: string;
+  error: boolean
+  message: string
 }
 
 class ErrorStore {
-  error: ErrorInterface | null = null;
+  error: ErrorInterface | null = null
 
   constructor() {
-    makeAutoObservable(this);
+    makeAutoObservable(this)
   }
 
   setError(error: ErrorInterface) {
-    this.error = error;
+    this.error = error
   }
 
   clearError() {
-    this.error = null;
+    this.error = null
   }
 
   get isError() {
-    return this.error?.error;
+    return this.error?.error
   }
 }
 
-const errorStore = new ErrorStore();
-export default errorStore;
+const errorStore = new ErrorStore()
+export default errorStore

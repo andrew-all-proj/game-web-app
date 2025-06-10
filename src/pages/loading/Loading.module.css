@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -17,23 +18,22 @@ html, body {
 }
 
 .loadingTitle {
-  font-family: 'Nunito', sans-serif;
-  font-weight: 900; 
+  font-family: "Nunito", sans-serif;
+  font-weight: 900;
   font-size: 48px;
   line-height: 1.2;
-  color: #D2FF49;
+  color: #d2ff49;
   text-align: center;
   text-shadow:
-  -3px -3px 0 #362F2D,
-   3px -3px 0 #362F2D,
-  -3px  3px 0 #362F2D,
-   3px  3px 0 #362F2D,
-   0px  3px 0 #362F2D,
-   3px  0px 0 #362F2D,
-  -3px  0px 0 #362F2D,
-   0px -3px 0 #362F2D;
+    -3px -3px 0 #362f2d,
+    3px -3px 0 #362f2d,
+    -3px 3px 0 #362f2d,
+    3px 3px 0 #362f2d,
+    0px 3px 0 #362f2d,
+    3px 0px 0 #362f2d,
+    -3px 0px 0 #362f2d,
+    0px -3px 0 #362f2d;
 }
-
 
 .spinner {
   width: 10vw;

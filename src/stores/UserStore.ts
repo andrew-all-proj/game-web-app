@@ -3,59 +3,59 @@ import client from '../api/apolloClient'
 import { USER_LOGIN } from '../api/graphql/mutation'
 
 export interface User {
-	id: string
-	name: string
-	token?: string
-	nameProfessor?: string
-	isRegistered?: boolean
-	avatar?: { id: string; url: string } | null
+  id: string
+  name: string
+  token?: string
+  nameProfessor?: string
+  isRegistered?: boolean
+  avatar?: { id: string; url: string } | null
 }
 
 class UserStore {
-	user: User | null = null
+  user: User | null = null
 
-	constructor() {
-		makeAutoObservable(this)
-	}
+  constructor() {
+    makeAutoObservable(this)
+  }
 
-	async loginUser(initData: any, tgUser: any): Promise<User | null> {
-		const response = await client.mutate({
-			mutation: USER_LOGIN,
-			variables: {
-				initData,
-				telegramId: String(tgUser.id),
-			},
-		})
+  async loginUser(initData: any, tgUser: any): Promise<User | null> {
+    const response = await client.mutate({
+      mutation: USER_LOGIN,
+      variables: {
+        initData,
+        telegramId: String(tgUser.id),
+      },
+    })
 
-		const user = response.data?.UserLogin
+    const user = response.data?.UserLogin
 
-		if (!user?.id) {
-			return null
-		}
+    if (!user?.id) {
+      return null
+    }
 
-		this.setUser({
-			id: user.id,
-			name: tgUser.first_name || tgUser.username || 'Unknown',
-			nameProfessor: user.nameProfessor || tgUser.first_name || tgUser.username || 'Unknown',
-			token: user.token,
-			isRegistered: user.isRegistered,
-			avatar: user.avatar ? { id: user.avatar.id, url: user.avatar.url } : null,
-		})
+    this.setUser({
+      id: user.id,
+      name: tgUser.first_name || tgUser.username || 'Unknown',
+      nameProfessor: user.nameProfessor || tgUser.first_name || tgUser.username || 'Unknown',
+      token: user.token,
+      isRegistered: user.isRegistered,
+      avatar: user.avatar ? { id: user.avatar.id, url: user.avatar.url } : null,
+    })
 
-		return user
-	}
+    return user
+  }
 
-	setUser(user: User) {
-		this.user = user
-	}
+  setUser(user: User) {
+    this.user = user
+  }
 
-	clearUser() {
-		this.user = null
-	}
+  clearUser() {
+    this.user = null
+  }
 
-	get isAuthenticated() {
-		return this.user?.token
-	}
+  get isAuthenticated() {
+    return this.user?.token
+  }
 }
 
 const userStore = new UserStore()

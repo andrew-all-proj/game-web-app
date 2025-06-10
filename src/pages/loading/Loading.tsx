@@ -1,5 +1,5 @@
-import styles from "./Loading.module.css";
-import { observer } from "mobx-react-lite";
+import styles from './Loading.module.css'
+import { observer } from 'mobx-react-lite'
 
 const Loading = observer(() => {
   return (
@@ -9,7 +9,7 @@ const Loading = observer(() => {
         <h1 className={styles.loadingTitle}>Mutantorium</h1>
       </div>
     </>
-  );
-});
+  )
+})
 
-export default Loading;
+export default Loading

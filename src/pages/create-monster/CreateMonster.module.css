@@ -15,7 +15,7 @@
   padding: 24px;
   text-align: center;
   color: azure;
-  background: radial-gradient(circle, #0B5EA3 0%, #0B5EA3 40%, #2c2d42 80%);
+  background: radial-gradient(circle, #0b5ea3 0%, #0b5ea3 40%, #2c2d42 80%);
 }
 
 .logoPlaceholder {
@@ -23,8 +23,8 @@
 }
 
 .nameInput {
-  padding: '8px';
-  margin-right: '10px';
-  border-radius: '6px';
-  border: '1px solid #ccc',
+  padding: "8px";
+  margin-right: "10px";
+  border-radius: "6px";
+  border: "1px solid #ccc";
 }

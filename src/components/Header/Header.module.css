@@ -1,7 +1,7 @@
 header {
   display: flex;
-  justify-content: center; 
-  align-items: center;      
+  justify-content: center;
+  align-items: center;
   padding: 16px;
   background-color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -9,12 +9,12 @@ header {
   font-weight: bold;
   color: #1c9e1c;
   text-shadow:
-  -1px -1px 0 #201e1e,
-   1px -1px 0 #201e1e,
-  -1px  1px 0 #201e1e,
-   1px  1px 0 #201e1e;
-   letter-spacing: 3px;
-   background: radial-gradient(circle, #0B5EA3 0%, #0B5EA3 40%, #2c2d42 80%);
+    -1px -1px 0 #201e1e,
+    1px -1px 0 #201e1e,
+    -1px 1px 0 #201e1e,
+    1px 1px 0 #201e1e;
+  letter-spacing: 3px;
+  background: radial-gradient(circle, #0b5ea3 0%, #0b5ea3 40%, #2c2d42 80%);
 }
 
 .avatarWrapper {

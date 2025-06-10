@@ -20,12 +20,11 @@
   border-color: #e6e930;
 }
 
-
 .wrapperCreateMenu {
   display: flex;
   flex-direction: row;
-  gap: 10px; 
-  align-items: center; 
+  gap: 10px;
+  align-items: center;
   margin-top: 20px;
 }
 
@@ -45,7 +44,9 @@
   background-color: #ffda3a;
   border-radius: 10px;
   cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 

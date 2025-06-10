@@ -17,12 +17,12 @@
   max-height: 100vw;
   aspect-ratio: 1/1;
   border-radius: 50%;
-  border: 5px solid #362F2D;
+  border: 5px solid #362f2d;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);
-  background: #FBC94B;
+  background: #fbc94b;
   overflow: hidden;
   flex-shrink: 0;
   flex-grow: 0;
@@ -36,7 +36,7 @@
   display: block;
 }
 
-.infoMessage{
+.infoMessage {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -49,11 +49,11 @@
   width: 100%;
   max-width: 205px;
   height: 34px;
-  border: 5px solid #362F2D;
+  border: 5px solid #362f2d;
   border-radius: 15px;
   box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);
   font-size: 18px;
-  color: #C1C5FE;
+  color: #c1c5fe;
   text-align: center;
   background: none;
   font-family: var(--font-base);
@@ -76,8 +76,8 @@
 .tabIcon {
   width: 100%;
   height: 50px;
-  background-color: #FFA260;
-  border-color: #362F2D;
+  background-color: #ffa260;
+  border-color: #362f2d;
   border: 5px solid;
   display: flex;
   align-items: center;
@@ -90,23 +90,23 @@
 }
 
 .activeTab {
-  background: #FBC94B;
-  border-bottom: 5px solid #FBC94B;
+  background: #fbc94b;
+  border-bottom: 5px solid #fbc94b;
 }
 
 .gridWrapper {
-  flex-grow: 1;   
+  flex-grow: 1;
   flex-shrink: 1;
-  min-height: 0;     
+  min-height: 0;
   padding-top: 20px;
   padding-bottom: 20px;
-  background: #FBC94B;
+  background: #fbc94b;
   display: flex;
   flex-direction: column;
 
-  border-left: 5px solid #362F2D;
-  border-right: 5px solid #362F2D;
-  border-bottom: 5px solid #362F2D;
+  border-left: 5px solid #362f2d;
+  border-right: 5px solid #362f2d;
+  border-bottom: 5px solid #362f2d;
 }
 
 .grid {
@@ -127,19 +127,18 @@
   height: 60px;
   background: white;
   border-radius: 12px;
-  border: 5px solid #362F2D;
+  border: 5px solid #362f2d;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 6px;
-  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);
 }
 
 .partItemSvg {
   width: 100%;
   height: 100%;
 }
-
 
 @media (min-height: 720px) {
   .main {

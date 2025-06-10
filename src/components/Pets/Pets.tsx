@@ -7,5 +7,5 @@ export default function Pets() {
       <div className={styles.petBlock} />
       <div className={styles.petBlock} />
     </div>
-  );
+  )
 }

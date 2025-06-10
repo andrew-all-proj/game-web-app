@@ -1,43 +1,43 @@
-import { useEffect, useState } from "react"
-import { observer } from "mobx-react-lite"
-import userStore from "../../stores/UserStore"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from 'react'
+import { observer } from 'mobx-react-lite'
+import userStore from '../../stores/UserStore'
+import { useNavigate } from 'react-router-dom'
 
-import styles from "./Laboratory.module.css"
-import { authorizationAndInitTelegram } from "../../functions/authorization-and-init-telegram"
-import Loading from "../loading/Loading"
-import monsterStore, { Monster } from "../../stores/MonsterStore"
+import styles from './Laboratory.module.css'
+import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
+import Loading from '../loading/Loading'
+import monsterStore, { Monster } from '../../stores/MonsterStore'
 import noAvatarMonster from '../../assets/images/no-avatar-monster.jpg'
-import MainButton from "../../components/Button/MainButton"
+import MainButton from '../../components/Button/MainButton'
 
 const Laboratory = observer(() => {
   const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [isLoading, setIsLoading] = useState(true)
+  const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
-    (async () => {
-      const success = await authorizationAndInitTelegram(navigate);
+    ;(async () => {
+      const success = await authorizationAndInitTelegram(navigate)
       if (success && userStore.user?.id) {
-        await monsterStore.fetchMonsters(userStore.user.id);
+        await monsterStore.fetchMonsters(userStore.user.id)
         if (!monsterStore.selectedMonster && monsterStore.monsters.length > 0) {
-          monsterStore.setSelectedMonster(monsterStore.monsters[0].id);
+          monsterStore.setSelectedMonster(monsterStore.monsters[0].id)
         }
       }
       setIsLoading(false)
-    })();
-  }, []);
+    })()
+  }, [])
 
   const handleGoToArena = () => {
-    if(!monsterStore.selectedMonster) {
+    if (!monsterStore.selectedMonster) {
       setErrorMsg('Выберите питомца')
       return
     }
-    navigate("/arena")
+    navigate('/arena')
   }
 
   const handleGoToCreateUser = () => {
-    navigate("/create-user")
+    navigate('/create-user')
   }
 
   const handleSelectMonster = (monster: Monster) => {
@@ -55,49 +55,42 @@ const Laboratory = observer(() => {
           Профессор {userStore.user?.nameProfessor}, Ваша Лаборатория!
         </div>
         <div className={styles.avatarWrapper}>
-          <img 
-            alt="avatar user" 
-            src={userStore.user?.avatar?.url} 
-          />
+          <img alt="avatar user" src={userStore.user?.avatar?.url} />
         </div>
-        <div style={{ color: 'red' }}>
-          {errorMsg}
-        </div>
-        <div>
-          Ваши питомцы:
-        </div>
+        <div style={{ color: 'red' }}>{errorMsg}</div>
+        <div>Ваши питомцы:</div>
         <div className={styles.petsList}>
-            {monsterStore.monsters.map((monster) => (
-              <div
-                key={monster.id}
-                className={`${styles.petCard} ${monsterStore.selectedMonster?.id === monster.id ? styles.selectedCard : ''}`}
-                onClick={() => handleSelectMonster(monster)}
-                style={{ cursor: "pointer" }}
-              >
-                <img
-                  src={
-                    monster.files?.find((file) => file.contentType === "AVATAR_MONSTER")?.url || noAvatarMonster
-                  }
-                  alt={monster.name}
-                  className={styles.petImage}
-                />
-                <div>{monster.name}</div>
-              </div>
-            ))}
-
+          {monsterStore.monsters.map((monster) => (
             <div
-              className={`${styles.petCard} ${styles.createPetCard}`}
-              onClick={() => navigate("/create-monster")}
+              key={monster.id}
+              className={`${styles.petCard} ${monsterStore.selectedMonster?.id === monster.id ? styles.selectedCard : ''}`}
+              onClick={() => handleSelectMonster(monster)}
+              style={{ cursor: 'pointer' }}
             >
-              ➕ Создать питомца
+              <img
+                src={
+                  monster.files?.find((file) => file.contentType === 'AVATAR_MONSTER')?.url ||
+                  noAvatarMonster
+                }
+                alt={monster.name}
+                className={styles.petImage}
+              />
+              <div>{monster.name}</div>
             </div>
+          ))}
+
+          <div
+            className={`${styles.petCard} ${styles.createPetCard}`}
+            onClick={() => navigate('/create-monster')}
+          >
+            ➕ Создать питомца
           </div>
+        </div>
 
         <MainButton onClick={handleGoToArena}>Арена</MainButton>
         <MainButton onClick={handleGoToCreateUser}>Обновить</MainButton>
       </main>
     </div>
-
   )
 })
 

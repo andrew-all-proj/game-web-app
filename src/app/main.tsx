@@ -1,18 +1,18 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter, useRoutes } from "react-router-dom";
-import routes from "../routes";
-import ApolloProvider from "../api/ApolloProvider";
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { BrowserRouter, useRoutes } from 'react-router-dom'
+import routes from '../routes'
+import ApolloProvider from '../api/ApolloProvider'
 import '../assets/styles/global.css'
 
-const AppRouter = () => useRoutes(routes);
+const AppRouter = () => useRoutes(routes)
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ApolloProvider>
       <BrowserRouter>
         <AppRouter />
       </BrowserRouter>
     </ApolloProvider>
-  </React.StrictMode>
-);
+  </React.StrictMode>,
+)

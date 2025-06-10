@@ -1,36 +1,36 @@
-import { RouteObject } from "react-router-dom";
-import CreateUser from "../pages/create-user/CreateUser";
-import Arena from "../pages/arena/Arena";
-import StartApp from "../pages/start-app/StartApp";
-import Laboratory from "../pages/laboratory/Laboratory";
-import ErrorPage from "../pages/error/ErrorPage";
-import CreateMonster from "../pages/create-monster/CreateMonster";
+import { RouteObject } from 'react-router-dom'
+import CreateUser from '../pages/create-user/CreateUser'
+import Arena from '../pages/arena/Arena'
+import StartApp from '../pages/start-app/StartApp'
+import Laboratory from '../pages/laboratory/Laboratory'
+import ErrorPage from '../pages/error/ErrorPage'
+import CreateMonster from '../pages/create-monster/CreateMonster'
 
 const routes: RouteObject[] = [
   {
-    path: "/",
+    path: '/',
     element: <StartApp />,
   },
   {
-    path: "/arena",
+    path: '/arena',
     element: <Arena />,
   },
   {
-    path: "/laboratory",
+    path: '/laboratory',
     element: <Laboratory />,
   },
   {
-    path: "/create-user",
+    path: '/create-user',
     element: <CreateUser />,
   },
   {
-    path: "/create-monster",
+    path: '/create-monster',
     element: <CreateMonster />,
   },
   {
-    path: "/error",
+    path: '/error',
     element: <ErrorPage />,
   },
-];
+]
 
-export default routes;
+export default routes
