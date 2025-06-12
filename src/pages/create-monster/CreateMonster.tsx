@@ -179,8 +179,6 @@ const CreateMonster = observer(() => {
 
     setIsSaving(true)
 
-    console.log('Saving monster with parts:')
-
     const selected = selectedPartsMonster.current
 
     try {
