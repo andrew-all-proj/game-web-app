@@ -1,5 +1,5 @@
+import { SelectedParts } from '../pages/create-monster/CreateMonster'
 import { SpriteAtlas } from '../types/sprites'
-import { SelectedParts } from '../pages/create-monster/ConstructorMonster'
 
 export async function assembleMonsterCanvas(
   selected: SelectedParts,
