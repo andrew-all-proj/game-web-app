@@ -23,6 +23,7 @@ import { MONSTER_CREATE } from '../../api/graphql/mutation'
 import { uploadFile } from '../../api/upload-file'
 import monsterStore from '../../stores/MonsterStore'
 import SecondButton from '../../components/Button/SecondButton'
+import Loading from '../loading/Loading'
 
 export interface PartPreviewEntry {
   key: string
@@ -57,6 +58,8 @@ const CreateMonster = observer(() => {
   const [partPreviews, setPartPreviews] = useState<PartPreviews>({ head: [], body: [], arms: [] })
   const [spriteUrl, setSpriteUrl] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   const [activeTab, setActiveTab] = useState<PartTab>('body')
   //const [isEditing, setIsEditing] = useState(false)  //TODO for future use
@@ -100,6 +103,7 @@ const CreateMonster = observer(() => {
           })
           navigate('/error')
         }
+        setIsLoading(false)
       } catch (error) {
         errorStore.setError({
           error: true,
@@ -163,6 +167,7 @@ const CreateMonster = observer(() => {
   }
 
   const handleSaveImage = async () => {
+    if (isSaving) return
     if (!name.trim()) return setErrorMsg('Введите имя монстра')
     if (!selectedPartsMonster.current.body) return setErrorMsg('Выберите тело')
     if (!selectedPartsMonster.current.head) return setErrorMsg('Выберите голову')
@@ -171,6 +176,10 @@ const CreateMonster = observer(() => {
       setErrorMsg('Спрайты не загружены')
       return
     }
+
+    setIsSaving(true)
+
+    console.log('Saving monster with parts:')
 
     const selected = selectedPartsMonster.current
 
@@ -194,7 +203,7 @@ const CreateMonster = observer(() => {
           token: userStore.user?.token,
         })
 
-        await client.mutate({
+        const resultCreateMonster = await client.mutate({
           mutation: MONSTER_CREATE,
           variables: {
             name,
@@ -206,7 +215,14 @@ const CreateMonster = observer(() => {
               rightArmKey: selected.rightArm?.key,
             },
           },
+          errorPolicy: 'all',
         })
+
+        if (resultCreateMonster.errors) {
+          setIsSaving(false)
+          setErrorMsg('Ошибка при создании монстра')
+          return
+        }
 
         if (userStore.user?.id) {
           await monsterStore.fetchMonsters(userStore.user?.id)
@@ -215,8 +231,14 @@ const CreateMonster = observer(() => {
         navigate('/laboratory')
       }, 'image/png')
     } catch (err) {
+      console.log('Error saving monster:', err)
+      setIsSaving(false)
       setErrorMsg('Ошибка при сохранении монстра')
     }
+  }
+
+  if (isLoading) {
+    return <Loading />
   }
 
   return (
@@ -244,7 +266,7 @@ const CreateMonster = observer(() => {
         />
       </div>
       <div className={styles.buttonWrapper}>
-        <SecondButton onClick={handleSaveImage}>Сохранить</SecondButton>
+        <SecondButton onClick={isSaving ? () => {} : handleSaveImage}>Сохранить</SecondButton>
         <SecondButton onClick={() => navigate('/laboratory')}>Лаборатория</SecondButton>
       </div>
       <PartSelector<keyof PartPreviews>

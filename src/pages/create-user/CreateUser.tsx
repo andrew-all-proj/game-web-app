@@ -16,6 +16,7 @@ import { authorizationAndInitTelegram } from '../../functions/authorization-and-
 import MainInput from '../../components/Input/MainInput'
 import PartSelector from '../../components/PartSelector/PartSelector'
 import SecondButton from '../../components/Button/SecondButton'
+import Loading from '../loading/Loading'
 
 interface PartTypeAvatar {
   part: string
@@ -46,6 +47,7 @@ const CreateUser = observer(() => {
   const [activeTab, setActiveTab] = useState<string>('head')
 
   const [isEditing, setIsEditing] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const loadSvgSprite = async () => {
@@ -119,6 +121,7 @@ const CreateUser = observer(() => {
         setHeadParts(heads)
         setBodyParts(bodies)
         setEmotionParts(emotions)
+        setIsLoading(false)
       } catch (err) {
         setMessage('Не удалось загрузить спрайт.')
         navigate('/error')
@@ -361,6 +364,10 @@ const CreateUser = observer(() => {
         ))}
       </div>
     )
+  }
+
+  if (isLoading) {
+    return <Loading />
   }
 
   return (
