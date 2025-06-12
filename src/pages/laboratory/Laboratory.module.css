@@ -1,70 +1,30 @@
 .laboratory {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  height: 100dvh;
   background-color: var(--color-bg);
   color: var(--color-text);
 }
 
-.main {
-  flex: 1;
+.header {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
   justify-content: center;
-  padding: 24px;
-  text-align: center;
-}
+  align-items: center;
 
-.logoPlaceholder {
-  color: rgb(40, 42, 43);
-}
-
-.petsList {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-top: 20px;
-}
-
-.petCard {
-  width: 100px;
-  padding: 10px;
-  border-radius: 10px;
-  background: #f0f0f0;
-  text-align: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.petImage {
   width: 100%;
-  height: 120px;
-  object-fit: contain;
-  border-radius: 8px;
-  background-color: #fff;
-}
-
-.selectedCard {
-  border: 2px solid #4caf50;
-  box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
-}
-
-.createPetCard {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  background: #e0ffe0;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-.createPetCard:hover {
-  background: #c8f7c8;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .avatarWrapper {
-  height: 142px;
-  width: 142px;
+  height: 80px;
+  width: 80px;
   border-radius: 50%;
   border: 5px solid #362f2d;
   display: flex;
@@ -73,4 +33,118 @@
   box-shadow: 0px 4px 0px rgba(0, 0, 0, 0.4);
   background: #fbc94b;
   overflow: hidden;
+  margin-inline: 20px;
+}
+
+.avatarWrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wrapperCharacteristics {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.characteristic {
+  padding-left: 30px;
+  padding-right: 30px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.wrapperMonster {
+  width: 292px;
+  height: 308px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  position: relative;
+}
+
+.petImage {
+  width: 100%;
+  height: 240px;
+  object-fit: contain;
+  z-index: 2;
+}
+
+.dotWrapper {
+  margin-top: -100px;
+  display: flex;
+  justify-content: center;
+  z-index: 1;
+  position: relative;
+}
+
+.outerDot {
+  width: 354px;
+  height: 81px;
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.innerDot {
+  width: 250px;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.3); /* Почти чёрный */
+  border-radius: 50%;
+}
+
+.selectMonsters {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.selectMonsters button {
+  margin: 10px;
+}
+
+.bottomMenu {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+  padding-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  gap: 15px;
+}
+
+.menuItem {
+  width: 56px;
+  height: 56px;
+  background: #ffc941;
+  border-radius: 12px;
+  border: 5px solid #362f2d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);
+}
+
+.activeText {
+  font-weight: bold;
+  color: #62d643;
+  margin-top: 4px;
 }

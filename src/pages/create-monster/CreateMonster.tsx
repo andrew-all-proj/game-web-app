@@ -1,29 +1,72 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { observer } from 'mobx-react-lite'
 import { useNavigate } from 'react-router-dom'
-import userStore from '../../stores/UserStore'
-import monsterStore from '../../stores/MonsterStore'
-import client from '../../api/apolloClient'
+import styles from './CreateMonster.module.css'
+import MainInput from '../../components/Input/MainInput'
+import PartSelector from '../../components/PartSelector/PartSelector'
+import headIcon from '../../assets/icon/head-icon.svg'
+import bodyIcon from '../../assets/icon/body-icon.svg'
+import emotionIcon from '../../assets/icon/emotion-icon.svg'
+import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
 import { FILES } from '../../api/graphql/query'
+import { FileItem, GraphQLListResponse } from '../../types/GraphResponse'
+import client from '../../api/apolloClient'
+import { getMaxVersion } from '../../functions/get-max-version'
+import { FrameData, SpriteAtlas } from '../../types/sprites'
+import errorStore from '../../stores/ErrorStore'
+import PreviewMonster from './PreviewMonster'
+import { createPartPreviews } from './create-part-previews'
+import MonsterPartGrid from './MonsterPartGrid'
+import { assembleMonsterCanvas } from '../../functions/assemble-monster-canvas'
+import userStore from '../../stores/UserStore'
 import { MONSTER_CREATE } from '../../api/graphql/mutation'
 import { uploadFile } from '../../api/upload-file'
-import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
-import { assembleMonsterCanvas } from '../../functions/assemble-monster-canvas'
-import styles from './CreateMonster.module.css'
-import Header from '../../components/Header/Header'
-import ConstructorMonster, { SelectedParts } from './ConstructorMonster'
-import Loading from '../loading/Loading'
-import MainButton from '../../components/Button/MainButton'
-import { FileItem, GraphQLListResponse } from '../../types/GraphResponse'
-import { SpriteAtlas } from '../../types/sprites'
-import errorStore from '../../stores/ErrorStore'
-import { getMaxVersion } from '../../functions/get-max-version'
+import monsterStore from '../../stores/MonsterStore'
+import SecondButton from '../../components/Button/SecondButton'
+
+export interface PartPreviewEntry {
+  key: string
+  frameData: FrameData
+}
+
+export interface SelectedPartInfo {
+  key: string
+  attachPoint: { x: number; y: number }
+  frameSize: { w: number; h: number; x: number; y: number }
+}
+
+export interface SelectedParts {
+  head?: SelectedPartInfo
+  body?: SelectedPartInfo
+  leftArm?: SelectedPartInfo
+  rightArm?: SelectedPartInfo
+}
+
+export interface PartPreviews {
+  head: PartPreviewEntry[]
+  body: PartPreviewEntry[]
+  arms: { arm: { left: PartPreviewEntry; right: PartPreviewEntry } }[]
+}
+
+type PartTab = keyof PartPreviews
 
 const CreateMonster = observer(() => {
   const navigate = useNavigate()
-  const [errorMsg, setErrorMsg] = useState('')
+  const [name, setName] = useState('')
+  const [spriteAtlasJson, setSpriteAtlasJson] = useState<SpriteAtlas | null>(null)
+  const [partPreviews, setPartPreviews] = useState<PartPreviews>({ head: [], body: [], arms: [] })
   const [spriteUrl, setSpriteUrl] = useState<string | null>(null)
-  const [spriteAtlasJson, setSpriteAtlasJson] = useState<any>(null)
+  const [errorMsg, setErrorMsg] = useState('')
+
+  const [activeTab, setActiveTab] = useState<PartTab>('body')
+  //const [isEditing, setIsEditing] = useState(false)  //TODO for future use
+
+  const selectedPartsMonster = useRef<SelectedParts>({
+    head: undefined,
+    body: undefined,
+    leftArm: undefined,
+    rightArm: undefined,
+  })
 
   useEffect(() => {
     const fetchMainSprite = async () => {
@@ -45,11 +88,11 @@ const CreateMonster = observer(() => {
         const atlasFile = getMaxVersion(jsonFiles)
 
         if (spriteFile && atlasFile) {
-          setSpriteUrl(spriteFile.url)
-
           const atlasResponse = await fetch(atlasFile.url)
           const atlasJson: SpriteAtlas = await atlasResponse.json()
           setSpriteAtlasJson(atlasJson)
+          setPartPreviews(createPartPreviews(atlasJson))
+          setSpriteUrl(spriteFile.url)
         } else {
           errorStore.setError({
             error: true,
@@ -67,17 +110,69 @@ const CreateMonster = observer(() => {
     }
 
     fetchMainSprite()
-  }, [navigate])
+  }, [])
 
-  const handleGoToLaboratory = () => {
-    navigate('/laboratory')
+  const tabs: { key: keyof PartPreviews; icon: string; alt: string }[] = [
+    { key: 'head', icon: headIcon, alt: 'Head' },
+    { key: 'body', icon: bodyIcon, alt: 'Body' },
+    { key: 'arms', icon: emotionIcon, alt: 'Emotion' },
+  ]
+
+  const handlePartSelect = (part: any) => {
+    if (!part) return
+
+    const attachPoint = part.frameData?.points?.attachToBody || { x: 0, y: 0 }
+
+    switch (activeTab) {
+      case 'head':
+        selectedPartsMonster.current.head = {
+          key: part.key,
+          attachPoint,
+          frameSize: part.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
+        }
+        break
+      case 'body':
+        selectedPartsMonster.current.body = {
+          key: part.key,
+          attachPoint,
+          frameSize: part.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
+        }
+        break
+      case 'arms':
+        if ('arm' in part) {
+          selectedPartsMonster.current.leftArm = {
+            key: part.arm.left.key,
+            attachPoint: part.arm.left.frameData?.points?.attachToBody || { x: 0, y: 0 },
+            frameSize: part.arm.left.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
+          }
+          selectedPartsMonster.current.rightArm = {
+            key: part.arm.right.key,
+            attachPoint: part.arm.right.frameData?.points?.attachToBody || { x: 0, y: 0 },
+            frameSize: part.arm.right.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
+          }
+        }
+        break
+    }
+
+    if (
+      (window as any).updatePhaserDisplay &&
+      typeof (window as any).updatePhaserDisplay === 'function'
+    ) {
+      ;(window as any).updatePhaserDisplay()
+    }
   }
 
-  const handleSaveImage = async (monsterName: string, selected: SelectedParts) => {
+  const handleSaveImage = async () => {
+    if (!name.trim()) return setErrorMsg('Введите имя монстра')
+    if (!selectedPartsMonster.current.body) return setErrorMsg('Выберите тело')
+    if (!selectedPartsMonster.current.head) return setErrorMsg('Выберите голову')
+    if (!selectedPartsMonster.current.leftArm) return setErrorMsg('Выберите руки')
     if (!spriteAtlasJson || !spriteUrl) {
       setErrorMsg('Спрайты не загружены')
       return
     }
+
+    const selected = selectedPartsMonster.current
 
     try {
       const canvas = await assembleMonsterCanvas(selected, spriteAtlasJson, spriteUrl)
@@ -102,7 +197,7 @@ const CreateMonster = observer(() => {
         await client.mutate({
           mutation: MONSTER_CREATE,
           variables: {
-            name: monsterName,
+            name,
             fileId: result.id,
             selectedPartsKey: {
               headKey: selected.head?.key,
@@ -120,35 +215,51 @@ const CreateMonster = observer(() => {
         navigate('/laboratory')
       }, 'image/png')
     } catch (err) {
-      console.error('Error saving monster:', err)
       setErrorMsg('Ошибка при сохранении монстра')
     }
   }
 
-  if (!userStore.isAuthenticated) {
-    return <Loading />
-  }
-
-  if (!spriteUrl || !spriteAtlasJson) {
-    return <div className={styles.loadingText}>Загрузка спрайтов...</div>
-  }
-
   return (
     <div className={styles.laboratory}>
-      <Header avatarUrl={userStore.user?.avatar?.url} />
-      <main className={styles.main}>
-        <div className={styles.logoPlaceholder}>
-          Профессор {userStore.user?.nameProfessor}, Ваша Лаборатория!
-        </div>
-        {errorMsg && <div style={{ color: 'red' }}>{errorMsg}</div>}
-        <ConstructorMonster
-          onError={setErrorMsg}
-          saveImage={handleSaveImage}
-          spriteSheets={spriteUrl}
+      <div className={styles.wrapperMonster}>
+        <PreviewMonster
           spriteAtlas={spriteAtlasJson}
+          spriteSheets={spriteUrl}
+          partPreviews={partPreviews}
+          selectedPartsMonster={selectedPartsMonster}
         />
-        <MainButton onClick={handleGoToLaboratory}>Лаборатория</MainButton>
-      </main>
+      </div>
+      <div className={styles.dotWrapper}>
+        <div className={styles.outerDot}>
+          <div className={styles.innerDot}></div>
+        </div>
+      </div>
+      <div>{errorMsg && <div style={{ color: 'red' }}>{errorMsg}</div>}</div>
+      <div className={styles.inputWrapper}>
+        <MainInput
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="_введите имя"
+          type="text"
+        />
+      </div>
+      <div className={styles.buttonWrapper}>
+        <SecondButton onClick={handleSaveImage}>Сохранить</SecondButton>
+        <SecondButton onClick={() => navigate('/laboratory')}>Лаборатория</SecondButton>
+      </div>
+      <PartSelector<keyof PartPreviews>
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        renderGrid={() => (
+          <MonsterPartGrid
+            partPreviews={partPreviews}
+            activeTab={activeTab}
+            spriteUrl={spriteUrl}
+            handlePartSelect={handlePartSelect}
+          />
+        )}
+      />
     </div>
   )
 })

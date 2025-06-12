@@ -1,30 +1,80 @@
 .laboratory {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  background-color: var(--color-bg);
-  color: var(--color-text);
+  align-items: center;
+  height: 100vh;
+  height: 100dvh;
+  padding-top: 50px;
+  position: relative;
+  box-sizing: border-box;
 }
 
-.main {
-  flex: 1;
+.wrapperMonster {
+  width: 292px;
+  height: 308px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: top; /* Центрирует по вертикали */
-  padding: 24px;
-  text-align: center;
-  color: azure;
-  background: radial-gradient(circle, #0b5ea3 0%, #0b5ea3 40%, #2c2d42 80%);
+  justify-content: center;
+  z-index: 2;
+  position: relative;
 }
 
-.logoPlaceholder {
-  color: rgb(244, 251, 255);
+.dotWrapper {
+  margin-top: -80px; /* круги чуть выше */
+  display: flex;
+  justify-content: center;
+  z-index: 1;
+  position: relative;
 }
 
-.nameInput {
-  padding: "8px";
-  margin-right: "10px";
-  border-radius: "6px";
-  border: "1px solid #ccc";
+.outerDot {
+  width: 354px;
+  height: 81px;
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.innerDot {
+  width: 250px;
+  height: 35px;
+  background-color: rgba(0, 0, 0, 0.3); /* Почти чёрный */
+  border-radius: 50%;
+}
+
+.inputWrapper {
+  margin: auto;
+}
+
+.buttonWrapper {
+  margin: auto;
+}
+
+.grid {
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  justify-content: center;
+  align-content: start;
+}
+
+.partItem {
+  width: 60px;
+  height: 60px;
+  background: white;
+  border-radius: 12px;
+  border: 5px solid #362f2d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);
 }

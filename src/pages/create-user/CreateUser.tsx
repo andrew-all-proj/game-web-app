@@ -6,7 +6,6 @@ import bodyIcon from '../../assets/icon/body-icon.svg'
 import emotionIcon from '../../assets/icon/emotion-icon.svg'
 import userStore from '../../stores/UserStore'
 import styles from './CreateUser.module.css'
-import MainButton from '../../components/Button/MainButton'
 import { uploadFile } from '../../api/upload-file'
 import client from '../../api/apolloClient'
 import { USER_UPDATE } from '../../api/graphql/mutation'
@@ -14,11 +13,20 @@ import { FILES } from '../../api/graphql/query'
 import { FileItem, GraphQLListResponse } from '../../types/GraphResponse'
 import { getMaxVersion } from '../../functions/get-max-version'
 import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
+import MainInput from '../../components/Input/MainInput'
+import PartSelector from '../../components/PartSelector/PartSelector'
+import SecondButton from '../../components/Button/SecondButton'
 
 interface PartTypeAvatar {
   part: string
   icon: string
 }
+
+const tabs = [
+  { key: 'head', icon: headIcon, alt: 'Голова' },
+  { key: 'body', icon: bodyIcon, alt: 'Тело' },
+  { key: 'emotion', icon: emotionIcon, alt: 'Эмоции' },
+]
 
 const CreateUser = observer(() => {
   const navigate = useNavigate()
@@ -35,7 +43,7 @@ const CreateUser = observer(() => {
   const [name, setName] = useState('')
   const [message, setMessage] = useState('')
 
-  const [activeTab, setActiveTab] = useState<'head' | 'body' | 'emotion'>('head')
+  const [activeTab, setActiveTab] = useState<string>('head')
 
   const [isEditing, setIsEditing] = useState(false)
 
@@ -362,42 +370,27 @@ const CreateUser = observer(() => {
       </div>
       <div className={styles.infoMessage}>
         {message}
-        <input
-          className={styles.nameInput}
+        <MainInput
           placeholder="_введите Имя"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        <MainButton onClick={handleSaveAvatar}>Сохранить</MainButton>
+        <SecondButton onClick={handleSaveAvatar}>Сохранить</SecondButton>
+        <SecondButton onClick={() => navigate('/laboratory')}>Лаборатория</SecondButton>
       </div>
 
-      <div className={styles.selectPart}>
-        <div className={styles.tabs}>
-          <div
-            className={`${styles.tabIcon} ${activeTab === 'head' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('head')}
-          >
-            <img src={headIcon} alt="Голова" className={styles.tabIconImage} />
-          </div>
-          <div
-            className={`${styles.tabIcon} ${activeTab === 'body' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('body')}
-          >
-            <img src={bodyIcon} alt="Тело" className={styles.tabIconImage} />
-          </div>
-          <div
-            className={`${styles.tabIcon} ${activeTab === 'emotion' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('emotion')}
-          >
-            <img src={emotionIcon} alt="Волосы" className={styles.tabIconImage} />
-          </div>
-        </div>
-        <div className={styles.gridWrapper}>
-          {activeTab === 'head' && renderGrid(headParts, headIndex, setHeadIndex)}
-          {activeTab === 'body' && renderGrid(bodyParts, bodyIndex, setBodyIndex)}
-          {activeTab === 'emotion' && renderGrid(emotionParts, emotionIndex, setEmotionIndex)}
-        </div>
-      </div>
+      <PartSelector
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        renderGrid={() => {
+          if (activeTab === 'head') return renderGrid(headParts, headIndex, setHeadIndex)
+          if (activeTab === 'body') return renderGrid(bodyParts, bodyIndex, setBodyIndex)
+          if (activeTab === 'emotion')
+            return renderGrid(emotionParts, emotionIndex, setEmotionIndex)
+          return null
+        }}
+      />
     </div>
   )
 })
