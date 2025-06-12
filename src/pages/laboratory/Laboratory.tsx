@@ -9,11 +9,25 @@ import Loading from '../loading/Loading'
 import monsterStore, { Monster } from '../../stores/MonsterStore'
 import noAvatarMonster from '../../assets/images/no-avatar-monster.jpg'
 import MainButton from '../../components/Button/MainButton'
+import NotFoundMonsters from './NotFoundMonsters'
+import SecondButton from '../../components/Button/SecondButton'
+import levelLifeIcon from '../../assets/icon/level-life.svg'
+import foodIcon from '../../assets/icon/icon_food.svg'
+import levelHitIcon from '../../assets/icon/level-hit-icon.svg'
+import energyIcon from '../../assets/icon/energy-icon.svg'
+import labIcon from '../../assets/icon/icon_lab.svg'
+import upgradeIcon from '../../assets/icon/icon_upgrade.svg'
+import socialIcon from '../../assets/icon/icon_social.svg'
+import TriangleButton from '../../components/Button/TriangleButton'
 
 const Laboratory = observer(() => {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(true)
   const [errorMsg, setErrorMsg] = useState('')
+  const [monsterIndex, setMonsterIndex] = useState(0)
+
+  const monsters = monsterStore.monsters
+  const selectedMonster = monsters[monsterIndex]
 
   useEffect(() => {
     ;(async () => {
@@ -28,7 +42,8 @@ const Laboratory = observer(() => {
     })()
   }, [])
 
-  const handleGoToArena = () => {
+  const handleGoToArena = (monster: Monster) => {
+    monsterStore.setSelectedMonster(monster.id)
     if (!monsterStore.selectedMonster) {
       setErrorMsg('Выберите питомца')
       return
@@ -48,48 +63,84 @@ const Laboratory = observer(() => {
     return <Loading />
   }
 
+  if (monsterStore.monsters.length === 0) {
+    return <NotFoundMonsters />
+  }
+
+  const handlePrevMonster = () => {
+    if (monsters.length === 0) return
+    const newIndex = (monsterIndex - 1 + monsters.length) % monsters.length
+    setMonsterIndex(newIndex)
+  }
+
+  const handleNextMonster = () => {
+    if (monsters.length === 0) return
+    const newIndex = (monsterIndex + 1) % monsters.length
+    setMonsterIndex(newIndex)
+  }
+
   return (
     <div className={styles.laboratory}>
-      <main className={styles.main}>
-        <div className={styles.logoPlaceholder}>
-          Профессор {userStore.user?.nameProfessor}, Ваша Лаборатория!
-        </div>
-        <div className={styles.avatarWrapper}>
+      <div className={styles.header}>
+        <SecondButton onClick={() => {}}>Энергия</SecondButton>
+        <div className={styles.avatarWrapper} onClick={handleGoToCreateUser}>
           <img alt="avatar user" src={userStore.user?.avatar?.url} />
         </div>
-        <div style={{ color: 'red' }}>{errorMsg}</div>
-        <div>Ваши питомцы:</div>
-        <div className={styles.petsList}>
-          {monsterStore.monsters.map((monster) => (
-            <div
-              key={monster.id}
-              className={`${styles.petCard} ${monsterStore.selectedMonster?.id === monster.id ? styles.selectedCard : ''}`}
-              onClick={() => handleSelectMonster(monster)}
-              style={{ cursor: 'pointer' }}
-            >
-              <img
-                src={
-                  monster.files?.find((file) => file.contentType === 'AVATAR_MONSTER')?.url ||
-                  noAvatarMonster
-                }
-                alt={monster.name}
-                className={styles.petImage}
-              />
-              <div>{monster.name}</div>
-            </div>
-          ))}
-
-          <div
-            className={`${styles.petCard} ${styles.createPetCard}`}
-            onClick={() => navigate('/create-monster')}
-          >
-            ➕ Создать питомца
-          </div>
+        <SecondButton onClick={() => navigate('/create-monster')}>Создать</SecondButton>
+      </div>
+      <div className={styles.wrapperCharacteristics}>
+        <div className={styles.characteristic}>Lvl. 26</div>
+        <div className={styles.characteristic}>
+          <img alt="level-life" src={levelLifeIcon} />
         </div>
-
-        <MainButton onClick={handleGoToArena}>Арена</MainButton>
-        <MainButton onClick={handleGoToCreateUser}>Обновить</MainButton>
-      </main>
+      </div>
+      <div className={styles.wrapperCharacteristics}>
+        <div className={styles.characteristic}>
+          <img alt="energy" src={energyIcon} />
+        </div>
+        <div className={styles.characteristic}>
+          <img alt="hit" src={levelHitIcon} />
+        </div>
+      </div>
+      <div style={{ color: 'red' }}>{errorMsg}</div>
+      <div>{selectedMonster.name}</div>
+      {monsterStore.selectedMonster?.id === selectedMonster.id && (
+        <div className={styles.activeText}>активный</div>
+      )}
+      <div className={styles.wrapperMonster} onClick={() => handleSelectMonster(selectedMonster)}>
+        <img
+          src={
+            selectedMonster.files?.find((file) => file.contentType === 'AVATAR_MONSTER')?.url ||
+            noAvatarMonster
+          }
+          alt={selectedMonster.name}
+          className={styles.petImage}
+        />
+      </div>
+      <div className={styles.dotWrapper}>
+        <div className={styles.outerDot}>
+          <div className={styles.innerDot}></div>
+        </div>
+      </div>
+      <div className={styles.selectMonsters}>
+        <TriangleButton rotate={0} onClick={handlePrevMonster} />
+        <MainButton onClick={() => handleGoToArena(selectedMonster)}>Арена</MainButton>
+        <TriangleButton rotate={180} onClick={handleNextMonster} />
+      </div>
+      <div className={styles.bottomMenu}>
+        <div className={styles.menuItem}>
+          <img src={foodIcon} alt="food" className={styles.tabIconImage} />
+        </div>
+        <div className={styles.menuItem}>
+          <img src={labIcon} alt="lab" className={styles.tabIconImage} />
+        </div>
+        <div className={styles.menuItem}>
+          <img src={upgradeIcon} alt="upgrade" className={styles.tabIconImage} />
+        </div>
+        <div className={styles.menuItem}>
+          <img src={socialIcon} alt="social" className={styles.tabIconImage} />
+        </div>
+      </div>
     </div>
   )
 })

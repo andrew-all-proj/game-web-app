@@ -1,0 +1,57 @@
+.notFoundMonsters {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%; /* вместо min-height: 100vh */
+  padding: 40px 20px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 900;
+  color: #fbc94b;
+  margin-bottom: 40px;
+  line-height: 1.4;
+  text-shadow: 2px 2px 0 #3f3e3e;
+}
+
+.questionWrapper {
+  position: relative;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.questionMark {
+  font-size: 222px;
+  font-weight: 900;
+  color: #d2ff49;
+  -webkit-text-stroke: 6px #000;
+}
+
+.dotWrapper {
+  margin-top: -60px;
+  display: flex;
+  justify-content: center;
+}
+
+.outerDot {
+  width: 354px;
+  height: 81px;
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.innerDot {
+  width: 148px;
+  height: 35px;
+  background-color: rgba(0, 0, 0, 0.3); /* Почти чёрный */
+  border-radius: 50%;
+}
