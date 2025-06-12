@@ -1,12 +1,13 @@
 import styles from './Loading.module.css'
 import { observer } from 'mobx-react-lite'
+import label from '../../assets/icon/label-icon.svg'
 
 const Loading = observer(() => {
   return (
     <>
       <div className={styles.loadingPage}>
         <div className={styles.spinner} />
-        <h1 className={styles.loadingTitle}>Mutantorium</h1>
+        <img src={label} alt="Mutantorium" className={styles.labelIcon} />
       </div>
     </>
   )
