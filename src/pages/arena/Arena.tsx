@@ -11,7 +11,7 @@ import Loading from '../loading/Loading'
 import TestFight from './TestFight'
 import { MONSTER_BATTLE } from '../../api/graphql/query'
 import client from '../../api/apolloClient'
-import {  MonsterBattles } from '../../types/GraphResponse'
+import { MonsterBattles } from '../../types/GraphResponse'
 import SecondButton from '../../components/Button/SecondButton'
 import monsterStore from '../../stores/MonsterStore'
 

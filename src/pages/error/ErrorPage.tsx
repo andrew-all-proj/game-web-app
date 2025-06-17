@@ -1,20 +1,13 @@
 import { observer } from 'mobx-react-lite'
 import errorStore from '../../stores/ErrorStore'
 import { useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
 
 const ErrorPage = observer(() => {
   const navigate = useNavigate()
   const error = errorStore.error
 
-  useEffect(() => {
-    if (!error?.error) {
-      navigate('/')
-    }
-  }, [error, navigate])
-
   const handleReload = () => {
-    window.location.reload()
+    navigate('/')
   }
 
   return (

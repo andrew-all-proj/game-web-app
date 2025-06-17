@@ -107,7 +107,7 @@ const CreateMonster = observer(() => {
       } catch (error) {
         errorStore.setError({
           error: true,
-          message: 'Ошибка при загрузке спрайтов',
+          message: `Ошибка при загрузке спрайтов: ${error}`,
         })
         navigate('/error')
       }
