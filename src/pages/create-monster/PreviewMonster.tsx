@@ -29,30 +29,36 @@ export default function PreviewMonster({
   partPreviews,
   selectedPartsMonster,
 }: MonsterPreviewProps) {
-  if (!spriteAtlas || !spriteSheets) return null
-
   const phaserContainerRef = useRef<HTMLDivElement>(null)
   const phaserRef = useRef<Phaser.Game | null>(null)
   const sceneRef = useRef<Phaser.Scene | null>(null)
   const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
-    if (!phaserContainerRef.current) return
+    if (!phaserContainerRef.current || !spriteAtlas || !spriteSheets) return
 
-    function waitForSceneReady(timeout = 7000): Promise<Phaser.Scene> {
-      return new Promise((resolve, reject) => {
+    const waitForSceneReady = (timeout = 7000): Promise<Phaser.Scene> =>
+      new Promise((resolve, reject) => {
         const interval = setInterval(() => {
           if (sceneRef.current) {
             clearInterval(interval)
             resolve(sceneRef.current)
           }
         }, 50)
-
         setTimeout(() => {
           clearInterval(interval)
           reject(new Error('Scene initialization timed out'))
         }, timeout)
       })
+
+    ;(window as any).updatePhaserDisplay = async () => {
+      try {
+        const scene = await waitForSceneReady()
+        updateDisplay(scene)
+      } catch (err) {
+        console.error('Failed to update display:', err)
+        setErrorMsg('Failed to update display')
+      }
     }
 
     const config: Phaser.Types.Core.GameConfig = {
@@ -62,109 +68,93 @@ export default function PreviewMonster({
       parent: phaserContainerRef.current,
       transparent: true,
       scale: { mode: Phaser.Scale.NONE },
-      scene: { preload, create, update },
+      scene: {
+        preload(this: Phaser.Scene) {
+          this.load.atlas('monster', spriteSheets, spriteAtlas)
+        },
+        create(this: Phaser.Scene) {
+          generateStayAnimations(this)
+          sceneRef.current = this
+        },
+        update() {},
+      },
     }
 
     phaserRef.current = new Phaser.Game(config)
 
-    function preload(this: Phaser.Scene) {
-      if (!spriteSheets || !spriteAtlas) return
-      this.load.atlas('monster', spriteSheets, spriteAtlas)
-    }
-
-    function create(this: Phaser.Scene) {
-      generateStayAnimations(this)
-      sceneRef.current = this
-
-      // Сохраняем ссылку, вызываем только если сцена готова
-      ;(window as any).updatePhaserDisplay = async () => {
-        try {
-          const scene = await waitForSceneReady()
-          updateDisplay(scene)
-        } catch (err) {
-          console.error('Failed to update display:', err)
-          setErrorMsg('Failed to update display')
-        }
-      }
-    }
-
-    function update() {}
-
-    function generateStayAnimations(scene: Phaser.Scene) {
-      const stayAnimations: Record<string, string[]> = {}
-
-      if (!spriteAtlas) return
-
-      for (const frameName in spriteAtlas.frames) {
-        if (frameName.includes('/stay/')) {
-          const baseKey = frameName.replace(/_\d+$/, '')
-          const animKey = `${baseKey}_stay`
-          if (!stayAnimations[animKey]) stayAnimations[animKey] = []
-          stayAnimations[animKey].push(frameName)
-        }
-      }
-
-      for (const animKey in stayAnimations) {
-        scene.anims.create({
-          key: animKey,
-          frames: stayAnimations[animKey].sort().map((f) => ({ key: 'monster', frame: f })),
-          frameRate: 6,
-          repeat: -1,
-        })
-      }
-    }
-
-    function updateDisplay(scene: Phaser.Scene) {
-      scene.children.removeAll()
-
-      const scale = 0.2
-      const bodyX = 0
-      const bodyY = 145
-
-      const body = selectedPartsMonster.current.body
-      if (!body) return
-
-      const bodyKey = body.key.replace(/_\d+$/, '')
-      const bodyFrame = partPreviews.body.find((f) => f.key === body.key)?.frameData
-      const bodyPoints = bodyFrame?.points
-      if (!bodyPoints) return
-
-      const drawPart = (part: SelectedPartInfo, attachPoint: { x: number; y: number }) => {
-        const partKey = part.key.replace(/_\d+$/, '')
-        scene.add
-          .sprite(
-            bodyX + (attachPoint.x - part.attachPoint.x) * scale,
-            bodyY + (attachPoint.y - part.attachPoint.y) * scale,
-            'monster',
-          )
-          .setOrigin(0, 0)
-          .setScale(scale)
-          .play(`${partKey}_stay`)
-      }
-
-      if (selectedPartsMonster.current.leftArm && bodyPoints.attachLeftArm) {
-        drawPart(selectedPartsMonster.current.leftArm, bodyPoints.attachLeftArm)
-      }
-
-      scene.add
-        .sprite(bodyX, bodyY, 'monster')
-        .setOrigin(0, 0)
-        .setScale(scale)
-        .play(`${bodyKey}_stay`)
-
-      if (selectedPartsMonster.current.rightArm && bodyPoints.attachRightArm) {
-        drawPart(selectedPartsMonster.current.rightArm, bodyPoints.attachRightArm)
-      }
-
-      if (selectedPartsMonster.current.head && bodyPoints.attachToHead) {
-        drawPart(selectedPartsMonster.current.head, bodyPoints.attachToHead)
-      }
-    }
-
     return () => {
       phaserRef.current?.destroy(true)
     }
-  }, [spriteAtlas, spriteSheets, partPreviews, selectedPartsMonster])
+  }, [spriteAtlas, spriteSheets])
 
-  return errorMsg ? <>{errorMsg}</> : <div ref={phaserContainerRef} style={{ margin: '20px auto' }} /> 
+  const generateStayAnimations = (scene: Phaser.Scene) => {
+    const stayAnimations: Record<string, string[]> = {}
+
+    for (const frameName in spriteAtlas!.frames) {
+      if (frameName.includes('/stay/')) {
+        const baseKey = frameName.replace(/_\d+$/, '')
+        const animKey = `${baseKey}_stay`
+        if (!stayAnimations[animKey]) stayAnimations[animKey] = []
+        stayAnimations[animKey].push(frameName)
+      }
+    }
+
+    for (const animKey in stayAnimations) {
+      scene.anims.create({
+        key: animKey,
+        frames: stayAnimations[animKey].sort().map((f) => ({ key: 'monster', frame: f })),
+        frameRate: 6,
+        repeat: -1,
+      })
+    }
+  }
+
+  const updateDisplay = (scene: Phaser.Scene) => {
+    scene.children.removeAll()
+
+    const scale = 0.2
+    const bodyX = 0
+    const bodyY = 145
+
+    const body = selectedPartsMonster.current.body
+    if (!body) return
+
+    const bodyKey = body.key.replace(/_\d+$/, '')
+    const bodyFrame = partPreviews.body.find((f) => f.key === body.key)?.frameData
+    const bodyPoints = bodyFrame?.points
+    if (!bodyPoints) return
+
+    const drawPart = (part: SelectedPartInfo, attachPoint: { x: number; y: number }) => {
+      const partKey = part.key.replace(/_\d+$/, '')
+      scene.add
+        .sprite(
+          bodyX + (attachPoint.x - part.attachPoint.x) * scale,
+          bodyY + (attachPoint.y - part.attachPoint.y) * scale,
+          'monster'
+        )
+        .setOrigin(0, 0)
+        .setScale(scale)
+        .play(`${partKey}_stay`)
+    }
+
+    if (selectedPartsMonster.current.leftArm && bodyPoints.attachLeftArm) {
+      drawPart(selectedPartsMonster.current.leftArm, bodyPoints.attachLeftArm)
+    }
+
+    scene.add
+      .sprite(bodyX, bodyY, 'monster')
+      .setOrigin(0, 0)
+      .setScale(scale)
+      .play(`${bodyKey}_stay`)
+
+    if (selectedPartsMonster.current.rightArm && bodyPoints.attachRightArm) {
+      drawPart(selectedPartsMonster.current.rightArm, bodyPoints.attachRightArm)
+    }
+
+    if (selectedPartsMonster.current.head && bodyPoints.attachToHead) {
+      drawPart(selectedPartsMonster.current.head, bodyPoints.attachToHead)
+    }
+  }
+
+  return errorMsg ? <>{errorMsg}</> : <div ref={phaserContainerRef} style={{ margin: '20px auto' }} />
 }
