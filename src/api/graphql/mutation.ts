@@ -57,3 +57,21 @@ export const MONSTER_CREATE = gql`
     }
   }
 `
+
+export const MONSTER_UPDATE = gql`
+  mutation MonsterUpdate($id: String!, $name: String, $isSelected: Boolean!) {
+    MonsterUpdate(id: $id, name: $name, isSelected: $isSelected) {
+      id
+      name
+      level
+      bodyMass
+      updatedAt
+      userId
+      isSelected
+      files {
+        id
+        url
+      }
+    }
+  }
+`

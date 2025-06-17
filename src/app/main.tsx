@@ -16,3 +16,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </ApolloProvider>
   </React.StrictMode>,
 )
+
+export default AppRouter
