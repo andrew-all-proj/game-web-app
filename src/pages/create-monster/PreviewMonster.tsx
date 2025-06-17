@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Phaser from 'phaser'
 import { PartPreviews } from './CreateMonster'
 import { SpriteAtlas } from '../../types/sprites'
@@ -34,6 +34,7 @@ export default function PreviewMonster({
   const phaserContainerRef = useRef<HTMLDivElement>(null)
   const phaserRef = useRef<Phaser.Game | null>(null)
   const sceneRef = useRef<Phaser.Scene | null>(null)
+  const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
     if (!phaserContainerRef.current) return
@@ -82,6 +83,7 @@ export default function PreviewMonster({
           updateDisplay(scene)
         } catch (err) {
           console.error('Failed to update display:', err)
+          setErrorMsg('Failed to update display')
         }
       }
     }
@@ -164,5 +166,5 @@ export default function PreviewMonster({
     }
   }, [spriteAtlas, spriteSheets, partPreviews, selectedPartsMonster])
 
-  return <div ref={phaserContainerRef} style={{ margin: '20px auto' }} />
+  return errorMsg ? {errorMsg} : <div ref={phaserContainerRef} style={{ margin: '20px auto' }} /> 
 }
