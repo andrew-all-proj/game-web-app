@@ -39,7 +39,7 @@ export default function PreviewMonster({
   useEffect(() => {
     if (!phaserContainerRef.current) return
 
-    function waitForSceneReady(timeout = 3000): Promise<Phaser.Scene> {
+    function waitForSceneReady(timeout = 7000): Promise<Phaser.Scene> {
       return new Promise((resolve, reject) => {
         const interval = setInterval(() => {
           if (sceneRef.current) {
