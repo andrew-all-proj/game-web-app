@@ -166,5 +166,5 @@ export default function PreviewMonster({
     }
   }, [spriteAtlas, spriteSheets, partPreviews, selectedPartsMonster])
 
-  return errorMsg ? {errorMsg} : <div ref={phaserContainerRef} style={{ margin: '20px auto' }} /> 
+  return errorMsg ? <>{errorMsg}</> : <div ref={phaserContainerRef} style={{ margin: '20px auto' }} /> 
 }
