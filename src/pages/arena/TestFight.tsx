@@ -28,6 +28,7 @@ export default function TestFight() {
   const [spriteUrl, setSpriteUrl] = useState<string>('')
   const [atlasOpponent, setAtlasOpponent] = useState<any>(null)
   const [spriteUrlOpponent, setSpriteUrlOpponent] = useState<string>('')
+   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     ;(async () => {
@@ -89,6 +90,7 @@ export default function TestFight() {
       this.load.on('complete', () => {
         console.log('✅ All assets loaded!')
         loadingText.destroy()
+        setIsLoading(false)
       })
 
       this.load.on('loaderror', (file: Phaser.Loader.File) => {
@@ -232,6 +234,7 @@ export default function TestFight() {
   }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent])
 
   const handleAttack = (damage: number) => {
+    if(isLoading) return 
     setOpponentHealth((prev) => {
       const newHealth = Math.max(prev - damage, 0)
 
