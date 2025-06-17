@@ -17,6 +17,7 @@ import MainInput from '../../components/Input/MainInput'
 import PartSelector from '../../components/PartSelector/PartSelector'
 import SecondButton from '../../components/Button/SecondButton'
 import Loading from '../loading/Loading'
+import errorStore from '../../stores/ErrorStore'
 
 interface PartTypeAvatar {
   part: string
@@ -76,6 +77,10 @@ const CreateUser = observer(() => {
 
         if (!spriteFile) {
           setMessage('SVG файл спрайта не найден.')
+          errorStore.setError({
+            error: true,
+            message: 'Не удалось загрузить спрайты с сервера',
+          })
           navigate('/error')
           return
         }
@@ -124,6 +129,10 @@ const CreateUser = observer(() => {
         setIsLoading(false)
       } catch (err) {
         setMessage('Не удалось загрузить спрайт.')
+        errorStore.setError({
+            error: true,
+            message: `Не удалось загрузить спрайты с сервера ${err}`,
+          })
         navigate('/error')
       }
     }
