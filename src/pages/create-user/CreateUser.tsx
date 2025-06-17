@@ -130,9 +130,9 @@ const CreateUser = observer(() => {
       } catch (err) {
         setMessage('Не удалось загрузить спрайт.')
         errorStore.setError({
-            error: true,
-            message: `Не удалось загрузить спрайты с сервера ${err}`,
-          })
+          error: true,
+          message: `Не удалось загрузить спрайты с сервера ${err}`,
+        })
         navigate('/error')
       }
     }

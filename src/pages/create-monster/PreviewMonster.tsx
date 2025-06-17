@@ -38,6 +38,22 @@ export default function PreviewMonster({
   useEffect(() => {
     if (!phaserContainerRef.current) return
 
+    function waitForSceneReady(timeout = 3000): Promise<Phaser.Scene> {
+      return new Promise((resolve, reject) => {
+        const interval = setInterval(() => {
+          if (sceneRef.current) {
+            clearInterval(interval)
+            resolve(sceneRef.current)
+          }
+        }, 50)
+
+        setTimeout(() => {
+          clearInterval(interval)
+          reject(new Error('Scene initialization timed out'))
+        }, timeout)
+      })
+    }
+
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.CANVAS,
       width: 250,
@@ -60,11 +76,12 @@ export default function PreviewMonster({
       sceneRef.current = this
 
       // Сохраняем ссылку, вызываем только если сцена готова
-      ;(window as any).updatePhaserDisplay = () => {
-        if (sceneRef.current) {
-          updateDisplay(sceneRef.current)
-        } else {
-          console.warn('Phaser scene not ready yet.')
+      ;(window as any).updatePhaserDisplay = async () => {
+        try {
+          const scene = await waitForSceneReady()
+          updateDisplay(scene)
+        } catch (err) {
+          console.error('Failed to update display:', err)
         }
       }
     }
