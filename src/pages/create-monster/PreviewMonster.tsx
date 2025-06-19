@@ -36,25 +36,11 @@ export default function PreviewMonster({
 
   useEffect(() => {
     if (!phaserContainerRef.current || !spriteAtlas || !spriteSheets) return
-
-    const waitForSceneReady = (timeout = 7000): Promise<Phaser.Scene> =>
-      new Promise((resolve, reject) => {
-        const interval = setInterval(() => {
-          if (sceneRef.current) {
-            clearInterval(interval)
-            resolve(sceneRef.current)
-          }
-        }, 50)
-        setTimeout(() => {
-          clearInterval(interval)
-          reject(new Error('Scene initialization timed out'))
-        }, timeout)
-      })
-
     ;(window as any).updatePhaserDisplay = async () => {
       try {
-        const scene = await waitForSceneReady()
-        updateDisplay(scene)
+        if (sceneRef.current) {
+          updateDisplay(sceneRef.current)
+        }
       } catch (err) {
         console.error('Failed to update display:', err)
         setErrorMsg((prev) => `${prev}\n${err instanceof Error ? err.message : String(err)}`)
@@ -70,12 +56,18 @@ export default function PreviewMonster({
       scale: { mode: Phaser.Scale.NONE },
       scene: {
         preload(this: Phaser.Scene) {
-          this.load.atlas('monster', spriteSheets, spriteAtlas)
+          this.load.image('monsterImage', spriteSheets + '?v=' + Date.now())
         },
+
         create(this: Phaser.Scene) {
+          const textureImg = this.textures.get('monsterImage').getSourceImage() as HTMLImageElement
+
+          this.textures.addAtlasJSONHash('monster', textureImg, spriteAtlas)
+
           generateStayAnimations(this)
           sceneRef.current = this
         },
+
         update() {},
       },
     }
@@ -114,9 +106,7 @@ export default function PreviewMonster({
     for (const animKey in stayAnimations) {
       scene.anims.create({
         key: animKey,
-        frames: stayAnimations[animKey]
-          .sort()
-          .map((f) => ({ key: 'monster', frame: f })),
+        frames: stayAnimations[animKey].sort().map((f) => ({ key: 'monster', frame: f })),
         frameRate: 6,
         repeat: -1,
       })
