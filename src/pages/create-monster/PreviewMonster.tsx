@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import Phaser from 'phaser'
 import { PartPreviews } from './CreateMonster'
 import { SpriteAtlas } from '../../types/sprites'
-import DebugLogPanel, { DebugLogHandle } from '../../components/DebugLogHandle/DebugLogHandle'
 
 interface SelectedPartInfo {
   key: string
@@ -33,33 +32,7 @@ export default function PreviewMonster({
   const phaserContainerRef = useRef<HTMLDivElement>(null)
   const phaserRef = useRef<Phaser.Game | null>(null)
   const sceneRef = useRef<Phaser.Scene | null>(null)
-  const debugRef = useRef<DebugLogHandle>(null)
   const [errorMsg, setErrorMsg] = useState('')
-
-  useEffect(() => {
-    const originalLog = console.log
-    const originalWarn = console.warn
-    const originalError = console.error
-
-    console.log = (...args) => {
-      debugRef.current?.log('🟢 log:', ...args)
-      originalLog(...args)
-    }
-    console.warn = (...args) => {
-      debugRef.current?.log('🟡 warn:', ...args)
-      originalWarn(...args)
-    }
-    console.error = (...args) => {
-      debugRef.current?.log('🔴 error:', ...args)
-      originalError(...args)
-    }
-
-    return () => {
-      console.log = originalLog
-      console.warn = originalWarn
-      console.error = originalError
-    }
-  }, [])
 
   useEffect(() => {
     if (!phaserContainerRef.current || !spriteAtlas || !spriteSheets) return
@@ -72,26 +45,17 @@ export default function PreviewMonster({
       }
 
       preload() {
-        debugRef.current?.log('🖼️ Загружаем atlas image:', spriteSheets)
         this.load.image('monsterImage', spriteSheets + '?v=' + Date.now())
-        this.load.on('complete', () => {
-          debugRef.current?.log('✅ Загрузка изображений завершена')
-        })
+        this.load.on('complete', () => {})
       }
 
       create() {
         monsterImage = this.textures.get('monsterImage').getSourceImage() as HTMLImageElement
         this.textures.addAtlasJSONHash('monster', monsterImage, spriteAtlas!)
 
-        debugRef.current?.log('🎞️ Фреймы из atlas:', Object.keys(spriteAtlas!.frames))
         generateStayAnimations(this)
         sceneRef.current = this
         updateDisplay(this)
-
-        this.add.text(50, 250, 'Phaser OK!', {
-          font: '16px Arial',
-          color: '#00ff00',
-        })
       }
     }
 
@@ -116,7 +80,6 @@ export default function PreviewMonster({
           updateDisplay(sceneRef.current)
         }
       } catch (err) {
-        debugRef.current?.log('❌ Ошибка обновления дисплея:', err)
         setErrorMsg((prev) => `${prev}\n${err instanceof Error ? err.message : String(err)}`)
       }
     }
@@ -128,13 +91,11 @@ export default function PreviewMonster({
 
   const generateStayAnimations = (scene: Phaser.Scene) => {
     const texture = scene.textures.get('monster')
-    debugRef.current?.log('📦 Фреймы в Phaser:', texture.getFrameNames())
 
     const stayAnimations: Record<string, string[]> = {}
 
     for (const frameName in spriteAtlas!.frames) {
       if (!texture.has(frameName)) {
-        debugRef.current?.log(`❌ Frame not found in texture: ${frameName}`)
         continue
       }
 
@@ -147,7 +108,6 @@ export default function PreviewMonster({
     }
 
     for (const animKey in stayAnimations) {
-      debugRef.current?.log(`🎬 Создание анимации: ${animKey}`, stayAnimations[animKey])
       scene.anims.create({
         key: animKey,
         frames: stayAnimations[animKey].sort().map((f) => ({ key: 'monster', frame: f })),
@@ -177,13 +137,11 @@ export default function PreviewMonster({
       const x = bodyX + (attachPoint.x - part.attachPoint.x) * scale
       const y = bodyY + (attachPoint.y - part.attachPoint.y) * scale
 
-      debugRef.current?.log(`🧩 ${animKey} at (${x.toFixed(1)}, ${y.toFixed(1)})`)
       scene.add.sprite(x, y, 'monster').setOrigin(0, 0).setScale(scale).play(animKey)
     }
 
     // Body
     const baseBodyKey = body.key.replace(/\/[^/]+$/, '') + '_stay'
-    debugRef.current?.log(`🧍 Тело: ${baseBodyKey}`)
     scene.add.sprite(bodyX, bodyY, 'monster').setOrigin(0, 0).setScale(scale).play(baseBodyKey)
 
     // Arms & head
@@ -203,17 +161,8 @@ export default function PreviewMonster({
   return (
     <>
       {errorMsg && <div style={{ color: 'red' }}>{errorMsg}</div>}
-      <DebugLogPanel ref={debugRef} />
       <div
         ref={phaserContainerRef}
-        style={{
-          margin: '20px auto',
-          position: 'relative',
-          width: '300px',
-          height: '500px',
-          backgroundColor: '#222',
-          zIndex: 1,
-        }}
       />
     </>
   )
