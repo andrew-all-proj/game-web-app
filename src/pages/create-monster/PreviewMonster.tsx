@@ -91,7 +91,7 @@ export default function PreviewMonster({
     const texture = scene.textures.get('monster')
 
     if (!spriteAtlas?.frames || Object.keys(spriteAtlas.frames).length === 0) {
-      setErrorMsg((prev) => `${prev}\nNo frames found in atlas`)
+      setErrorMsg(`No frames found in atlas`)
       return
     }
 
@@ -99,7 +99,7 @@ export default function PreviewMonster({
 
     for (const frameName in spriteAtlas.frames) {
       if (!texture.has(frameName)) {
-        setErrorMsg((prev) => `${prev}\nFrame "${frameName}" not found in texture`)
+        setErrorMsg(`${frameName} not found in texture`)
         continue
       }
 
