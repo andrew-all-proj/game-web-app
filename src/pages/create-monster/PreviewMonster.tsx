@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import Phaser from 'phaser'
 import { PartPreviews } from './CreateMonster'
 import { SpriteAtlas } from '../../types/sprites'
@@ -32,7 +32,6 @@ export default function PreviewMonster({
   const phaserContainerRef = useRef<HTMLDivElement>(null)
   const phaserRef = useRef<Phaser.Game | null>(null)
   const sceneRef = useRef<Phaser.Scene | null>(null)
-  const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
     if (!phaserContainerRef.current || !spriteAtlas || !spriteSheets) return
@@ -72,7 +71,6 @@ export default function PreviewMonster({
       },
     }
 
-
     phaserRef.current = new Phaser.Game(config)
     ;(window as any).updatePhaserDisplay = async () => {
       try {
@@ -80,7 +78,7 @@ export default function PreviewMonster({
           updateDisplay(sceneRef.current)
         }
       } catch (err) {
-        setErrorMsg((prev) => `${prev}\n${err instanceof Error ? err.message : String(err)}`)
+        console.log(`${err instanceof Error ? err.message : String(err)}`)
       }
     }
 
@@ -160,10 +158,7 @@ export default function PreviewMonster({
 
   return (
     <>
-      {errorMsg && <div style={{ color: 'red' }}>{errorMsg}</div>}
-      <div
-        ref={phaserContainerRef}
-      />
+      <div ref={phaserContainerRef} />
     </>
   )
 }

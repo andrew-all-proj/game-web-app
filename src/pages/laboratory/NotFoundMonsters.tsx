@@ -7,8 +7,6 @@ import MainButton from '../../components/Button/MainButton'
 const NotFoundMonsters = observer(() => {
   const navigate = useNavigate()
 
-  console.log('NotFoundMonsters render')
-
   return (
     <div className={styles.notFoundMonsters}>
       <h1 className={styles.title}>

@@ -50,7 +50,6 @@ const SearchBattle = observer(() => {
         socketRef.current = socket
 
         socket.on('opponents', (data) => {
-          console.log('opponents event')
           setOpponents(data.opponents)
           setNextCursor(data.nextCursor)
           setIsLoading(false)
@@ -65,7 +64,10 @@ const SearchBattle = observer(() => {
             setWaitOpponent(true)
             setWaitOpponentMessage('Противник отказался')
           } else {
-            console.log(data)
+            socketRef.current?.emit('registerMonsterForBattle', {
+              isFindOpponent: false,
+              monsterId: monsterStore.selectedMonster?.id,
+            })
             navigate(`/arena/${data.battleId}`)
           }
         })
@@ -85,8 +87,6 @@ const SearchBattle = observer(() => {
           cursor,
           limit: 5,
         })
-
-        console.log('registration and getOpponents sent')
       })
     }
 

@@ -2,9 +2,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  height: 100%; /* вместо min-height: 100vh */
-  padding: 40px 20px;
+  justify-content: center;
+  height: 100vh;
+  height: 100dvh;
   box-sizing: border-box;
   text-align: center;
 }
@@ -13,17 +13,16 @@
   font-size: 36px;
   font-weight: 900;
   color: #fbc94b;
-  margin-bottom: 40px;
   line-height: 1.4;
-  text-shadow: 2px 2px 0 #3f3e3e;
+  text-shadow: 4px 4px 0 #3f3e3e;
 }
 
 .questionWrapper {
   position: relative;
-  margin-bottom: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-bottom: 20px;
 }
 
 .questionMark {
@@ -54,4 +53,8 @@
   height: 35px;
   background-color: rgba(0, 0, 0, 0.3); /* Почти чёрный */
   border-radius: 50%;
+}
+
+.buttonWrapper{
+  padding: 20px;
 }
