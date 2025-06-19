@@ -37,10 +37,9 @@ export default function PreviewMonster({
   useEffect(() => {
     if (!phaserContainerRef.current || !spriteAtlas || !spriteSheets) return
 
-    if (Object.keys(spriteAtlas.frames).length === 0) {
-        setErrorMsg('No frames found in atlas: ' + JSON.stringify(spriteAtlas.frames))
-        return
-    }
+  
+    setErrorMsg(JSON.stringify(spriteAtlas.frames))
+
 
     const waitForSceneReady = (timeout = 7000): Promise<Phaser.Scene> =>
       new Promise((resolve, reject) => {
@@ -62,7 +61,7 @@ export default function PreviewMonster({
         updateDisplay(scene)
       } catch (err) {
         console.error('Failed to update display:', err)
-        setErrorMsg(err instanceof Error ? err.message : String(err))
+        setErrorMsg( (prev) => `${prev}\n${err instanceof Error ? err.message : String(err)}`)
       }
     }
 
