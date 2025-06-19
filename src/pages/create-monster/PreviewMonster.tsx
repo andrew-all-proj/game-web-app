@@ -97,6 +97,8 @@ export default function PreviewMonster({
 
     debugRef.current?.log('📦 Фреймы в Phaser:', texture.getFrameNames())
 
+    console.log(texture.getFrameNames())
+
     if (!spriteAtlas?.frames || Object.keys(spriteAtlas.frames).length === 0) {
       setErrorMsg(`No frames found in atlas`)
       return
@@ -133,6 +135,8 @@ export default function PreviewMonster({
   const updateDisplay = (scene: Phaser.Scene) => {
     scene.children.removeAll()
 
+    console.log(1111111111)
+
     const scale = 0.2
     const bodyX = 0
     const bodyY = 145
@@ -146,7 +150,10 @@ export default function PreviewMonster({
     if (!bodyPoints) return
 
     const drawPart = (part: SelectedPartInfo, attachPoint: { x: number; y: number }) => {
-      const animKey = part.key.replace(/\/[^/]+$/, '') + '_stay'
+      const baseAnimKey = part.key.replace(/\/[^/]+$/, '') // → "right_arm/right_arm_1/stay"
+      const animKey = baseAnimKey + '_stay' // → "right_arm/right_arm_1/stay_stay"
+      debugRef.current?.log(`🔁 Проигрываю анимацию: ${animKey}`)
+
       scene.add
         .sprite(
           bodyX + (attachPoint.x - part.attachPoint.x) * scale,
@@ -162,11 +169,10 @@ export default function PreviewMonster({
       drawPart(selectedPartsMonster.current.leftArm, bodyPoints.attachLeftArm)
     }
 
-    scene.add
-      .sprite(bodyX, bodyY, 'monster')
-      .setOrigin(0, 0)
-      .setScale(scale)
-      .play(`${bodyKey}_stay`)
+    const baseAnimKey = body.key.replace(/\/[^/]+$/, '') // → "body/body_2/stay"
+    const animKey = baseAnimKey + '_stay' // → "body/body_2/stay_stay"
+
+    scene.add.sprite(bodyX, bodyY, 'monster').setOrigin(0, 0).setScale(scale).play(animKey)
 
     if (selectedPartsMonster.current.rightArm && bodyPoints.attachRightArm) {
       drawPart(selectedPartsMonster.current.rightArm, bodyPoints.attachRightArm)
