@@ -57,7 +57,7 @@ export default function PreviewMonster({
         updateDisplay(scene)
       } catch (err) {
         console.error('Failed to update display:', err)
-        setErrorMsg('Failed to update display')
+         setErrorMsg(err instanceof Error ? err.message : String(err))
       }
     }
 

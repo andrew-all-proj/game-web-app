@@ -7,6 +7,7 @@ const ErrorPage = observer(() => {
   const error = errorStore.error
 
   const handleReload = () => {
+    errorStore.clearError()
     navigate('/')
   }
 
