@@ -36,14 +36,27 @@ export default function PreviewMonster({
 
   useEffect(() => {
     if (!phaserContainerRef.current || !spriteAtlas || !spriteSheets) return
-    ;(window as any).updatePhaserDisplay = async () => {
-      try {
-        if (sceneRef.current) {
-          updateDisplay(sceneRef.current)
-        }
-      } catch (err) {
-        console.error('Failed to update display:', err)
-        setErrorMsg((prev) => `${prev}\n${err instanceof Error ? err.message : String(err)}`)
+
+    let monsterImage: HTMLImageElement
+
+    class PreviewScene extends Phaser.Scene {
+      constructor() {
+        super('PreviewScene')
+      }
+
+      preload() {
+        this.load.image('monsterImage', spriteSheets + '?v=' + Date.now())
+      }
+
+      create() {
+        monsterImage = this.textures.get('monsterImage').getSourceImage() as HTMLImageElement
+
+        this.textures.addAtlasJSONHash('monster', monsterImage, spriteAtlas!)
+
+        generateStayAnimations(this)
+        sceneRef.current = this
+
+        updateDisplay(this)
       }
     }
 
@@ -54,25 +67,21 @@ export default function PreviewMonster({
       parent: phaserContainerRef.current,
       transparent: true,
       scale: { mode: Phaser.Scale.NONE },
-      scene: {
-        preload(this: Phaser.Scene) {
-          this.load.image('monsterImage', spriteSheets + '?v=' + Date.now())
-        },
-
-        create(this: Phaser.Scene) {
-          const textureImg = this.textures.get('monsterImage').getSourceImage() as HTMLImageElement
-
-          this.textures.addAtlasJSONHash('monster', textureImg, spriteAtlas)
-
-          generateStayAnimations(this)
-          sceneRef.current = this
-        },
-
-        update() {},
-      },
+      scene: PreviewScene,
     }
 
     phaserRef.current = new Phaser.Game(config)
+
+    ;(window as any).updatePhaserDisplay = async () => {
+      try {
+        if (sceneRef.current) {
+          updateDisplay(sceneRef.current)
+        }
+      } catch (err) {
+        console.error('Failed to update display:', err)
+        setErrorMsg((prev) => `${prev}\n${err instanceof Error ? err.message : String(err)}`)
+      }
+    }
 
     return () => {
       phaserRef.current?.destroy(true)
@@ -92,7 +101,7 @@ export default function PreviewMonster({
     for (const frameName in spriteAtlas.frames) {
       if (!texture.has(frameName)) {
         setErrorMsg(`${frameName} not found in texture`)
-        continue
+        return
       }
 
       if (frameName.includes('/stay/')) {
