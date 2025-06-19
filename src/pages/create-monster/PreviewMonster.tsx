@@ -97,8 +97,6 @@ export default function PreviewMonster({
 
     debugRef.current?.log('📦 Фреймы в Phaser:', texture.getFrameNames())
 
-    console.log(texture.getFrameNames())
-
     if (!spriteAtlas?.frames || Object.keys(spriteAtlas.frames).length === 0) {
       setErrorMsg(`No frames found in atlas`)
       return
@@ -135,8 +133,6 @@ export default function PreviewMonster({
   const updateDisplay = (scene: Phaser.Scene) => {
     scene.children.removeAll()
 
-    console.log(1111111111)
-
     const scale = 0.2
     const bodyX = 0
     const bodyY = 145
@@ -144,7 +140,6 @@ export default function PreviewMonster({
     const body = selectedPartsMonster.current.body
     if (!body) return
 
-    const bodyKey = body.key.replace(/_\d+$/, '')
     const bodyFrame = partPreviews.body.find((f) => f.key === body.key)?.frameData
     const bodyPoints = bodyFrame?.points
     if (!bodyPoints) return
