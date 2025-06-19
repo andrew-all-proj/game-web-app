@@ -111,14 +111,16 @@ export default function PreviewMonster({
       }
 
       if (frameName.includes('/stay/')) {
-        const baseKey = frameName.replace(/_\d+$/, '')
-        const animKey = `${baseKey}_stay`
+        const match = frameName.match(/^(.*\/stay)\/[^/]+$/)
+        if (!match) continue
+        const animKey = `${match[1]}_stay`
         if (!stayAnimations[animKey]) stayAnimations[animKey] = []
         stayAnimations[animKey].push(frameName)
       }
     }
 
     for (const animKey in stayAnimations) {
+      debugRef.current?.log(`🎬 Создание анимации: ${animKey}`, stayAnimations[animKey])
       scene.anims.create({
         key: animKey,
         frames: stayAnimations[animKey].sort().map((f) => ({ key: 'monster', frame: f })),
@@ -144,7 +146,7 @@ export default function PreviewMonster({
     if (!bodyPoints) return
 
     const drawPart = (part: SelectedPartInfo, attachPoint: { x: number; y: number }) => {
-      const partKey = part.key.replace(/_\d+$/, '')
+      const animKey = part.key.replace(/\/[^/]+$/, '') + '_stay'
       scene.add
         .sprite(
           bodyX + (attachPoint.x - part.attachPoint.x) * scale,
@@ -153,7 +155,7 @@ export default function PreviewMonster({
         )
         .setOrigin(0, 0)
         .setScale(scale)
-        .play(`${partKey}_stay`)
+        .play(animKey)
     }
 
     if (selectedPartsMonster.current.leftArm && bodyPoints.attachLeftArm) {
