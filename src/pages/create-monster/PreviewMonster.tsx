@@ -90,7 +90,28 @@ export default function PreviewMonster({
   const generateStayAnimations = (scene: Phaser.Scene) => {
     const stayAnimations: Record<string, string[]> = {}
 
-    for (const frameName in spriteAtlas!.frames) {
+    const texture = scene.textures.get('monster')
+
+    if (!spriteAtlas?.frames || Object.keys(spriteAtlas.frames).length === 0) {
+      setErrorMsg((prev) => `${prev}\nNo frames found in atlas`)
+      return
+    }
+
+    for (const frameName in spriteAtlas.frames) {
+      if (!texture.has(frameName)) {
+        setErrorMsg((prev) => `${prev}\nFrame "${frameName}" not found in texture`)
+        continue
+      }
+
+      if (frameName.includes('/stay/')) {
+        const baseKey = frameName.replace(/_\d+$/, '')
+        const animKey = `${baseKey}_stay`
+        if (!stayAnimations[animKey]) stayAnimations[animKey] = []
+        stayAnimations[animKey].push(frameName)
+      }
+    }
+
+    for (const frameName in spriteAtlas.frames) {
       const texture = scene.textures.get('monster')
       if (!texture.has(frameName)) {
         setErrorMsg(`${errorMsg} \nFrame "${frameName}" not found in atlas`)

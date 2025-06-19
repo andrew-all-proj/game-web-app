@@ -93,6 +93,12 @@ const CreateMonster = observer(() => {
         if (spriteFile && atlasFile) {
           const atlasResponse = await fetch(atlasFile.url)
           const atlasJson: SpriteAtlas = await atlasResponse.json()
+          if (!atlasJson) {
+            errorStore.setError({
+              error: true,
+              message: 'Не удалось загрузить атлас с сервера',
+            })
+          }
           setSpriteAtlasJson(atlasJson)
           setPartPreviews(createPartPreviews(atlasJson))
           setSpriteUrl(spriteFile.url)
