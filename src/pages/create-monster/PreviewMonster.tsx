@@ -61,8 +61,8 @@ export default function PreviewMonster({
 
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.CANVAS,
-      width: 300, // увеличил размер для уверенности
-      height: 500,
+      width: 250,
+      height: 350,
       parent: phaserContainerRef.current,
       transparent: true,
       scale: { mode: Phaser.Scale.NONE },
@@ -121,8 +121,8 @@ export default function PreviewMonster({
     scene.children.removeAll()
 
     const scale = 0.2
-    const bodyX = 50
-    const bodyY = 200
+    const bodyX = 0
+    const bodyY = 145
 
     const body = selectedPartsMonster.current.body
     if (!body) return
