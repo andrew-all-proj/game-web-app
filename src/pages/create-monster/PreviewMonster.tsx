@@ -87,18 +87,27 @@ export default function PreviewMonster({
         generateStayAnimations(this)
         sceneRef.current = this
         updateDisplay(this)
+
+        this.add.text(50, 250, 'Phaser OK!', {
+          font: '16px Arial',
+          color: '#00ff00',
+        })
       }
     }
 
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.CANVAS,
       width: 300, // увеличил размер для уверенности
-      height: 600,
+      height: 500,
       parent: phaserContainerRef.current,
       transparent: true,
       scale: { mode: Phaser.Scale.NONE },
       scene: PreviewScene,
+      audio: {
+        noAudio: true,
+      },
     }
+
 
     phaserRef.current = new Phaser.Game(config)
     ;(window as any).updatePhaserDisplay = async () => {
@@ -200,8 +209,8 @@ export default function PreviewMonster({
         style={{
           margin: '20px auto',
           position: 'relative',
-          width: '500px',
-          height: '700px',
+          width: '300px',
+          height: '500px',
           backgroundColor: '#222',
           zIndex: 1,
         }}
