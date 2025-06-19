@@ -37,6 +37,12 @@ export default function PreviewMonster({
   useEffect(() => {
     if (!phaserContainerRef.current || !spriteAtlas || !spriteSheets) return
 
+    if (Object.keys(spriteAtlas.frames).length === 0) {
+      if (Object.keys(spriteAtlas.frames).length === 0) {
+        setErrorMsg('No frames found in atlas: ' + JSON.stringify(spriteAtlas.frames))
+      }
+    }
+
     const waitForSceneReady = (timeout = 7000): Promise<Phaser.Scene> =>
       new Promise((resolve, reject) => {
         const interval = setInterval(() => {
