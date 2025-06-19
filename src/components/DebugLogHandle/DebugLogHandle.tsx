@@ -1,4 +1,4 @@
-import { useState, useImperativeHandle, forwardRef } from 'react'
+import { useState, useImperativeHandle, forwardRef, useRef } from 'react'
 
 export interface DebugLogHandle {
   log: (...args: any[]) => void
@@ -7,6 +7,7 @@ export interface DebugLogHandle {
 
 const DebugLogPanel = forwardRef<DebugLogHandle>((_props, ref) => {
   const [logs, setLogs] = useState<string[]>([])
+  const preRef = useRef<HTMLPreElement>(null)
 
   useImperativeHandle(ref, () => ({
     log: (...args: any[]) => {
@@ -32,15 +33,27 @@ const DebugLogPanel = forwardRef<DebugLogHandle>((_props, ref) => {
         fontSize: '10px',
         fontFamily: 'monospace',
         padding: '4px 8px',
-        height: '50px',
-        overflowY: 'auto',
+        height: '80px',
+        width: '300px',
+        overflow: 'hidden',
         borderBottom: '1px solid #444',
         zIndex: 9999,
-        pointerEvents: 'none', // 👈 не блокирует клики по WebApp
+        pointerEvents: 'auto', // 👈 теперь можно копировать
       }}
     >
       <strong>Debug Log:</strong>
-      <pre style={{ margin: 0 }}>{logs.join('\n')}</pre>
+      <pre
+        ref={preRef}
+        style={{
+          margin: 0,
+          maxHeight: '80px',
+          overflowY: 'auto',
+          whiteSpace: 'pre-wrap',
+          userSelect: 'text',
+        }}
+      >
+        {logs.join('\n')}
+      </pre>
     </div>
   )
 })
