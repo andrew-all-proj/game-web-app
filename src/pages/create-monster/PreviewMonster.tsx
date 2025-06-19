@@ -37,10 +37,6 @@ export default function PreviewMonster({
   useEffect(() => {
     if (!phaserContainerRef.current || !spriteAtlas || !spriteSheets) return
 
-  
-    setErrorMsg(JSON.stringify(spriteAtlas.frames))
-
-
     const waitForSceneReady = (timeout = 7000): Promise<Phaser.Scene> =>
       new Promise((resolve, reject) => {
         const interval = setInterval(() => {
@@ -61,7 +57,7 @@ export default function PreviewMonster({
         updateDisplay(scene)
       } catch (err) {
         console.error('Failed to update display:', err)
-        setErrorMsg( (prev) => `${prev}\n${err instanceof Error ? err.message : String(err)}`)
+        setErrorMsg((prev) => `${prev}\n${err instanceof Error ? err.message : String(err)}`)
       }
     }
 
@@ -92,14 +88,14 @@ export default function PreviewMonster({
   }, [spriteAtlas, spriteSheets])
 
   const generateStayAnimations = (scene: Phaser.Scene) => {
-    const stayAnimations: Record<string, string[]> = {}
-
     const texture = scene.textures.get('monster')
 
     if (!spriteAtlas?.frames || Object.keys(spriteAtlas.frames).length === 0) {
       setErrorMsg((prev) => `${prev}\nNo frames found in atlas`)
       return
     }
+
+    const stayAnimations: Record<string, string[]> = {}
 
     for (const frameName in spriteAtlas.frames) {
       if (!texture.has(frameName)) {
@@ -115,24 +111,12 @@ export default function PreviewMonster({
       }
     }
 
-    for (const frameName in spriteAtlas.frames) {
-      const texture = scene.textures.get('monster')
-      if (!texture.has(frameName)) {
-        setErrorMsg(`${errorMsg} \nFrame "${frameName}" not found in atlas`)
-        return
-      }
-      if (frameName.includes('/stay/')) {
-        const baseKey = frameName.replace(/_\d+$/, '')
-        const animKey = `${baseKey}_stay`
-        if (!stayAnimations[animKey]) stayAnimations[animKey] = []
-        stayAnimations[animKey].push(frameName)
-      }
-    }
-
     for (const animKey in stayAnimations) {
       scene.anims.create({
         key: animKey,
-        frames: stayAnimations[animKey].sort().map((f) => ({ key: 'monster', frame: f })),
+        frames: stayAnimations[animKey]
+          .sort()
+          .map((f) => ({ key: 'monster', frame: f })),
         frameRate: 6,
         repeat: -1,
       })
