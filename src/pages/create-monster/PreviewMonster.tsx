@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Phaser from 'phaser'
 import { PartPreviews } from './CreateMonster'
 import { SpriteAtlas } from '../../types/sprites'
+import DebugLogPanel, { DebugLogHandle } from '../../components/DebugLogHandle/DebugLogHandle'
 
 interface SelectedPartInfo {
   key: string
@@ -33,6 +34,8 @@ export default function PreviewMonster({
   const phaserRef = useRef<Phaser.Game | null>(null)
   const sceneRef = useRef<Phaser.Scene | null>(null)
   const [errorMsg, setErrorMsg] = useState('')
+
+  const debugRef = useRef<DebugLogHandle>(null)
 
   useEffect(() => {
     if (!phaserContainerRef.current || !spriteAtlas || !spriteSheets) return
@@ -72,13 +75,14 @@ export default function PreviewMonster({
 
     phaserRef.current = new Phaser.Game(config)
 
+    debugRef.current?.log('🎞️ Фреймы в spriteAtlas:', Object.keys(spriteAtlas.frames))
     ;(window as any).updatePhaserDisplay = async () => {
       try {
         if (sceneRef.current) {
           updateDisplay(sceneRef.current)
         }
       } catch (err) {
-        console.error('Failed to update display:', err)
+        debugRef.current?.log(err instanceof Error ? err.message : String(err))
         setErrorMsg((prev) => `${prev}\n${err instanceof Error ? err.message : String(err)}`)
       }
     }
@@ -90,6 +94,8 @@ export default function PreviewMonster({
 
   const generateStayAnimations = (scene: Phaser.Scene) => {
     const texture = scene.textures.get('monster')
+
+    debugRef.current?.log('📦 Фреймы в Phaser:', texture.getFrameNames())
 
     if (!spriteAtlas?.frames || Object.keys(spriteAtlas.frames).length === 0) {
       setErrorMsg(`No frames found in atlas`)
@@ -172,6 +178,10 @@ export default function PreviewMonster({
   return errorMsg ? (
     <>{errorMsg}</>
   ) : (
-    <div ref={phaserContainerRef} style={{ margin: '20px auto' }} />
+    <>
+      {errorMsg && <div style={{ color: 'red' }}>{errorMsg}</div>}
+      <DebugLogPanel ref={debugRef} />
+      <div ref={phaserContainerRef} style={{ margin: '20px auto' }} />
+    </>
   )
 }
