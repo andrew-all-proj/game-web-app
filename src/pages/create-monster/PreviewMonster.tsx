@@ -57,7 +57,7 @@ export default function PreviewMonster({
         updateDisplay(scene)
       } catch (err) {
         console.error('Failed to update display:', err)
-         setErrorMsg(err instanceof Error ? err.message : String(err))
+        setErrorMsg(err instanceof Error ? err.message : String(err))
       }
     }
 
@@ -91,6 +91,11 @@ export default function PreviewMonster({
     const stayAnimations: Record<string, string[]> = {}
 
     for (const frameName in spriteAtlas!.frames) {
+      const texture = scene.textures.get('monster')
+      if (!texture.has(frameName)) {
+        setErrorMsg(`${errorMsg} \nFrame "${frameName}" not found in atlas`)
+        return
+      }
       if (frameName.includes('/stay/')) {
         const baseKey = frameName.replace(/_\d+$/, '')
         const animKey = `${baseKey}_stay`
@@ -130,7 +135,7 @@ export default function PreviewMonster({
         .sprite(
           bodyX + (attachPoint.x - part.attachPoint.x) * scale,
           bodyY + (attachPoint.y - part.attachPoint.y) * scale,
-          'monster'
+          'monster',
         )
         .setOrigin(0, 0)
         .setScale(scale)
@@ -156,5 +161,9 @@ export default function PreviewMonster({
     }
   }
 
-  return errorMsg ? <>{errorMsg}</> : <div ref={phaserContainerRef} style={{ margin: '20px auto' }} />
+  return errorMsg ? (
+    <>{errorMsg}</>
+  ) : (
+    <div ref={phaserContainerRef} style={{ margin: '20px auto' }} />
+  )
 }
