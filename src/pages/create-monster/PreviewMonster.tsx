@@ -68,7 +68,7 @@ export default function PreviewMonster({
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.CANVAS,
       width: 300, // увеличил размер для уверенности
-      height: 300,
+      height: 600,
       parent: phaserContainerRef.current,
       transparent: true,
       scale: { mode: Phaser.Scale.NONE },
