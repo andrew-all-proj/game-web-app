@@ -33,9 +33,8 @@ export default function PreviewMonster({
   const phaserContainerRef = useRef<HTMLDivElement>(null)
   const phaserRef = useRef<Phaser.Game | null>(null)
   const sceneRef = useRef<Phaser.Scene | null>(null)
-  const [errorMsg, setErrorMsg] = useState('')
-
   const debugRef = useRef<DebugLogHandle>(null)
+  const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
     if (!phaserContainerRef.current || !spriteAtlas || !spriteSheets) return
@@ -48,25 +47,28 @@ export default function PreviewMonster({
       }
 
       preload() {
+        debugRef.current?.log('🖼️ Загружаем atlas image:', spriteSheets)
         this.load.image('monsterImage', spriteSheets + '?v=' + Date.now())
+        this.load.on('complete', () => {
+          debugRef.current?.log('✅ Загрузка изображений завершена')
+        })
       }
 
       create() {
         monsterImage = this.textures.get('monsterImage').getSourceImage() as HTMLImageElement
-
         this.textures.addAtlasJSONHash('monster', monsterImage, spriteAtlas!)
 
+        debugRef.current?.log('🎞️ Фреймы из atlas:', Object.keys(spriteAtlas!.frames))
         generateStayAnimations(this)
         sceneRef.current = this
-
         updateDisplay(this)
       }
     }
 
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.CANVAS,
-      width: 250,
-      height: 350,
+      width: 300, // увеличил размер для уверенности
+      height: 300,
       parent: phaserContainerRef.current,
       transparent: true,
       scale: { mode: Phaser.Scale.NONE },
@@ -75,14 +77,13 @@ export default function PreviewMonster({
 
     phaserRef.current = new Phaser.Game(config)
 
-    debugRef.current?.log('🎞️ Фреймы в spriteAtlas:', Object.keys(spriteAtlas.frames))
     ;(window as any).updatePhaserDisplay = async () => {
       try {
         if (sceneRef.current) {
           updateDisplay(sceneRef.current)
         }
       } catch (err) {
-        debugRef.current?.log(err instanceof Error ? err.message : String(err))
+        debugRef.current?.log('❌ Ошибка обновления дисплея:', err)
         setErrorMsg((prev) => `${prev}\n${err instanceof Error ? err.message : String(err)}`)
       }
     }
@@ -94,29 +95,22 @@ export default function PreviewMonster({
 
   const generateStayAnimations = (scene: Phaser.Scene) => {
     const texture = scene.textures.get('monster')
-
     debugRef.current?.log('📦 Фреймы в Phaser:', texture.getFrameNames())
-
-    if (!spriteAtlas?.frames || Object.keys(spriteAtlas.frames).length === 0) {
-      setErrorMsg(`No frames found in atlas`)
-      return
-    }
 
     const stayAnimations: Record<string, string[]> = {}
 
-    for (const frameName in spriteAtlas.frames) {
+    for (const frameName in spriteAtlas!.frames) {
       if (!texture.has(frameName)) {
-        setErrorMsg(`${frameName} not found in texture`)
-        return
+        debugRef.current?.log(`❌ Frame not found in texture: ${frameName}`)
+        continue
       }
 
-      if (frameName.includes('/stay/')) {
-        const match = frameName.match(/^(.*\/stay)\/[^/]+$/)
-        if (!match) continue
-        const animKey = `${match[1]}_stay`
-        if (!stayAnimations[animKey]) stayAnimations[animKey] = []
-        stayAnimations[animKey].push(frameName)
-      }
+      const match = frameName.match(/^(.*\/stay)\/[^/]+$/)
+      if (!match) continue
+
+      const animKey = `${match[1]}_stay`
+      if (!stayAnimations[animKey]) stayAnimations[animKey] = []
+      stayAnimations[animKey].push(frameName)
     }
 
     for (const animKey in stayAnimations) {
@@ -134,8 +128,8 @@ export default function PreviewMonster({
     scene.children.removeAll()
 
     const scale = 0.2
-    const bodyX = 0
-    const bodyY = 145
+    const bodyX = 50
+    const bodyY = 200
 
     const body = selectedPartsMonster.current.body
     if (!body) return
@@ -145,29 +139,24 @@ export default function PreviewMonster({
     if (!bodyPoints) return
 
     const drawPart = (part: SelectedPartInfo, attachPoint: { x: number; y: number }) => {
-      const baseAnimKey = part.key.replace(/\/[^/]+$/, '') // → "right_arm/right_arm_1/stay"
-      const animKey = baseAnimKey + '_stay' // → "right_arm/right_arm_1/stay_stay"
-      debugRef.current?.log(`🔁 Проигрываю анимацию: ${animKey}`)
+      const baseAnimKey = part.key.replace(/\/[^/]+$/, '')
+      const animKey = baseAnimKey + '_stay'
+      const x = bodyX + (attachPoint.x - part.attachPoint.x) * scale
+      const y = bodyY + (attachPoint.y - part.attachPoint.y) * scale
 
-      scene.add
-        .sprite(
-          bodyX + (attachPoint.x - part.attachPoint.x) * scale,
-          bodyY + (attachPoint.y - part.attachPoint.y) * scale,
-          'monster',
-        )
-        .setOrigin(0, 0)
-        .setScale(scale)
-        .play(animKey)
+      debugRef.current?.log(`🧩 ${animKey} at (${x.toFixed(1)}, ${y.toFixed(1)})`)
+      scene.add.sprite(x, y, 'monster').setOrigin(0, 0).setScale(scale).play(animKey)
     }
 
+    // Body
+    const baseBodyKey = body.key.replace(/\/[^/]+$/, '') + '_stay'
+    debugRef.current?.log(`🧍 Тело: ${baseBodyKey}`)
+    scene.add.sprite(bodyX, bodyY, 'monster').setOrigin(0, 0).setScale(scale).play(baseBodyKey)
+
+    // Arms & head
     if (selectedPartsMonster.current.leftArm && bodyPoints.attachLeftArm) {
       drawPart(selectedPartsMonster.current.leftArm, bodyPoints.attachLeftArm)
     }
-
-    const baseAnimKey = body.key.replace(/\/[^/]+$/, '') // → "body/body_2/stay"
-    const animKey = baseAnimKey + '_stay' // → "body/body_2/stay_stay"
-
-    scene.add.sprite(bodyX, bodyY, 'monster').setOrigin(0, 0).setScale(scale).play(animKey)
 
     if (selectedPartsMonster.current.rightArm && bodyPoints.attachRightArm) {
       drawPart(selectedPartsMonster.current.rightArm, bodyPoints.attachRightArm)
@@ -178,13 +167,21 @@ export default function PreviewMonster({
     }
   }
 
-  return errorMsg ? (
-    <>{errorMsg}</>
-  ) : (
+  return (
     <>
       {errorMsg && <div style={{ color: 'red' }}>{errorMsg}</div>}
       <DebugLogPanel ref={debugRef} />
-      <div ref={phaserContainerRef} style={{ margin: '20px auto' }} />
+      <div
+        ref={phaserContainerRef}
+        style={{
+          margin: '20px auto',
+          position: 'relative',
+          width: '500px',
+          height: '700px',
+          backgroundColor: '#222',
+          zIndex: 1,
+        }}
+      />
     </>
   )
 }
