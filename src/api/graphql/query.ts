@@ -34,7 +34,45 @@ export const MONSTERS = gql`
           fileType
         }
         userId
+        isSelected
       }
+    }
+  }
+`
+
+export const MONSTER = gql`
+  query Monster($monsterId: String!) {
+    Monster(id: $monsterId) {
+      bodyMass
+      createdAt
+      files {
+        contentType
+        fileType
+        id
+        url
+        version
+      }
+      id
+      isSelected
+      level
+      name
+      userId
+      updatedAt
+    }
+  }
+`
+
+export const MONSTER_BATTLE = gql`
+  query MonsterBattle($monsterBattleId: String!) {
+    MonsterBattle(id: $monsterBattleId) {
+      challengerMonsterId
+      createdAt
+      id
+      log
+      opponentMonsterId
+      status
+      updatedAt
+      winnerMonsterId
     }
   }
 `

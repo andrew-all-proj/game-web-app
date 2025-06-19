@@ -1,8 +1,23 @@
 import { useEffect, useRef, useState } from 'react'
 import Phaser from 'phaser'
 import monsterStore from '../../stores/MonsterStore'
-import opponentMonster from '../../assets/images/opponent-monster.png'
 import styles from './TestFight.module.css'
+import { FileItem, Monster } from '../../types/GraphResponse'
+
+const getSprite = async (
+  monster?: Monster,
+): Promise<{ atlasFile: FileItem | null; spriteFile: FileItem | null }> => {
+  if (!monster) return { atlasFile: null, spriteFile: null }
+
+  let atlasFile =
+    monster.files?.find((f) => f.fileType === 'JSON' && f.contentType === 'SPRITE_SHEET_MONSTER') ??
+    null
+  let spriteFile =
+    monster.files?.find(
+      (f) => f.fileType === 'IMAGE' && f.contentType === 'SPRITE_SHEET_MONSTER',
+    ) ?? null
+  return { atlasFile, spriteFile }
+}
 
 export default function TestFight() {
   const gameRef = useRef<Phaser.Game | null>(null)
@@ -11,40 +26,37 @@ export default function TestFight() {
   const [opponentHealth, setOpponentHealth] = useState(100)
   const [atlas, setAtlas] = useState<any>(null)
   const [spriteUrl, setSpriteUrl] = useState<string>('')
+  const [atlasOpponent, setAtlasOpponent] = useState<any>(null)
+  const [spriteUrlOpponent, setSpriteUrlOpponent] = useState<string>('')
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     ;(async () => {
-      if (!monsterStore.selectedMonster) return
+      if (!monsterStore.selectedMonster || !monsterStore.opponentMonster) return
 
-      let atlasFile = monsterStore.selectedMonster.files?.find(
-        (f) => f.fileType === 'JSON' && f.contentType === 'SPRITE_SHEET_MONSTER',
-      )
-      let spriteFile = monsterStore.selectedMonster.files?.find(
-        (f) => f.fileType === 'IMAGE' && f.contentType === 'SPRITE_SHEET_MONSTER',
-      )
-
-      if (!atlasFile || !spriteFile) {
-        await monsterStore.fetchMonsters()
-        monsterStore.setSelectedMonster(monsterStore.selectedMonster.id)
-        atlasFile = monsterStore.selectedMonster.files?.find(
-          (f) => f.fileType === 'JSON' && f.contentType === 'SPRITE_SHEET_MONSTER',
-        )
-        spriteFile = monsterStore.selectedMonster.files?.find(
-          (f) => f.fileType === 'IMAGE' && f.contentType === 'SPRITE_SHEET_MONSTER',
-        )
+      // Получение файлов игрока
+      const { atlasFile, spriteFile } = await getSprite(monsterStore.selectedMonster)
+      if (atlasFile && spriteFile) {
+        const atlasJson = await fetch(atlasFile.url).then((res) => res.json())
+        setAtlas(atlasJson)
+        setSpriteUrl(spriteFile.url)
       }
 
-      if (atlasFile && spriteFile) {
-        await fetch(atlasFile.url)
-          .then((res) => res.json())
-          .then((data) => setAtlas(data))
-        setSpriteUrl(spriteFile.url)
+      // Получение файлов соперника
+      const { atlasFile: opponentAtlasFile, spriteFile: opponentSpriteFile } = await getSprite(
+        monsterStore.opponentMonster,
+      )
+      if (opponentAtlasFile && opponentSpriteFile) {
+        const atlasJson = await fetch(opponentAtlasFile.url).then((res) => res.json())
+        setAtlasOpponent(atlasJson)
+        setSpriteUrlOpponent(opponentSpriteFile.url)
       }
     })()
   }, [])
 
   useEffect(() => {
-    if (!atlas || !spriteUrl || !containerRef.current) return
+    if (!atlas || !spriteUrl || !containerRef.current || !spriteUrlOpponent || !atlasOpponent)
+      return
 
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.CANVAS,
@@ -78,6 +90,7 @@ export default function TestFight() {
       this.load.on('complete', () => {
         console.log('✅ All assets loaded!')
         loadingText.destroy()
+        setIsLoading(false)
       })
 
       this.load.on('loaderror', (file: Phaser.Loader.File) => {
@@ -86,7 +99,7 @@ export default function TestFight() {
       })
 
       this.load.atlas('monster', spriteUrl, atlas)
-      this.load.image('opponent', opponentMonster)
+      this.load.atlas('opponent', spriteUrlOpponent, atlasOpponent)
     }
 
     const scale = 0.12
@@ -98,12 +111,31 @@ export default function TestFight() {
         .setName('yourMonster')
 
       opponentMonsterSprite = this.add
-        .sprite(300, 150, 'opponent')
+        .sprite(300, 150, 'opponent', Object.keys(atlasOpponent.frames)[0])
         .setScale(-scale, scale)
         .setName('opponentMonster')
 
+      this.add
+        .text(yourMonster.x, yourMonster.y - 90, monsterStore.selectedMonster?.name || 'Вы', {
+          fontSize: '14px',
+          color: '#ffffff',
+        })
+        .setOrigin(0.5)
+
+      this.add
+        .text(
+          opponentMonsterSprite.x,
+          opponentMonsterSprite.y - 90,
+          monsterStore.opponentMonster?.name || 'Соперник',
+          {
+            fontSize: '14px',
+            color: '#ffffff',
+          },
+        )
+        .setOrigin(0.5)
+
       this.anims.create({
-        key: 'stay',
+        key: 'monster_stay',
         frames: this.anims.generateFrameNames('monster', {
           prefix: 'stay_',
           start: 0,
@@ -114,11 +146,33 @@ export default function TestFight() {
       })
 
       this.anims.create({
-        key: 'hit',
+        key: 'opponent_stay',
+        frames: this.anims.generateFrameNames('opponent', {
+          prefix: 'stay_',
+          start: 0,
+          end: Object.keys(atlasOpponent.frames).filter((k) => k.startsWith('stay_')).length - 1,
+        }),
+        frameRate: 5,
+        repeat: -1,
+      })
+
+      this.anims.create({
+        key: 'monster_hit',
         frames: this.anims.generateFrameNames('monster', {
           prefix: 'hit_',
           start: 0,
           end: Object.keys(atlas.frames).filter((k) => k.startsWith('hit_')).length - 1,
+        }),
+        frameRate: 8,
+        repeat: -1,
+      })
+
+      this.anims.create({
+        key: 'opponent_hit',
+        frames: this.anims.generateFrameNames('opponent', {
+          prefix: 'hit_',
+          start: 0,
+          end: Object.keys(atlasOpponent.frames).filter((k) => k.startsWith('hit_')).length - 1,
         }),
         frameRate: 8,
         repeat: -1,
@@ -132,7 +186,8 @@ export default function TestFight() {
       hitOverlayMy.setVisible(false)
       hitOverlayMy.setName('hitOverlayMy')
 
-      yourMonster.play('stay')
+      yourMonster.play('monster_stay')
+      opponentMonsterSprite.play('opponent_stay')
     }
 
     function update(this: Phaser.Scene) {
@@ -176,9 +231,10 @@ export default function TestFight() {
       gameRef.current?.destroy(true)
       gameRef.current = null
     }
-  }, [atlas, spriteUrl])
+  }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent])
 
   const handleAttack = (damage: number) => {
+    if (isLoading) return
     setOpponentHealth((prev) => {
       const newHealth = Math.max(prev - damage, 0)
 
@@ -234,9 +290,9 @@ export default function TestFight() {
       const hitOverlay = scene.children.getByName('hitOverlay') as Phaser.GameObjects.Ellipse
 
       if (yourMonsterSprite) {
-        yourMonsterSprite.play('hit')
+        yourMonsterSprite.play('monster_hit')
         scene.time.delayedCall(1000, () => {
-          yourMonsterSprite.play('stay')
+          yourMonsterSprite.play('monster_stay')
         })
       }
 

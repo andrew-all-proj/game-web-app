@@ -5,6 +5,7 @@ import StartApp from '../pages/start-app/StartApp'
 import Laboratory from '../pages/laboratory/Laboratory'
 import ErrorPage from '../pages/error/ErrorPage'
 import CreateMonster from '../pages/create-monster/CreateMonster'
+import SearchBattle from '../pages/search-battle/SearchBattle'
 
 const routes: RouteObject[] = [
   {
@@ -12,8 +13,12 @@ const routes: RouteObject[] = [
     element: <StartApp />,
   },
   {
-    path: '/arena',
+    path: '/arena/:battleId',
     element: <Arena />,
+  },
+  {
+    path: '/arena',
+    element: <SearchBattle />,
   },
   {
     path: '/laboratory',
@@ -26,6 +31,10 @@ const routes: RouteObject[] = [
   {
     path: '/create-monster',
     element: <CreateMonster />,
+  },
+  {
+    path: '/search-battle',
+    element: <SearchBattle />,
   },
   {
     path: '/error',

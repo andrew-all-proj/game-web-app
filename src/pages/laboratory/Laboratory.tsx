@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import styles from './Laboratory.module.css'
 import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
 import Loading from '../loading/Loading'
-import monsterStore, { Monster } from '../../stores/MonsterStore'
+import monsterStore from '../../stores/MonsterStore'
 import noAvatarMonster from '../../assets/images/no-avatar-monster.jpg'
 import MainButton from '../../components/Button/MainButton'
 import NotFoundMonsters from './NotFoundMonsters'
@@ -19,6 +19,7 @@ import labIcon from '../../assets/icon/icon_lab.svg'
 import upgradeIcon from '../../assets/icon/icon_upgrade.svg'
 import socialIcon from '../../assets/icon/icon_social.svg'
 import TriangleButton from '../../components/Button/TriangleButton'
+import { Monster } from '../../types/GraphResponse'
 
 const Laboratory = observer(() => {
   const navigate = useNavigate()
@@ -34,9 +35,10 @@ const Laboratory = observer(() => {
       const success = await authorizationAndInitTelegram(navigate)
       if (success && userStore.user?.id) {
         await monsterStore.fetchMonsters(userStore.user.id)
-        if (!monsterStore.selectedMonster && monsterStore.monsters.length > 0) {
-          monsterStore.setSelectedMonster(monsterStore.monsters[0].id)
-        }
+        const fetchedMonsters = monsterStore.monsters
+        const selectedIndex = fetchedMonsters.findIndex((monster) => monster.isSelected)
+
+        setMonsterIndex(selectedIndex !== -1 ? selectedIndex : 0)
       }
       setIsLoading(false)
     })()
@@ -48,7 +50,7 @@ const Laboratory = observer(() => {
       setErrorMsg('Выберите питомца')
       return
     }
-    navigate('/arena')
+    navigate('/search-battle')
   }
 
   const handleGoToCreateUser = () => {
@@ -109,10 +111,7 @@ const Laboratory = observer(() => {
       )}
       <div className={styles.wrapperMonster} onClick={() => handleSelectMonster(selectedMonster)}>
         <img
-          src={
-            selectedMonster.files?.find((file) => file.contentType === 'AVATAR_MONSTER')?.url ||
-            noAvatarMonster
-          }
+          src={selectedMonster.avatar || noAvatarMonster}
           alt={selectedMonster.name}
           className={styles.petImage}
         />

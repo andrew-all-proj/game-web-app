@@ -20,9 +20,11 @@
     "phaser": "^3.88.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.5.0"
+    "react-router-dom": "^7.5.0",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
+    "game-db": "git+ssh://git@github.com/andrew-all-proj/game-db.git#v0.1.2",
     "@eslint/js": "^9.21.0",
     "@types/node": "^22.14.0",
     "@types/react": "^19.0.10",

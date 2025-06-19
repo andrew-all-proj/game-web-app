@@ -1,27 +1,14 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 import client from '../api/apolloClient'
-import { MONSTERS } from '../api/graphql/query'
+import { MONSTER, MONSTERS } from '../api/graphql/query'
 import userStore from './UserStore'
-
-export interface File {
-  id: string
-  name: string
-  url: string
-  description: string
-  fileType: string
-  contentType: string
-}
-
-export interface Monster {
-  id: string
-  name: string
-  level: number
-  files?: File[]
-}
+import { MONSTER_UPDATE } from '../api/graphql/mutation'
+import { GraphQLListResponse, Monster } from '../types/GraphResponse'
 
 class MonsterStore {
   monsters: Monster[] = []
   selectedMonster: Monster | null = null
+  opponentMonster: Monster | null = null
   error: string | null = null
 
   constructor() {
@@ -33,8 +20,26 @@ class MonsterStore {
   }
 
   setSelectedMonster(monsterId: string) {
-    const monster = this.monsters.find((monster) => monster.id === monsterId)
-    this.selectedMonster = monster || null
+    const monster = this.monsters.find((m) => m.id === monsterId)
+    if (!monster) return
+
+    this.monsters = this.monsters.map((m) => ({
+      ...m,
+      isSelected: m.id === monsterId,
+    }))
+    this.selectedMonster = monster
+
+    client
+      .mutate({
+        mutation: MONSTER_UPDATE,
+        variables: {
+          id: monsterId,
+          isSelected: true,
+        },
+      })
+      .catch((err) => {
+        console.error('Failed to update selected monster:', err)
+      })
   }
 
   clearMonsters() {
@@ -46,7 +51,7 @@ class MonsterStore {
     this.error = null
 
     try {
-      const { data } = await client.query({
+      const { data }: { data: { Monsters: GraphQLListResponse<Monster> } } = await client.query({
         query: MONSTERS,
         variables: {
           limit: 10,
@@ -57,7 +62,21 @@ class MonsterStore {
       })
 
       runInAction(() => {
-        this.monsters = data.Monsters.items || []
+        const monstersWithAvatars = (data.Monsters.items || []).map((monster: Monster) => {
+          const avatarFile = monster.files?.find((file) => file.contentType === 'AVATAR_MONSTER')
+          return {
+            ...monster,
+            avatar: avatarFile?.url ?? undefined,
+          }
+        })
+
+        this.monsters = monstersWithAvatars
+        this.selectedMonster =
+          monstersWithAvatars.length > 0
+            ? monstersWithAvatars.find(
+                (monster: Monster & { avatar?: string }) => monster.isSelected,
+              ) || null
+            : null
       })
     } catch (err: any) {
       runInAction(() => {
@@ -65,6 +84,24 @@ class MonsterStore {
       })
       console.error('Failed to fetch monsters:', err)
     }
+  }
+
+  setOpponentMonster(monster: Monster) {
+    this.opponentMonster = monster
+  }
+
+  async fetchOpponentMonster(monsterId: string) {
+    const { data }: { data: { Monster: Monster } } = await client.query({
+      query: MONSTER,
+      variables: {
+        monsterId: monsterId,
+      },
+      fetchPolicy: 'no-cache',
+    })
+
+    const avatarFile = data.Monster.files?.find((file) => file.contentType === 'AVATAR_MONSTER')
+
+    this.setOpponentMonster({ ...data.Monster, avatar: avatarFile?.url })
   }
 }
 
