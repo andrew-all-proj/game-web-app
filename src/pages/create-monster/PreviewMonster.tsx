@@ -37,6 +37,31 @@ export default function PreviewMonster({
   const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
+    const originalLog = console.log
+    const originalWarn = console.warn
+    const originalError = console.error
+
+    console.log = (...args) => {
+      debugRef.current?.log('🟢 log:', ...args)
+      originalLog(...args)
+    }
+    console.warn = (...args) => {
+      debugRef.current?.log('🟡 warn:', ...args)
+      originalWarn(...args)
+    }
+    console.error = (...args) => {
+      debugRef.current?.log('🔴 error:', ...args)
+      originalError(...args)
+    }
+
+    return () => {
+      console.log = originalLog
+      console.warn = originalWarn
+      console.error = originalError
+    }
+  }, [])
+
+  useEffect(() => {
     if (!phaserContainerRef.current || !spriteAtlas || !spriteSheets) return
 
     let monsterImage: HTMLImageElement
@@ -76,7 +101,6 @@ export default function PreviewMonster({
     }
 
     phaserRef.current = new Phaser.Game(config)
-
     ;(window as any).updatePhaserDisplay = async () => {
       try {
         if (sceneRef.current) {
