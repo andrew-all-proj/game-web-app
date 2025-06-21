@@ -3,6 +3,9 @@ import Phaser from 'phaser'
 import monsterStore from '../../stores/MonsterStore'
 import styles from './TestFight.module.css'
 import { FileItem, Monster } from '../../types/GraphResponse'
+import { connectSocket, disconnectSocket } from '../../api/socket'
+import userStore from '../../stores/UserStore'
+import { BattleRedis } from '../../types/BattleRedis'
 
 const getSprite = async (
   monster?: Monster,
@@ -19,22 +22,31 @@ const getSprite = async (
   return { atlasFile, spriteFile }
 }
 
-export default function TestFight() {
+interface TestFightProps {
+  battleId?: string
+}
+
+export default function TestFight({ battleId }: TestFightProps) {
   const gameRef = useRef<Phaser.Game | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const [yourHealth, setYourHealth] = useState(100)
-  const [opponentHealth, setOpponentHealth] = useState(100)
+  const [yourHealth, setYourHealth] = useState<number>(100)
+  const [opponentHealth, setOpponentHealth] = useState<number>(100)
   const [atlas, setAtlas] = useState<any>(null)
   const [spriteUrl, setSpriteUrl] = useState<string>('')
   const [atlasOpponent, setAtlasOpponent] = useState<any>(null)
   const [spriteUrlOpponent, setSpriteUrlOpponent] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
+  const [isOpponentReady, setIsOpponentReady] = useState(false)
+  const socketRef = useRef<ReturnType<typeof connectSocket> | null>(null)
+  const [isMyTurn, setIsMyTurn] = useState(false)
+  const [turnTimer, setTurnTimer] = useState<number>(0)
+  const [currentTurnMonsterId, setCurrentTurnMonsterId] = useState<string | null>(null)
+  const [isBattleOver, setIsBattleOver] = useState(false)
 
   useEffect(() => {
     ;(async () => {
       if (!monsterStore.selectedMonster || !monsterStore.opponentMonster) return
 
-      // Получение файлов игрока
       const { atlasFile, spriteFile } = await getSprite(monsterStore.selectedMonster)
       if (atlasFile && spriteFile) {
         const atlasJson = await fetch(atlasFile.url).then((res) => res.json())
@@ -42,7 +54,6 @@ export default function TestFight() {
         setSpriteUrl(spriteFile.url)
       }
 
-      // Получение файлов соперника
       const { atlasFile: opponentAtlasFile, spriteFile: opponentSpriteFile } = await getSprite(
         monsterStore.opponentMonster,
       )
@@ -51,6 +62,81 @@ export default function TestFight() {
         setAtlasOpponent(atlasJson)
         setSpriteUrlOpponent(opponentSpriteFile.url)
       }
+
+      if (!userStore.user?.token) return //TODO add error
+
+      disconnectSocket()
+
+      const socket = connectSocket(userStore.user.token, () => {
+        socketRef.current = socket
+
+        socket.emit('getBattle', {
+          battleId: battleId,
+          monsterId: monsterStore.selectedMonster?.id,
+        })
+
+        //if load completed but was reconnect socket
+        if (!isLoading) {
+          socket.emit('startBattle', {
+            battleId: battleId,
+            monsterId: monsterStore.selectedMonster?.id,
+          })
+        }
+
+        socket.on('responseBattle', (data: BattleRedis) => {
+          const currentMonsterId = monsterStore.selectedMonster?.id
+          if (!currentMonsterId) return
+
+          //check winner
+          if (data.winnerMonsterId) {
+            setIsBattleOver(true)
+            const isWin = currentMonsterId === data.winnerMonsterId
+
+            if (gameRef.current) {
+              const scene = gameRef.current.scene.scenes[0]
+              if (!scene.children.getByName('gameOverText')) {
+                scene.add
+                  .text(200, 40, isWin ? 'YOU WIN' : 'YOU LOSE', {
+                    fontSize: '32px',
+                    color: isWin ? '#00ff00' : '#ff0000',
+                    fontStyle: 'bold',
+                  })
+                  .setOrigin(0.5)
+                  .setName('gameOverText')
+              }
+            }
+
+            return
+          }
+
+          const isChallenger = currentMonsterId === data.challengerMonsterId
+
+          setYourHealth(isChallenger ? data.challengerMonsterHp : data.opponentMonsterHp)
+          setOpponentHealth(isChallenger ? data.opponentMonsterHp : data.challengerMonsterHp)
+
+          setIsOpponentReady(
+            isChallenger ? data.opponentReady === '1' : data.challengerReady === '1',
+          )
+
+          const isTurn = currentMonsterId === data.currentTurnMonsterId
+          setIsMyTurn(isTurn)
+          setCurrentTurnMonsterId(data.currentTurnMonsterId)
+
+          const now = Date.now()
+          const remaining = data.turnTimeLimit - (now - data.turnStartTime)
+          setTurnTimer(Math.max(0, Math.floor(remaining / 1000)))
+
+          let timerInterval = setInterval(() => {
+            setTurnTimer((prev) => {
+              if (prev <= 1) {
+                clearInterval(timerInterval)
+                return 0
+              }
+              return prev - 1
+            })
+          }, 1000)
+        })
+      })
     })()
   }, [])
 
@@ -88,13 +174,17 @@ export default function TestFight() {
       })
 
       this.load.on('complete', () => {
-        console.log('✅ All assets loaded!')
+        if (socketRef.current) {
+          socketRef.current.emit('startBattle', {
+            battleId: battleId,
+            monsterId: monsterStore.selectedMonster?.id,
+          })
+        }
         loadingText.destroy()
         setIsLoading(false)
       })
 
       this.load.on('loaderror', (file: Phaser.Loader.File) => {
-        console.error(`❌ Failed to load: ${file.key}`, file)
         loadingText.setText(`Error loading: ${file.key}`)
       })
 
@@ -191,6 +281,7 @@ export default function TestFight() {
     }
 
     function update(this: Phaser.Scene) {
+      //TODO DELETE!!!!!!!!!!!!
       if (opponentHealth <= 0) {
         opponentMonsterSprite.angle = 90
 
@@ -234,54 +325,14 @@ export default function TestFight() {
   }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent])
 
   const handleAttack = (damage: number) => {
-    if (isLoading) return
-    setOpponentHealth((prev) => {
-      const newHealth = Math.max(prev - damage, 0)
+    if (isLoading || !battleId || !monsterStore.selectedMonster?.id || !socketRef.current) return
 
-      if (gameRef.current) {
-        const scene = gameRef.current.scene.scenes[0]
-        const opponent = scene.children.getByName('opponentMonster') as Phaser.GameObjects.Sprite
-        const gameOverText = scene.children.getByName('gameOverText')
+    if (monsterStore.selectedMonster.id !== currentTurnMonsterId) return
 
-        if (newHealth <= 0 && opponent && !gameOverText) {
-          opponent.angle = 90
-          scene.add
-            .text(200, 40, 'YOU WIN', {
-              fontSize: '32px',
-              color: '#00ff00',
-              fontStyle: 'bold',
-            })
-            .setOrigin(0.5)
-            .setName('gameOverText')
-        }
-      }
-
-      return newHealth
-    })
-
-    setYourHealth((prev) => {
-      const randomDamage = Math.floor(Math.random() * 26) + 5 // от 5 до 30
-      const newHealth = Math.max(prev - randomDamage, 0)
-
-      if (gameRef.current) {
-        const scene = gameRef.current.scene.scenes[0]
-        const your = scene.children.getByName('yourMonster') as Phaser.GameObjects.Sprite
-        const gameOverText = scene.children.getByName('gameOverText')
-
-        if (newHealth <= 0 && your && !gameOverText) {
-          your.angle = -90
-          scene.add
-            .text(200, 40, 'YOU LOSE', {
-              fontSize: '32px',
-              color: '#ff0000',
-              fontStyle: 'bold',
-            })
-            .setOrigin(0.5)
-            .setName('gameOverText')
-        }
-      }
-
-      return newHealth
+    socketRef.current.emit('attack', {
+      battleId,
+      damage,
+      monsterId: monsterStore.selectedMonster.id,
     })
 
     if (gameRef.current) {
@@ -315,6 +366,20 @@ export default function TestFight() {
 
   return (
     <div className={styles.main}>
+      {!isMyTurn ? (
+        <div style={{ color: 'white', marginBottom: '10px' }}>
+          ⏳ Ждите хода соперника... {turnTimer} сек.
+        </div>
+      ) : (
+        <div style={{ color: 'lightgreen', marginBottom: '10px', fontWeight: 'bold' }}>
+          ✅ Ваш ход! {turnTimer} сек.
+        </div>
+      )}
+      {!isOpponentReady && (
+        <div style={{ color: 'white', marginBottom: '10px' }}>
+          🕐 Ожидание готовности соперника...
+        </div>
+      )}
       <div style={{ marginTop: '70px', position: 'relative', width: 400, height: 300 }}>
         <div className={styles.healthBar} style={{ top: 10, left: 20 }}>
           <div
@@ -331,20 +396,38 @@ export default function TestFight() {
         <div ref={containerRef} />
       </div>
 
-      <div className={styles.wrapperButton}>
-        <button className={styles.attackButton} onClick={() => handleAttack(10)}>
-          Укусить
-        </button>
-        <button className={styles.attackButton} onClick={() => handleAttack(15)}>
-          Удар рукой
-        </button>
-        <button className={styles.attackButton} onClick={() => handleAttack(20)}>
-          Удар ногой
-        </button>
-        <button className={styles.attackButton} onClick={() => handleAttack(25)}>
-          Удар хвостом
-        </button>
-      </div>
+      {!isBattleOver && (
+        <div className={styles.wrapperButton}>
+          <button
+            className={styles.attackButton}
+            onClick={() => handleAttack(10)}
+            disabled={!isMyTurn || !isOpponentReady}
+          >
+            Укусить
+          </button>
+          <button
+            className={styles.attackButton}
+            onClick={() => handleAttack(15)}
+            disabled={!isMyTurn || !isOpponentReady}
+          >
+            Удар рукой
+          </button>
+          <button
+            className={styles.attackButton}
+            onClick={() => handleAttack(20)}
+            disabled={!isMyTurn || !isOpponentReady}
+          >
+            Удар ногой
+          </button>
+          <button
+            className={styles.attackButton}
+            onClick={() => handleAttack(25)}
+            disabled={!isMyTurn || !isOpponentReady}
+          >
+            Удар хвостом
+          </button>
+        </div>
+      )}
     </div>
   )
 }

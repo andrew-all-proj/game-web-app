@@ -73,7 +73,7 @@ const Arena = observer(() => {
       <main className={styles.main}>
         <div className={styles.logoPlaceholder}>{infoMessage ? `${infoMessage}` : ''}</div>
 
-        {startFight ? <></> : <TestFight />}
+        {startFight ? <></> : <TestFight battleId={battleId} />}
         <SecondButton onClick={handleGoToLab}>Лаборатория</SecondButton>
       </main>
     </div>

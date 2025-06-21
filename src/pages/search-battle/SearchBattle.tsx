@@ -10,6 +10,9 @@ import MainButton from '../../components/Button/MainButton'
 import { connectSocket, disconnectSocket } from '../../api/socket'
 import SecondButton from '../../components/Button/SecondButton'
 import DuelRequestModal from './DuelRequestModal'
+import { GraphQLListResponse, MonsterBattles } from '../../types/GraphResponse'
+import { MONSTER_BATTLES } from '../../api/graphql/query'
+import client from '../../api/apolloClient'
 
 interface monsterOpponent {
   monsterId: string
@@ -37,6 +40,28 @@ const SearchBattle = observer(() => {
     const fetchOpponents = async () => {
       const success = await authorizationAndInitTelegram(navigate)
       if (!success) return
+
+      const { data }: { data: { MonsterBattles: GraphQLListResponse<MonsterBattles> } } =
+        await client.query({
+          query: MONSTER_BATTLES,
+          variables: {
+            limit: 10,
+            offset: 0,
+            status: {
+              in: ['PENDING', 'ACCEPTED'],
+            },
+          },
+          fetchPolicy: 'no-cache',
+        })
+
+      const activeBattle = data.MonsterBattles?.items?.find(
+        (battle) => battle.status && ['PENDING', 'ACCEPTED'].includes(battle.status),
+      )
+
+      if (activeBattle) {
+        navigate(`/arena/${activeBattle.id}`)
+        return
+      }
 
       if (monsterStore.selectedMonster === null) {
         await monsterStore.fetchMonsters()

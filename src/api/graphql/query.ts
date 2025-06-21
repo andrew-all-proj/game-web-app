@@ -76,3 +76,21 @@ export const MONSTER_BATTLE = gql`
     }
   }
 `
+
+export const MONSTER_BATTLES = gql`
+  query MonsterBattles($limit: Float!, $offset: Float!, $status: BattleStatusFilter) {
+    MonsterBattles(limit: $limit, offset: $offset, status: $status) {
+      items {
+        challengerMonsterId
+        createdAt
+        id
+        log
+        opponentMonsterId
+        status
+        updatedAt
+        winnerMonsterId
+      }
+      totalCount
+    }
+  }
+`
