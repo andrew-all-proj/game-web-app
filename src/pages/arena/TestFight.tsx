@@ -65,7 +65,7 @@ export default function TestFight({ battleId }: TestFightProps) {
 
       if (!userStore.user?.token) return //TODO add error
 
-      disconnectSocket()
+     // disconnectSocket()
 
       const socket = connectSocket(userStore.user.token, () => {
         socketRef.current = socket
@@ -76,7 +76,7 @@ export default function TestFight({ battleId }: TestFightProps) {
         })
 
         //if load completed but was reconnect socket
-        if (!isLoading) {
+        if (isLoading) {
           socket.emit('startBattle', {
             battleId: battleId,
             monsterId: monsterStore.selectedMonster?.id,
@@ -141,6 +141,17 @@ export default function TestFight({ battleId }: TestFightProps) {
   }, [])
 
   useEffect(() => {
+    if (!isLoading) {
+      if (socketRef.current) {
+        socketRef.current.emit('startBattle', {
+          battleId: battleId,
+          monsterId: monsterStore.selectedMonster?.id,
+        })
+      }
+    }
+  }, [isLoading])
+
+  useEffect(() => {
     if (!atlas || !spriteUrl || !containerRef.current || !spriteUrlOpponent || !atlasOpponent)
       return
 
@@ -174,12 +185,6 @@ export default function TestFight({ battleId }: TestFightProps) {
       })
 
       this.load.on('complete', () => {
-        if (socketRef.current) {
-          socketRef.current.emit('startBattle', {
-            battleId: battleId,
-            monsterId: monsterStore.selectedMonster?.id,
-          })
-        }
         loadingText.destroy()
         setIsLoading(false)
       })
