@@ -3,7 +3,7 @@ import Phaser from 'phaser'
 import monsterStore from '../../stores/MonsterStore'
 import styles from './TestFight.module.css'
 import { FileItem, Monster } from '../../types/GraphResponse'
-import { connectSocket, disconnectSocket } from '../../api/socket'
+import { connectSocket } from '../../api/socket'
 import userStore from '../../stores/UserStore'
 import { BattleRedis } from '../../types/BattleRedis'
 
