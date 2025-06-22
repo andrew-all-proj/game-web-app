@@ -28,40 +28,56 @@ const Arena = observer(() => {
 
   useEffect(() => {
     const startingFight = async () => {
-      await authorizationAndInitTelegram(navigate)
+      try {
+        await authorizationAndInitTelegram(navigate)
 
-      const { data }: { data: { MonsterBattle: MonsterBattles } } = await client.query({
-        query: MONSTER_BATTLE,
-        variables: {
-          monsterBattleId: battleId,
-        },
-        fetchPolicy: 'no-cache',
-      })
+        const { data }: { data: { MonsterBattle: MonsterBattles } } = await client.query({
+          query: MONSTER_BATTLE,
+          variables: { monsterBattleId: battleId },
+          fetchPolicy: 'no-cache',
+        })
 
-      if (data.MonsterBattle.status === 'REJECTED') {
-        setInfoMessage('Бой отменён')
+        const battle = data.MonsterBattle
+
+        if (battle.status === 'REJECTED') {
+          setInfoMessage('Бой отменён')
+          return setIsLoading(false)
+        }
+
+        if (battle.status === 'FINISHED') {
+          setInfoMessage('Бой завершён')
+          return setIsLoading(false)
+        }
+
+        if (!monsterStore.selectedMonster) {
+          await monsterStore.fetchMonsters()
+        }
+
+        const { challengerMonsterId, opponentMonsterId } = battle
+
+        const myMonster =
+          monsterStore.monsters.find(
+            (m) => m.id === challengerMonsterId || m.id === opponentMonsterId,
+          ) ?? null
+
+        if (myMonster && myMonster.id !== monsterStore.selectedMonster?.id) {
+          await monsterStore.setSelectedMonster(myMonster.id)
+        }
+
+        const opponentId =
+          myMonster?.id === challengerMonsterId ? opponentMonsterId : challengerMonsterId
+
+        await monsterStore.fetchOpponentMonster(opponentId)
+      } catch (error) {
+        console.error('Ошибка при старте боя:', error)
+        setInfoMessage('Ошибка при загрузке данных боя')
+      } finally {
         setIsLoading(false)
-        return
-      } else if (data.MonsterBattle.status === 'FINISHED') {
-        setInfoMessage('Бой завершён')
-        setIsLoading(false)
-        return
       }
-
-      if (!monsterStore.selectedMonster) {
-        await monsterStore.fetchMonsters()
-      }
-
-      if (data.MonsterBattle.challengerMonsterId !== monsterStore.selectedMonster?.id) {
-        await monsterStore.fetchOpponentMonster(data.MonsterBattle.challengerMonsterId)
-      } else {
-        await monsterStore.fetchOpponentMonster(data.MonsterBattle.opponentMonsterId)
-      }
-
-      setIsLoading(false)
     }
+
     startingFight()
-  }, [])
+  }, [battleId, navigate])
 
   if (isLoading) {
     return <Loading />

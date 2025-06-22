@@ -65,7 +65,7 @@ export default function TestFight({ battleId }: TestFightProps) {
 
       if (!userStore.user?.token) return //TODO add error
 
-     // disconnectSocket()
+      // disconnectSocket()
 
       const socket = connectSocket(userStore.user.token, () => {
         socketRef.current = socket

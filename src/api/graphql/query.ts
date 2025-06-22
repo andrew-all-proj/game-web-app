@@ -68,7 +68,13 @@ export const MONSTER_BATTLE = gql`
       challengerMonsterId
       createdAt
       id
-      log
+      log {
+        from
+        to
+        action
+        damage
+        timestamp
+      }
       opponentMonsterId
       status
       updatedAt
@@ -81,14 +87,20 @@ export const MONSTER_BATTLES = gql`
   query MonsterBattles($limit: Float!, $offset: Float!, $status: BattleStatusFilter) {
     MonsterBattles(limit: $limit, offset: $offset, status: $status) {
       items {
-        challengerMonsterId
-        createdAt
         id
-        log
+        challengerMonsterId
         opponentMonsterId
-        status
-        updatedAt
         winnerMonsterId
+        status
+        createdAt
+        updatedAt
+        log {
+          from
+          to
+          action
+          damage
+          timestamp
+        }
       }
       totalCount
     }
