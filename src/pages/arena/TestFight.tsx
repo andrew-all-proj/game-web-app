@@ -149,7 +149,7 @@ export default function TestFight({ battleId }: TestFightProps) {
         })
       }
     }
-  }, [isLoading])
+  }, [isLoading, isOpponentReady])
 
   useEffect(() => {
     if (!atlas || !spriteUrl || !containerRef.current || !spriteUrlOpponent || !atlasOpponent)
