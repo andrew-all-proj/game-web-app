@@ -6,19 +6,24 @@ import { FileItem, Monster } from '../../types/GraphResponse'
 import { connectSocket } from '../../api/socket'
 import userStore from '../../stores/UserStore'
 import { BattleRedis } from '../../types/BattleRedis'
+import { useNavigate } from 'react-router-dom'
+import errorStore from '../../stores/ErrorStore'
+import { SpriteAtlas } from '../../types/sprites'
 
 const getSprite = async (
   monster?: Monster,
 ): Promise<{ atlasFile: FileItem | null; spriteFile: FileItem | null }> => {
   if (!monster) return { atlasFile: null, spriteFile: null }
 
-  let atlasFile =
+  const atlasFile =
     monster.files?.find((f) => f.fileType === 'JSON' && f.contentType === 'SPRITE_SHEET_MONSTER') ??
     null
-  let spriteFile =
+
+  const spriteFile =
     monster.files?.find(
       (f) => f.fileType === 'IMAGE' && f.contentType === 'SPRITE_SHEET_MONSTER',
     ) ?? null
+
   return { atlasFile, spriteFile }
 }
 
@@ -31,9 +36,9 @@ export default function TestFight({ battleId }: TestFightProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [yourHealth, setYourHealth] = useState<number>(100)
   const [opponentHealth, setOpponentHealth] = useState<number>(100)
-  const [atlas, setAtlas] = useState<any>(null)
+  const [atlas, setAtlas] = useState<SpriteAtlas | null>(null)
+  const [atlasOpponent, setAtlasOpponent] = useState<SpriteAtlas | null>(null)
   const [spriteUrl, setSpriteUrl] = useState<string>('')
-  const [atlasOpponent, setAtlasOpponent] = useState<any>(null)
   const [spriteUrlOpponent, setSpriteUrlOpponent] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
   const [isOpponentReady, setIsOpponentReady] = useState(false)
@@ -42,6 +47,7 @@ export default function TestFight({ battleId }: TestFightProps) {
   const [turnTimer, setTurnTimer] = useState<number>(0)
   const [currentTurnMonsterId, setCurrentTurnMonsterId] = useState<string | null>(null)
   const [isBattleOver, setIsBattleOver] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     ;(async () => {
@@ -52,6 +58,9 @@ export default function TestFight({ battleId }: TestFightProps) {
         const atlasJson = await fetch(atlasFile.url).then((res) => res.json())
         setAtlas(atlasJson)
         setSpriteUrl(spriteFile.url)
+      } else {
+        errorStore.setError({ error: true, message: 'Ошибка загрузки спрайтов' })
+        navigate('/error')
       }
 
       const { atlasFile: opponentAtlasFile, spriteFile: opponentSpriteFile } = await getSprite(
@@ -61,11 +70,12 @@ export default function TestFight({ battleId }: TestFightProps) {
         const atlasJson = await fetch(opponentAtlasFile.url).then((res) => res.json())
         setAtlasOpponent(atlasJson)
         setSpriteUrlOpponent(opponentSpriteFile.url)
+      } else {
+        errorStore.setError({ error: true, message: 'Ошибка загрузки спрайтов соперника' })
+        navigate('/error')
       }
 
-      if (!userStore.user?.token) return //TODO add error
-
-      // disconnectSocket()
+      if (!userStore.user?.token) return
 
       const socket = connectSocket(userStore.user.token, () => {
         socketRef.current = socket
@@ -75,7 +85,6 @@ export default function TestFight({ battleId }: TestFightProps) {
           monsterId: monsterStore.selectedMonster?.id,
         })
 
-        //if load completed but was reconnect socket
         if (isLoading) {
           socket.emit('startBattle', {
             battleId: battleId,
@@ -87,46 +96,37 @@ export default function TestFight({ battleId }: TestFightProps) {
           const currentMonsterId = monsterStore.selectedMonster?.id
           if (!currentMonsterId) return
 
-          //check winner
           if (data.winnerMonsterId) {
             setIsBattleOver(true)
             const isWin = currentMonsterId === data.winnerMonsterId
-
-            if (gameRef.current) {
-              const scene = gameRef.current.scene.scenes[0]
-              if (!scene.children.getByName('gameOverText')) {
-                scene.add
-                  .text(200, 40, isWin ? 'YOU WIN' : 'YOU LOSE', {
-                    fontSize: '32px',
-                    color: isWin ? '#00ff00' : '#ff0000',
-                    fontStyle: 'bold',
-                  })
-                  .setOrigin(0.5)
-                  .setName('gameOverText')
-              }
+            const scene = gameRef.current?.scene.scenes[0]
+            if (scene && !scene.children.getByName('gameOverText')) {
+              scene.add
+                .text(200, 40, isWin ? 'YOU WIN' : 'YOU LOSE', {
+                  fontSize: '32px',
+                  color: isWin ? '#00ff00' : '#ff0000',
+                  fontStyle: 'bold',
+                })
+                .setOrigin(0.5)
+                .setName('gameOverText')
             }
-
             return
           }
 
           const isChallenger = currentMonsterId === data.challengerMonsterId
-
           setYourHealth(isChallenger ? data.challengerMonsterHp : data.opponentMonsterHp)
           setOpponentHealth(isChallenger ? data.opponentMonsterHp : data.challengerMonsterHp)
-
           setIsOpponentReady(
             isChallenger ? data.opponentReady === '1' : data.challengerReady === '1',
           )
-
-          const isTurn = currentMonsterId === data.currentTurnMonsterId
-          setIsMyTurn(isTurn)
+          setIsMyTurn(currentMonsterId === data.currentTurnMonsterId)
           setCurrentTurnMonsterId(data.currentTurnMonsterId)
 
           const now = Date.now()
           const remaining = data.turnTimeLimit - (now - data.turnStartTime)
           setTurnTimer(Math.max(0, Math.floor(remaining / 1000)))
 
-          let timerInterval = setInterval(() => {
+          const timerInterval = setInterval(() => {
             setTurnTimer((prev) => {
               if (prev <= 1) {
                 clearInterval(timerInterval)
@@ -138,9 +138,11 @@ export default function TestFight({ battleId }: TestFightProps) {
         })
       })
     })()
-  }, [])
+  }, [battleId, isLoading, navigate])
 
   useEffect(() => {
+    if (!atlas || !spriteUrl || !containerRef.current || !spriteUrlOpponent || !atlasOpponent)
+      return
     if (!isLoading) {
       if (socketRef.current) {
         socketRef.current.emit('startBattle', {
@@ -149,7 +151,7 @@ export default function TestFight({ battleId }: TestFightProps) {
         })
       }
     }
-  }, [isLoading, isOpponentReady])
+  }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent, battleId, isLoading])
 
   useEffect(() => {
     if (!atlas || !spriteUrl || !containerRef.current || !spriteUrlOpponent || !atlasOpponent)
@@ -172,6 +174,7 @@ export default function TestFight({ battleId }: TestFightProps) {
     let opponentMonsterSprite: Phaser.GameObjects.Sprite
 
     function preload(this: Phaser.Scene) {
+      if (!atlas || !atlasOpponent) return
       const loadingText = this.add
         .text(200, 150, 'Loading... 0%', {
           fontSize: '20px',
@@ -200,6 +203,7 @@ export default function TestFight({ battleId }: TestFightProps) {
     const scale = 0.12
 
     function create(this: Phaser.Scene) {
+      if (!atlas || !atlasOpponent) return
       yourMonster = this.add
         .sprite(100, 150, 'monster', Object.keys(atlas.frames)[0])
         .setScale(scale)
@@ -327,7 +331,7 @@ export default function TestFight({ battleId }: TestFightProps) {
       gameRef.current?.destroy(true)
       gameRef.current = null
     }
-  }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent])
+  }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent, yourHealth, opponentHealth])
 
   const handleAttack = (damage: number) => {
     if (isLoading || !battleId || !monsterStore.selectedMonster?.id || !socketRef.current) return

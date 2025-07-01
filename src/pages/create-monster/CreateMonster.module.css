@@ -1,12 +1,13 @@
 .laboratory {
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   height: 100vh;
   height: 100dvh;
-  padding-top: 50px;
-  position: relative;
-  box-sizing: border-box;
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 .wrapperMonster {
@@ -21,7 +22,7 @@
 }
 
 .dotWrapper {
-  margin-top: -80px; /* круги чуть выше */
+  margin-top: -80px;
   display: flex;
   justify-content: center;
   z-index: 1;
@@ -59,7 +60,7 @@
 .grid {
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, max-content);
   gap: 8px;
 
   width: 100%;

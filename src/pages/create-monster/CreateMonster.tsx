@@ -25,6 +25,12 @@ import monsterStore from '../../stores/MonsterStore'
 import SecondButton from '../../components/Button/SecondButton'
 import Loading from '../loading/Loading'
 
+declare global {
+  interface Window {
+    updatePhaserDisplay?: () => void
+  }
+}
+
 export interface PartPreviewEntry {
   key: string
   frameData: FrameData
@@ -50,6 +56,10 @@ export interface PartPreviews {
 }
 
 type PartTab = keyof PartPreviews
+
+type HeadBodyPart = PartPreviewEntry
+type ArmPair = { arm: { left: PartPreviewEntry; right: PartPreviewEntry } }
+export type SelectablePart = HeadBodyPart | ArmPair | null
 
 const CreateMonster = observer(() => {
   const navigate = useNavigate()
@@ -120,7 +130,7 @@ const CreateMonster = observer(() => {
     }
 
     fetchMainSprite()
-  }, [])
+  }, [navigate])
 
   const tabs: { key: keyof PartPreviews; icon: string; alt: string }[] = [
     { key: 'head', icon: headIcon, alt: 'Head' },
@@ -128,48 +138,37 @@ const CreateMonster = observer(() => {
     { key: 'arms', icon: emotionIcon, alt: 'Emotion' },
   ]
 
-  const handlePartSelect = (part: any) => {
+  const handlePartSelect = (part: SelectablePart) => {
     if (!part) return
 
-    const attachPoint = part.frameData?.points?.attachToBody || { x: 0, y: 0 }
+    if (activeTab === 'arms' && 'arm' in part) {
+      selectedPartsMonster.current.leftArm = {
+        key: part.arm.left.key,
+        attachPoint: part.arm.left.frameData?.points?.attachToBody || { x: 0, y: 0 },
+        frameSize: part.arm.left.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
+      }
+      selectedPartsMonster.current.rightArm = {
+        key: part.arm.right.key,
+        attachPoint: part.arm.right.frameData?.points?.attachToBody || { x: 0, y: 0 },
+        frameSize: part.arm.right.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
+      }
+    } else if (part && 'frameData' in part) {
+      const attachPoint = part.frameData?.points?.attachToBody || { x: 0, y: 0 }
 
-    switch (activeTab) {
-      case 'head':
-        selectedPartsMonster.current.head = {
-          key: part.key,
-          attachPoint,
-          frameSize: part.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
-        }
-        break
-      case 'body':
-        selectedPartsMonster.current.body = {
-          key: part.key,
-          attachPoint,
-          frameSize: part.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
-        }
-        break
-      case 'arms':
-        if ('arm' in part) {
-          selectedPartsMonster.current.leftArm = {
-            key: part.arm.left.key,
-            attachPoint: part.arm.left.frameData?.points?.attachToBody || { x: 0, y: 0 },
-            frameSize: part.arm.left.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
-          }
-          selectedPartsMonster.current.rightArm = {
-            key: part.arm.right.key,
-            attachPoint: part.arm.right.frameData?.points?.attachToBody || { x: 0, y: 0 },
-            frameSize: part.arm.right.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
-          }
-        }
-        break
+      const partInfo: SelectedPartInfo = {
+        key: part.key,
+        attachPoint,
+        frameSize: part.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
+      }
+
+      if (activeTab === 'head') {
+        selectedPartsMonster.current.head = partInfo
+      } else if (activeTab === 'body') {
+        selectedPartsMonster.current.body = partInfo
+      }
     }
 
-    if (
-      (window as any).updatePhaserDisplay &&
-      typeof (window as any).updatePhaserDisplay === 'function'
-    ) {
-      ;(window as any).updatePhaserDisplay()
-    }
+    window.updatePhaserDisplay?.()
   }
 
   const handleSaveImage = async () => {

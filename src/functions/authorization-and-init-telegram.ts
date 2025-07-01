@@ -40,7 +40,7 @@ export const authorizationAndInitTelegram = async (
         navigate('/error')
         return false
       }
-    } catch (err) {
+    } catch {
       errorStore.setError({ error: true, message: 'Ошибка регистрации' })
       navigate('/error')
       return false

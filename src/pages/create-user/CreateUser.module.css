@@ -47,9 +47,10 @@
 }
 
 .grid {
+  align-items: center;
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, max-content);
   gap: 8px;
 
   width: 100%;
@@ -75,11 +76,4 @@
 .partItemSvg {
   width: 100%;
   height: 100%;
-}
-
-@media (min-height: 720px) {
-  .main {
-    gap: 70px;
-    padding-top: 60px;
-  }
 }

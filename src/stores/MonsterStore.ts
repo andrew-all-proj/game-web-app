@@ -78,9 +78,9 @@ class MonsterStore {
               ) || null
             : null
       })
-    } catch (err: any) {
+    } catch (err: unknown) {
       runInAction(() => {
-        this.error = err.message
+        this.error = err instanceof Error ? err.message : String(err)
       })
       console.error('Failed to fetch monsters:', err)
     }

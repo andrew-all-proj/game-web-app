@@ -42,7 +42,7 @@ const Laboratory = observer(() => {
       }
       setIsLoading(false)
     })()
-  }, [])
+  }, [navigate])
 
   const handleGoToArena = (monster: Monster) => {
     monsterStore.setSelectedMonster(monster.id)
@@ -91,7 +91,7 @@ const Laboratory = observer(() => {
         <SecondButton onClick={() => navigate('/create-monster')}>Создать</SecondButton>
       </div>
       <div className={styles.wrapperCharacteristics}>
-        <div className={styles.characteristic}>Lvl. 26</div>
+        <div className={styles.characteristic}>Lvl. {selectedMonster.level}</div>
         <div className={styles.characteristic}>
           <img alt="level-life" src={levelLifeIcon} />
         </div>

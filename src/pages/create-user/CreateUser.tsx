@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { observer } from 'mobx-react-lite'
 import headIcon from '../../assets/icon/head-icon.svg'
@@ -29,6 +29,13 @@ const tabs = [
   { key: 'body', icon: bodyIcon, alt: 'Тело' },
   { key: 'emotion', icon: emotionIcon, alt: 'Эмоции' },
 ]
+
+interface MetadataSpriteAvatar {
+  type: string
+  attachToHead?: { x: number; y: number }
+  attachToBody?: { x: number; y: number }
+  attachToEmotion?: { x: number; y: number }
+}
 
 const CreateUser = observer(() => {
   const navigate = useNavigate()
@@ -106,7 +113,7 @@ const CreateUser = observer(() => {
           const match = id.match(/^(head|body|emotion)_icon_(\d+)$/)
           if (!match) continue
 
-          const [_, type, index] = match
+          const [, type, index] = match
           const partId = `${type}_${index}`
           const foundPart = symbols.find((s) => s.getAttribute('id') === partId)
           if (!foundPart) {
@@ -138,13 +145,9 @@ const CreateUser = observer(() => {
     }
 
     loadSvgSprite()
-  }, [])
+  }, [navigate])
 
-  useEffect(() => {
-    drawAvatarToCanvas()
-  }, [headIndex, bodyIndex, emotionIndex, headParts, bodyParts, emotionParts])
-
-  const drawAvatarToCanvas = async () => {
+  const drawAvatarToCanvas = useCallback(async () => {
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -173,7 +176,7 @@ const CreateUser = observer(() => {
 
       const viewBox = symbol.getAttribute('viewBox')
       const metadataElement = symbol.querySelector('metadata')
-      let metadata: any = null
+      let metadata: MetadataSpriteAvatar | null = null
 
       if (metadataElement?.textContent) {
         try {
@@ -206,14 +209,14 @@ const CreateUser = observer(() => {
       url: string
       vbWidth: number
       vbHeight: number
-      metadata: any
+      metadata: MetadataSpriteAvatar
       type: string
     }[]
 
     let lastDrawn = {
       x: canvas.width / 2,
       y: 0,
-      metadata: null as any,
+      metadata: null as unknown as MetadataSpriteAvatar,
       type: '',
     }
 
@@ -230,8 +233,16 @@ const CreateUser = observer(() => {
             x = canvas.width / 2 - vbWidth / 2
             y = 95 // is the vertical offset for body parts
           } else {
-            const attachFrom = lastDrawn.metadata[`attachTo${capitalize(type)}`]
-            const attachTo = metadata?.[`attachTo${capitalize(lastDrawn.type)}`]
+            const attachFromKey = `attachTo${capitalize(type)}` as keyof MetadataSpriteAvatar
+            const attachToKey =
+              `attachTo${capitalize(lastDrawn.type)}` as keyof MetadataSpriteAvatar
+
+            const attachFrom = (lastDrawn.metadata && lastDrawn.metadata[attachFromKey]) as
+              | { x: number; y: number }
+              | undefined
+            const attachTo = (metadata && metadata[attachToKey]) as
+              | { x: number; y: number }
+              | undefined
 
             if (attachFrom && attachTo) {
               x = lastDrawn.x + attachFrom.x - attachTo.x
@@ -251,7 +262,11 @@ const CreateUser = observer(() => {
         img.src = url
       })
     }
-  }
+  }, [headIndex, bodyIndex, emotionIndex, headParts, bodyParts, emotionParts, isEditing])
+
+  useEffect(() => {
+    drawAvatarToCanvas()
+  }, [drawAvatarToCanvas])
 
   function capitalize(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1)
@@ -349,9 +364,9 @@ const CreateUser = observer(() => {
     onSelect: (i: number) => void,
   ) => {
     if (!parts.length) return null
-    const fullParts = [...parts]
+    const fullParts: (PartTypeAvatar | null)[] = [...parts]
     while (fullParts.length < 12) {
-      fullParts.push(null as any)
+      fullParts.push(null)
     }
 
     return (

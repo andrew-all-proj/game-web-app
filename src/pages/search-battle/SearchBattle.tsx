@@ -69,8 +69,6 @@ const SearchBattle = observer(() => {
 
       if (!userStore.user?.token) return
 
-      disconnectSocket()
-
       const socket = connectSocket(userStore.user.token, () => {
         socketRef.current = socket
 
@@ -120,7 +118,7 @@ const SearchBattle = observer(() => {
     return () => {
       disconnectSocket()
     }
-  }, [navigate])
+  }, [navigate, cursor])
 
   if (isLoading) {
     return <Loading />
