@@ -11,10 +11,11 @@ const SpriteCropper = ({
   width?: number
   height?: number
 }) => {
-  if (!spriteSrc) return null
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
+    if (!spriteSrc) return
+
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -35,6 +36,8 @@ const SpriteCropper = ({
       img.onload = draw
     }
   }, [spriteSrc, frame, width, height])
+
+  if (!spriteSrc) return null
 
   return <canvas ref={canvasRef} width={width} height={height} />
 }

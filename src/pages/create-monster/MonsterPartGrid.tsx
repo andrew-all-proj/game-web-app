@@ -1,15 +1,36 @@
 import React from 'react'
 import styles from './CreateMonster.module.css'
-import { PartPreviews } from './CreateMonster'
+import { PartPreviews, SelectablePart } from './CreateMonster'
 import SpriteCropper from './SpriteCropper'
+import { FrameData } from '../../types/sprites'
 
 type PartTab = keyof PartPreviews
+
+type PartSingle = {
+  key: string
+  frameData: FrameData
+}
+
+type PartArm = {
+  arm: {
+    left: {
+      key: string
+      frameData: FrameData
+    }
+    right: {
+      key: string
+      frameData: FrameData
+    }
+  }
+}
+
+type PartItem = PartSingle | PartArm | null
 
 interface PartGridProps {
   partPreviews: PartPreviews
   activeTab: PartTab
   spriteUrl: string | null
-  handlePartSelect: (part: any) => void
+  handlePartSelect: (part: SelectablePart) => void
 }
 
 const MonsterPartGrid: React.FC<PartGridProps> = ({
@@ -20,9 +41,9 @@ const MonsterPartGrid: React.FC<PartGridProps> = ({
 }) => {
   if (!partPreviews[activeTab]) return null
 
-  const fullParts = [...partPreviews[activeTab]]
+  const fullParts: PartItem[] = [...partPreviews[activeTab]]
   while (fullParts.length < 12) {
-    fullParts.push(null as any)
+    fullParts.push(null)
   }
 
   return (
@@ -34,12 +55,12 @@ const MonsterPartGrid: React.FC<PartGridProps> = ({
           return <div key={index} className={styles.partItem} />
         }
 
-        if (activeTab === 'arms' && 'arm' in pair) {
+        if ('arm' in pair && 'right' in pair.arm) {
           return (
             <div key={index} className={styles.partItem} onClick={onClick}>
               <SpriteCropper
                 spriteSrc={spriteUrl}
-                frame={pair.arm?.right?.frameData.frame}
+                frame={pair.arm.right.frameData.frame}
                 width={64}
                 height={64}
               />

@@ -1,7 +1,7 @@
 import { useState, useImperativeHandle, forwardRef, useRef } from 'react'
 
 export interface DebugLogHandle {
-  log: (...args: any[]) => void
+  log: (...args: unknown[]) => void
   clear: () => void
 }
 
@@ -10,9 +10,11 @@ const DebugLogPanel = forwardRef<DebugLogHandle>((_props, ref) => {
   const preRef = useRef<HTMLPreElement>(null)
 
   useImperativeHandle(ref, () => ({
-    log: (...args: any[]) => {
+    log: (...args: unknown[]) => {
       const message = args
-        .map((arg) => (typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)))
+        .map((arg) =>
+          typeof arg === 'object' && arg !== null ? JSON.stringify(arg, null, 2) : String(arg),
+        )
         .join(' ')
       setLogs((prev) => [...prev, message])
     },
@@ -38,7 +40,7 @@ const DebugLogPanel = forwardRef<DebugLogHandle>((_props, ref) => {
         overflow: 'hidden',
         borderBottom: '1px solid #444',
         zIndex: 9999,
-        pointerEvents: 'auto', // 👈 теперь можно копировать
+        pointerEvents: 'auto',
       }}
     >
       <strong>Debug Log:</strong>

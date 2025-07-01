@@ -4,7 +4,19 @@ interface UploadOptions {
   token?: string
 }
 
-export async function uploadFile({ url, formData, token }: UploadOptions): Promise<any> {
+interface UploadFileResponse {
+  id: string
+  url: string
+  filename: string
+  mimetype: string
+  size: number
+}
+
+export async function uploadFile({
+  url,
+  formData,
+  token,
+}: UploadOptions): Promise<UploadFileResponse> {
   try {
     const response = await fetch(url, {
       method: 'POST',

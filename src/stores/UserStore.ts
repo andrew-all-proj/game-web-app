@@ -11,6 +11,17 @@ export interface User {
   avatar?: { id: string; url: string } | null
 }
 
+export type TelegramUser = {
+  id: number
+  first_name: string
+  last_name?: string
+  username?: string
+  language_code?: string
+  is_premium?: boolean
+  added_to_attachment_menu?: boolean
+  allows_write_to_pm?: boolean
+}
+
 class UserStore {
   user: User | null = null
 
@@ -18,7 +29,7 @@ class UserStore {
     makeAutoObservable(this)
   }
 
-  async loginUser(initData: any, tgUser: any): Promise<User | null> {
+  async loginUser(initData: string, tgUser: TelegramUser): Promise<User | null> {
     const response = await client.mutate({
       mutation: USER_LOGIN,
       variables: {
