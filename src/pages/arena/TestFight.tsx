@@ -52,6 +52,8 @@ export default function TestFight({ battleId }: TestFightProps) {
   const navigate = useNavigate()
 
   useEffect(() => {
+    if(!isLoading) return
+    
     ;(async () => {
       if (!monsterStore.selectedMonster || !monsterStore.opponentMonster) return
 
@@ -361,14 +363,6 @@ export default function TestFight({ battleId }: TestFightProps) {
         })
       }
     }
-  }
-
-  if (!monsterStore.selectedMonster) {
-    return (
-      <div style={{ textAlign: 'center', marginTop: '100px', color: 'white', fontSize: '34px' }}>
-        Выберите монстра в лаборатории
-      </div>
-    )
   }
 
   return (
