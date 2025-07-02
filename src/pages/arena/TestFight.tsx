@@ -52,8 +52,7 @@ export default function TestFight({ battleId }: TestFightProps) {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if(!isLoading) return
-    
+    if (!isLoading) return
     ;(async () => {
       if (!monsterStore.selectedMonster || !monsterStore.opponentMonster) return
 
@@ -102,6 +101,20 @@ export default function TestFight({ battleId }: TestFightProps) {
 
           if (data.winnerMonsterId) {
             setIsBattleOver(true)
+
+            const isWin = monsterStore.selectedMonster?.id === data.winnerMonsterId
+            const scene = gameRef.current?.scene.scenes[0]
+            if (scene && !scene.children.getByName('gameOverText')) {
+              scene.add
+                .text(200, 40, isWin ? 'YOU WIN' : 'YOU LOSE', {
+                  fontSize: '32px',
+                  color: isWin ? '#00ff00' : '#ff0000',
+                  fontStyle: 'bold',
+                })
+                .setOrigin(0.5)
+                .setName('gameOverText')
+            }
+            return
             return
           }
 
@@ -293,32 +306,10 @@ export default function TestFight({ battleId }: TestFightProps) {
       //TODO DELETE!!!!!!!!!!!!
       if (opponentHealthRef.current <= 0) {
         opponentMonsterSprite.angle = 90
-
-        if (!this.children.getByName('gameOverText')) {
-          this.add
-            .text(200, 40, 'YOU WIN', {
-              fontSize: '32px',
-              color: '#00ff00',
-              fontStyle: 'bold',
-            })
-            .setOrigin(0.5)
-            .setName('gameOverText')
-        }
       }
 
       if (yourHealthRef.current <= 0) {
         yourMonster.angle = -90
-
-        if (!this.children.getByName('gameOverText')) {
-          this.add
-            .text(200, 40, 'YOU LOSE', {
-              fontSize: '32px',
-              color: '#ff0000',
-              fontStyle: 'bold',
-            })
-            .setOrigin(0.5)
-            .setName('gameOverText')
-        }
       }
     }
 
