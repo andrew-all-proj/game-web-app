@@ -34,8 +34,10 @@ interface TestFightProps {
 export default function TestFight({ battleId }: TestFightProps) {
   const gameRef = useRef<Phaser.Game | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const [yourHealth, setYourHealth] = useState<number>(100)
-  const [opponentHealth, setOpponentHealth] = useState<number>(100)
+  const yourHealthRef = useRef<number>(100)
+  const opponentHealthRef = useRef<number>(100)
+  const yourHealthBarRef = useRef<HTMLDivElement>(null)
+  const opponentHealthBarRef = useRef<HTMLDivElement>(null)
   const [atlas, setAtlas] = useState<SpriteAtlas | null>(null)
   const [atlasOpponent, setAtlasOpponent] = useState<SpriteAtlas | null>(null)
   const [spriteUrl, setSpriteUrl] = useState<string>('')
@@ -81,13 +83,13 @@ export default function TestFight({ battleId }: TestFightProps) {
         socketRef.current = socket
 
         socket.emit('getBattle', {
-          battleId: battleId,
+          battleId,
           monsterId: monsterStore.selectedMonster?.id,
         })
 
         if (isLoading) {
           socket.emit('startBattle', {
-            battleId: battleId,
+            battleId,
             monsterId: monsterStore.selectedMonster?.id,
           })
         }
@@ -98,24 +100,20 @@ export default function TestFight({ battleId }: TestFightProps) {
 
           if (data.winnerMonsterId) {
             setIsBattleOver(true)
-            const isWin = currentMonsterId === data.winnerMonsterId
-            const scene = gameRef.current?.scene.scenes[0]
-            if (scene && !scene.children.getByName('gameOverText')) {
-              scene.add
-                .text(200, 40, isWin ? 'YOU WIN' : 'YOU LOSE', {
-                  fontSize: '32px',
-                  color: isWin ? '#00ff00' : '#ff0000',
-                  fontStyle: 'bold',
-                })
-                .setOrigin(0.5)
-                .setName('gameOverText')
-            }
             return
           }
 
           const isChallenger = currentMonsterId === data.challengerMonsterId
-          setYourHealth(isChallenger ? data.challengerMonsterHp : data.opponentMonsterHp)
-          setOpponentHealth(isChallenger ? data.opponentMonsterHp : data.challengerMonsterHp)
+          yourHealthRef.current = isChallenger ? data.challengerMonsterHp : data.opponentMonsterHp
+          opponentHealthRef.current = isChallenger
+            ? data.opponentMonsterHp
+            : data.challengerMonsterHp
+
+          if (yourHealthBarRef.current)
+            yourHealthBarRef.current.style.width = `${yourHealthRef.current}%`
+          if (opponentHealthBarRef.current)
+            opponentHealthBarRef.current.style.width = `${opponentHealthRef.current}%`
+
           setIsOpponentReady(
             isChallenger ? data.opponentReady === '1' : data.challengerReady === '1',
           )
@@ -291,7 +289,7 @@ export default function TestFight({ battleId }: TestFightProps) {
 
     function update(this: Phaser.Scene) {
       //TODO DELETE!!!!!!!!!!!!
-      if (opponentHealth <= 0) {
+      if (opponentHealthRef.current <= 0) {
         opponentMonsterSprite.angle = 90
 
         if (!this.children.getByName('gameOverText')) {
@@ -306,7 +304,7 @@ export default function TestFight({ battleId }: TestFightProps) {
         }
       }
 
-      if (yourHealth <= 0) {
+      if (yourHealthRef.current <= 0) {
         yourMonster.angle = -90
 
         if (!this.children.getByName('gameOverText')) {
@@ -331,7 +329,7 @@ export default function TestFight({ battleId }: TestFightProps) {
       gameRef.current?.destroy(true)
       gameRef.current = null
     }
-  }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent, yourHealth, opponentHealth])
+  }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent])
 
   const handleAttack = (damage: number) => {
     if (isLoading || !battleId || !monsterStore.selectedMonster?.id || !socketRef.current) return
@@ -393,13 +391,13 @@ export default function TestFight({ battleId }: TestFightProps) {
         <div className={styles.healthBar} style={{ top: 10, left: 20 }}>
           <div
             className={styles.healthFill}
-            style={{ width: `${yourHealth}%`, backgroundColor: '#4caf50' }}
+            style={{ width: `${yourHealthRef.current}%`, backgroundColor: '#4caf50' }}
           />
         </div>
         <div className={styles.healthBar} style={{ top: 10, right: 20 }}>
           <div
             className={styles.healthFill}
-            style={{ width: `${opponentHealth}%`, backgroundColor: '#f44336' }}
+            style={{ width: `${opponentHealthRef.current}%`, backgroundColor: '#f44336' }}
           />
         </div>
         <div ref={containerRef} />
