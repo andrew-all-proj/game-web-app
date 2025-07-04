@@ -19,7 +19,7 @@ const Arena = observer(() => {
   const navigate = useNavigate()
   const { battleId } = useParams()
   const [infoMessage, setInfoMessage] = useState('')
-  const [startFight] = useState(false)
+  const [startFight, setStartFight] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
 
   const handleGoToLab = () => {
@@ -41,11 +41,13 @@ const Arena = observer(() => {
 
         if (battle.status === 'REJECTED') {
           setInfoMessage('Бой отменён')
+          setStartFight(false)
           return setIsLoading(false)
         }
 
         if (battle.status === 'FINISHED') {
           setInfoMessage('Бой завершён')
+          setStartFight(false)
           return setIsLoading(false)
         }
 
@@ -89,7 +91,7 @@ const Arena = observer(() => {
       <main className={styles.main}>
         <div className={styles.logoPlaceholder}>{infoMessage ? `${infoMessage}` : ''}</div>
 
-        {startFight ? <></> : <TestFight battleId={battleId} />}
+        {startFight ? <TestFight battleId={battleId} /> : <></>}
         <SecondButton onClick={handleGoToLab}>Лаборатория</SecondButton>
       </main>
     </div>
