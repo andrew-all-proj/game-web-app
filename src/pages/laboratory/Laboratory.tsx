@@ -11,15 +11,16 @@ import noAvatarMonster from '../../assets/images/no-avatar-monster.jpg'
 import MainButton from '../../components/Button/MainButton'
 import NotFoundMonsters from './NotFoundMonsters'
 import SecondButton from '../../components/Button/SecondButton'
-import levelLifeIcon from '../../assets/icon/level-life.svg'
+import smallHeartIcon from '../../assets/icon/small-heart-icon.svg'
+import smallEnergyIcon from '../../assets/icon/small-energy-icon.svg'
+import smallStrengthIcon from '../../assets/icon/small-strength-icon.svg'
 import foodIcon from '../../assets/icon/icon_food.svg'
-import levelHitIcon from '../../assets/icon/level-hit-icon.svg'
-import energyIcon from '../../assets/icon/energy-icon.svg'
 import labIcon from '../../assets/icon/icon_lab.svg'
 import upgradeIcon from '../../assets/icon/icon_upgrade.svg'
 import socialIcon from '../../assets/icon/icon_social.svg'
 import TriangleButton from '../../components/Button/TriangleButton'
 import { Monster } from '../../types/GraphResponse'
+import StatBar from '../../components/StatBar/StatBar'
 
 const Laboratory = observer(() => {
   const navigate = useNavigate()
@@ -92,16 +93,27 @@ const Laboratory = observer(() => {
       </div>
       <div className={styles.wrapperCharacteristics}>
         <div className={styles.characteristic}>Lvl. {selectedMonster.level}</div>
+        <div></div>
         <div className={styles.characteristic}>
-          <img alt="level-life" src={levelLifeIcon} />
-        </div>
-      </div>
-      <div className={styles.wrapperCharacteristics}>
-        <div className={styles.characteristic}>
-          <img alt="energy" src={energyIcon} />
+          <StatBar current={selectedMonster.healthPoints ?? 0} max={600} iconSrc={smallHeartIcon} />
         </div>
         <div className={styles.characteristic}>
-          <img alt="hit" src={levelHitIcon} />
+          <StatBar
+            current={selectedMonster.stamina ?? 0}
+            iconSrc={smallEnergyIcon}
+            backgroundColor={'#6BE1FF'}
+            color={'#6BE1FF'}
+          />
+        </div>
+        <div></div>
+        <div className={styles.characteristic}>
+          <StatBar
+            current={selectedMonster.strength ?? 0}
+            max={100}
+            iconSrc={smallStrengthIcon}
+            backgroundColor={'#FCF8B5'}
+            color={'#e4e1ae'}
+          />
         </div>
       </div>
       <div style={{ color: 'red' }}>{errorMsg}</div>

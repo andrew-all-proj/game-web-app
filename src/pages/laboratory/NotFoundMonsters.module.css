@@ -5,7 +5,7 @@
   justify-content: center;
   height: 100vh;
   height: 100dvh;
-  box-sizing: border-box;
+
   text-align: center;
 }
 
@@ -53,8 +53,4 @@
   height: 35px;
   background-color: rgba(0, 0, 0, 0.3); /* Почти чёрный */
   border-radius: 50%;
-}
-
-.buttonWrapper {
-  padding: 20px;
 }

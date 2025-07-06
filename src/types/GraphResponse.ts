@@ -27,15 +27,40 @@ export interface MonsterBattles {
   createdAt?: Date
 }
 
+export interface MonsterDefenses {
+  id: number
+  monsterId: string
+  name: string
+  modifier: number
+  energyCost: number
+  cooldown: number
+}
+
+export interface MonsterAttacks {
+  id: number
+  monsterId: string
+  name: string
+  modifier: number
+  energyCost: number
+  cooldown: number
+}
+
 export interface Monster {
   id: string
   name?: string
-  bodyMass?: number
   level?: number
   isSelected?: boolean
   userId?: string
   files?: FileItem[]
+  monsterDefenses: MonsterDefenses[]
+  monsterAttacks: MonsterAttacks[]
   updatedAt?: Date
   createdAt?: Date
   avatar?: string
+  healthPoints?: number
+  stamina: number
+  strength: number
+  defense: number
+  evasion: number
+  experiencePoints: number
 }

@@ -2,46 +2,33 @@ import { useEffect, useRef, useState } from 'react'
 import Phaser from 'phaser'
 import monsterStore from '../../stores/MonsterStore'
 import styles from './TestFight.module.css'
-import { FileItem, Monster } from '../../types/GraphResponse'
 import { connectSocket } from '../../api/socket'
 import userStore from '../../stores/UserStore'
 import { BattleRedis } from '../../types/BattleRedis'
 import { useNavigate } from 'react-router-dom'
-import errorStore from '../../stores/ErrorStore'
 import { SpriteAtlas } from '../../types/sprites'
 
-const getSprite = async (
-  monster?: Monster,
-): Promise<{ atlasFile: FileItem | null; spriteFile: FileItem | null }> => {
-  if (!monster) return { atlasFile: null, spriteFile: null }
-
-  const atlasFile =
-    monster.files?.find((f) => f.fileType === 'JSON' && f.contentType === 'SPRITE_SHEET_MONSTER') ??
-    null
-
-  const spriteFile =
-    monster.files?.find(
-      (f) => f.fileType === 'IMAGE' && f.contentType === 'SPRITE_SHEET_MONSTER',
-    ) ?? null
-
-  return { atlasFile, spriteFile }
-}
-
 interface TestFightProps {
-  battleId?: string
+  battleId: string
+  atlas: SpriteAtlas
+  atlasOpponent: SpriteAtlas
+  spriteUrlOpponent: string
+  spriteUrl: string
 }
 
-export default function TestFight({ battleId }: TestFightProps) {
+export default function TestFight({
+  battleId,
+  atlas,
+  atlasOpponent,
+  spriteUrl,
+  spriteUrlOpponent,
+}: TestFightProps) {
   const gameRef = useRef<Phaser.Game | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const yourHealthRef = useRef<number>(100)
   const opponentHealthRef = useRef<number>(100)
   const yourHealthBarRef = useRef<HTMLDivElement>(null)
   const opponentHealthBarRef = useRef<HTMLDivElement>(null)
-  const [atlas, setAtlas] = useState<SpriteAtlas | null>(null)
-  const [atlasOpponent, setAtlasOpponent] = useState<SpriteAtlas | null>(null)
-  const [spriteUrl, setSpriteUrl] = useState<string>('')
-  const [spriteUrlOpponent, setSpriteUrlOpponent] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
   const [isOpponentReady, setIsOpponentReady] = useState(false)
   const socketRef = useRef<ReturnType<typeof connectSocket> | null>(null)
@@ -49,34 +36,21 @@ export default function TestFight({ battleId }: TestFightProps) {
   const [turnTimer, setTurnTimer] = useState<number>(0)
   const [currentTurnMonsterId, setCurrentTurnMonsterId] = useState<string | null>(null)
   const [isBattleOver, setIsBattleOver] = useState(false)
+  const [myAttacks, setMyAttacks] = useState<
+    { id: number; name: string; modifier: number; energyCost: number; cooldown: number }[]
+  >([])
+  const [myDefenses, setMyDefenses] = useState<
+    { id: number; name: string; modifier: number; energyCost: number; cooldown: number }[]
+  >([])
+  const [lastAction, setLastAction] = useState('')
+  const [yourStamina, setYourStamina] = useState(0)
+  const [opponentStamina, setOpponentStamina] = useState(0)
   const navigate = useNavigate()
 
   useEffect(() => {
     if (!isLoading) return
     ;(async () => {
       if (!monsterStore.selectedMonster || !monsterStore.opponentMonster) return
-
-      const { atlasFile, spriteFile } = await getSprite(monsterStore.selectedMonster)
-      if (atlasFile && spriteFile) {
-        const atlasJson = await fetch(atlasFile.url).then((res) => res.json())
-        setAtlas(atlasJson)
-        setSpriteUrl(spriteFile.url)
-      } else {
-        errorStore.setError({ error: true, message: 'Ошибка загрузки спрайтов' })
-        navigate('/error')
-      }
-
-      const { atlasFile: opponentAtlasFile, spriteFile: opponentSpriteFile } = await getSprite(
-        monsterStore.opponentMonster,
-      )
-      if (opponentAtlasFile && opponentSpriteFile) {
-        const atlasJson = await fetch(opponentAtlasFile.url).then((res) => res.json())
-        setAtlasOpponent(atlasJson)
-        setSpriteUrlOpponent(opponentSpriteFile.url)
-      } else {
-        errorStore.setError({ error: true, message: 'Ошибка загрузки спрайтов соперника' })
-        navigate('/error')
-      }
 
       if (!userStore.user?.token) return
 
@@ -115,14 +89,32 @@ export default function TestFight({ battleId }: TestFightProps) {
                 .setName('gameOverText')
             }
             return
-            return
           }
 
           const isChallenger = currentMonsterId === data.challengerMonsterId
+
+          if (isChallenger) {
+            setMyAttacks(data.challengerAttacks || [])
+            setMyDefenses(data.challengerDefenses || [])
+          } else {
+            setMyAttacks(data.opponentAttacks || [])
+            setMyDefenses(data.opponentDefenses || [])
+          }
+
+          setLastAction(data.lastActionLog || '')
+
           yourHealthRef.current = isChallenger ? data.challengerMonsterHp : data.opponentMonsterHp
           opponentHealthRef.current = isChallenger
             ? data.opponentMonsterHp
             : data.challengerMonsterHp
+
+          const yourSt = isChallenger ? data.challengerMonsterStamina : data.opponentMonsterStamina
+          const opponentSt = isChallenger
+            ? data.opponentMonsterStamina
+            : data.challengerMonsterStamina
+
+          setYourStamina(yourSt)
+          setOpponentStamina(opponentSt)
 
           if (yourHealthBarRef.current)
             yourHealthBarRef.current.style.width = `${yourHealthRef.current}%`
@@ -154,6 +146,7 @@ export default function TestFight({ battleId }: TestFightProps) {
   }, [battleId, isLoading, navigate])
 
   useEffect(() => {
+    //if reloading page setStartBattle
     if (!atlas || !spriteUrl || !containerRef.current || !spriteUrlOpponent || !atlasOpponent)
       return
     if (!isLoading) {
@@ -324,14 +317,21 @@ export default function TestFight({ battleId }: TestFightProps) {
     }
   }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent])
 
-  const handleAttack = (damage: number) => {
+  const handleAttack = ({
+    actionId,
+    actionType,
+  }: {
+    actionId: number
+    actionType: 'attack' | 'defense' | 'pass'
+  }) => {
     if (isLoading || !battleId || !monsterStore.selectedMonster?.id || !socketRef.current) return
 
     if (monsterStore.selectedMonster.id !== currentTurnMonsterId) return
 
     socketRef.current.emit('attack', {
       battleId,
-      damage,
+      actionId,
+      actionType,
       monsterId: monsterStore.selectedMonster.id,
     })
 
@@ -372,51 +372,84 @@ export default function TestFight({ battleId }: TestFightProps) {
           🕐 Ожидание готовности соперника...
         </div>
       )}
+      <div style={{ color: 'white', marginBottom: '10px' }}>Деиствие: {lastAction}</div>
+      <div style={{ color: 'white', marginBottom: '10px' }}>
+        {' '}
+        Ваш: {yourHealthRef.current} HP _______ Против: {opponentHealthRef.current} HP
+      </div>
+      <div style={{ color: 'white', marginBottom: '10px' }}>
+        {' '}
+        Ваш: {yourStamina} SP _______ Против: {opponentStamina} SP
+      </div>
       <div style={{ marginTop: '70px', position: 'relative', width: 400, height: 300 }}>
+        {/* Your HP bar */}
         <div className={styles.healthBar} style={{ top: 10, left: 20 }}>
           <div
             className={styles.healthFill}
             style={{ width: `${yourHealthRef.current}%`, backgroundColor: '#4caf50' }}
           />
+          <div
+            style={{
+              position: 'absolute',
+              top: 10,
+              left: 25,
+              color: 'white',
+              fontSize: '12px',
+              fontWeight: 'bold',
+            }}
+          ></div>
         </div>
+
+        {/* Opponent HP bar */}
         <div className={styles.healthBar} style={{ top: 10, right: 20 }}>
           <div
             className={styles.healthFill}
             style={{ width: `${opponentHealthRef.current}%`, backgroundColor: '#f44336' }}
           />
+          <div
+            style={{
+              position: 'absolute',
+              top: 10,
+              right: 25,
+              color: 'white',
+              fontSize: '12px',
+              fontWeight: 'bold',
+            }}
+          ></div>
         </div>
+
         <div ref={containerRef} />
       </div>
 
       {!isBattleOver && (
         <div className={styles.wrapperButton}>
+          {myAttacks.map((attack, idx) => (
+            <button
+              key={idx}
+              className={styles.attackButton}
+              onClick={() => handleAttack({ actionId: attack.id, actionType: 'attack' })}
+              disabled={!isMyTurn || !isOpponentReady}
+            >
+              {attack.name} ({attack.modifier})
+            </button>
+          ))}
+
+          {myDefenses.map((defense, idx) => (
+            <button
+              key={`d-${idx}`}
+              className={styles.attackButton}
+              onClick={() => handleAttack({ actionId: defense.id, actionType: 'defense' })}
+              disabled={!isMyTurn || !isOpponentReady}
+            >
+              🛡 {defense.name} ({defense.modifier})
+            </button>
+          ))}
           <button
             className={styles.attackButton}
-            onClick={() => handleAttack(10)}
+            onClick={() => handleAttack({ actionId: -1, actionType: 'pass' })}
             disabled={!isMyTurn || !isOpponentReady}
           >
-            Укусить
-          </button>
-          <button
-            className={styles.attackButton}
-            onClick={() => handleAttack(15)}
-            disabled={!isMyTurn || !isOpponentReady}
-          >
-            Удар рукой
-          </button>
-          <button
-            className={styles.attackButton}
-            onClick={() => handleAttack(20)}
-            disabled={!isMyTurn || !isOpponentReady}
-          >
-            Удар ногой
-          </button>
-          <button
-            className={styles.attackButton}
-            onClick={() => handleAttack(25)}
-            disabled={!isMyTurn || !isOpponentReady}
-          >
-            Удар хвостом
+          Пропустить ход
           </button>
         </div>
       )}
