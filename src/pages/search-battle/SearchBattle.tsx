@@ -181,6 +181,8 @@ const SearchBattle = observer(() => {
     setRequestbattleOpponent(null)
   }
 
+  console.log(registeredMonster)
+
   return (
     <>
       {requestBattleOpponent && (
