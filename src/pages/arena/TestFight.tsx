@@ -320,13 +320,22 @@ export default function TestFight({
   const handleAttack = ({
     actionId,
     actionType,
+    energyCost,
   }: {
     actionId: number
     actionType: 'attack' | 'defense' | 'pass'
+    energyCost: number
   }) => {
     if (isLoading || !battleId || !monsterStore.selectedMonster?.id || !socketRef.current) return
 
     if (monsterStore.selectedMonster.id !== currentTurnMonsterId) return
+
+    console.log('handleAttack', actionId, actionType, energyCost)
+
+    if(energyCost > yourStamina) {
+      alert(`Недостаточно SP для выполнения действия у Вас ${yourStamina} SP, требуется ${energyCost} SP`)
+      return
+    }
 
     socketRef.current.emit('attack', {
       battleId,
@@ -427,7 +436,7 @@ export default function TestFight({
             <button
               key={idx}
               className={styles.attackButton}
-              onClick={() => handleAttack({ actionId: attack.id, actionType: 'attack' })}
+              onClick={() => handleAttack({ actionId: attack.id, actionType: 'attack', energyCost: attack.energyCost })}
               disabled={!isMyTurn || !isOpponentReady}
             >
               {attack.name} ({attack.modifier})
@@ -438,7 +447,7 @@ export default function TestFight({
             <button
               key={`d-${idx}`}
               className={styles.attackButton}
-              onClick={() => handleAttack({ actionId: defense.id, actionType: 'defense' })}
+              onClick={() => handleAttack({ actionId: defense.id, actionType: 'defense', energyCost: defense.energyCost })}
               disabled={!isMyTurn || !isOpponentReady}
             >
               🛡 {defense.name} ({defense.modifier})
@@ -446,7 +455,7 @@ export default function TestFight({
           ))}
           <button
             className={styles.attackButton}
-            onClick={() => handleAttack({ actionId: -1, actionType: 'pass' })}
+            onClick={() => handleAttack({ actionId: -1, actionType: 'pass', energyCost: 0 })}
             disabled={!isMyTurn || !isOpponentReady}
           >
           Пропустить ход
