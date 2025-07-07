@@ -73,24 +73,6 @@ export default function TestFight({
           const currentMonsterId = monsterStore.selectedMonster?.id
           if (!currentMonsterId) return
 
-          if (data.winnerMonsterId) {
-            setIsBattleOver(true)
-
-            const isWin = monsterStore.selectedMonster?.id === data.winnerMonsterId
-            const scene = gameRef.current?.scene.scenes[0]
-            if (scene && !scene.children.getByName('gameOverText')) {
-              scene.add
-                .text(200, 40, isWin ? 'YOU WIN' : 'YOU LOSE', {
-                  fontSize: '32px',
-                  color: isWin ? '#00ff00' : '#ff0000',
-                  fontStyle: 'bold',
-                })
-                .setOrigin(0.5)
-                .setName('gameOverText')
-            }
-            return
-          }
-
           const isChallenger = currentMonsterId === data.challengerMonsterId
 
           if (isChallenger) {
@@ -120,6 +102,24 @@ export default function TestFight({
             yourHealthBarRef.current.style.width = `${yourHealthRef.current}%`
           if (opponentHealthBarRef.current)
             opponentHealthBarRef.current.style.width = `${opponentHealthRef.current}%`
+
+          if (data.winnerMonsterId) {
+            setIsBattleOver(true)
+
+            const isWin = monsterStore.selectedMonster?.id === data.winnerMonsterId
+            const scene = gameRef.current?.scene.scenes[0]
+            if (scene && !scene.children.getByName('gameOverText')) {
+              scene.add
+                .text(200, 40, isWin ? 'YOU WIN' : 'YOU LOSE', {
+                  fontSize: '32px',
+                  color: isWin ? '#00ff00' : '#ff0000',
+                  fontStyle: 'bold',
+                })
+                .setOrigin(0.5)
+                .setName('gameOverText')
+            }
+            return
+          }
 
           setIsOpponentReady(
             isChallenger ? data.opponentReady === '1' : data.challengerReady === '1',
@@ -157,7 +157,23 @@ export default function TestFight({
         })
       }
     }
-  }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent, battleId, isLoading])
+
+    if (isLoading && !isOpponentReady) {
+      const intervalId = setInterval(() => {
+        if (!socketRef.current || isOpponentReady) {
+          clearInterval(intervalId)
+          return
+        }
+
+        socketRef.current.emit('startBattle', {
+          battleId,
+          monsterId: monsterStore.selectedMonster?.id,
+        })
+      }, 2000)
+
+      return () => clearInterval(intervalId)
+    }
+  }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent, battleId, isLoading, isOpponentReady])
 
   useEffect(() => {
     if (!atlas || !spriteUrl || !containerRef.current || !spriteUrlOpponent || !atlasOpponent)
@@ -330,10 +346,10 @@ export default function TestFight({
 
     if (monsterStore.selectedMonster.id !== currentTurnMonsterId) return
 
-    console.log('handleAttack', actionId, actionType, energyCost)
-
-    if(energyCost > yourStamina) {
-      alert(`Недостаточно SP для выполнения действия у Вас ${yourStamina} SP, требуется ${energyCost} SP`)
+    if (energyCost > yourStamina) {
+      alert(
+        `Недостаточно SP для выполнения действия у Вас ${yourStamina} SP, требуется ${energyCost} SP`,
+      )
       return
     }
 
@@ -436,7 +452,13 @@ export default function TestFight({
             <button
               key={idx}
               className={styles.attackButton}
-              onClick={() => handleAttack({ actionId: attack.id, actionType: 'attack', energyCost: attack.energyCost })}
+              onClick={() =>
+                handleAttack({
+                  actionId: attack.id,
+                  actionType: 'attack',
+                  energyCost: attack.energyCost,
+                })
+              }
               disabled={!isMyTurn || !isOpponentReady}
             >
               {attack.name} ({attack.modifier})
@@ -447,7 +469,13 @@ export default function TestFight({
             <button
               key={`d-${idx}`}
               className={styles.attackButton}
-              onClick={() => handleAttack({ actionId: defense.id, actionType: 'defense', energyCost: defense.energyCost })}
+              onClick={() =>
+                handleAttack({
+                  actionId: defense.id,
+                  actionType: 'defense',
+                  energyCost: defense.energyCost,
+                })
+              }
               disabled={!isMyTurn || !isOpponentReady}
             >
               🛡 {defense.name} ({defense.modifier})
@@ -458,7 +486,7 @@ export default function TestFight({
             onClick={() => handleAttack({ actionId: -1, actionType: 'pass', energyCost: 0 })}
             disabled={!isMyTurn || !isOpponentReady}
           >
-          Пропустить ход
+            Пропустить ход
           </button>
         </div>
       )}
