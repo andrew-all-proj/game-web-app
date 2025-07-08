@@ -15,6 +15,7 @@
     "@twa-dev/sdk": "^8.0.2",
     "framer-motion": "^12.6.3",
     "graphql": "^16.10.0",
+    "lottie-react": "^2.4.1",
     "mobx": "^6.13.7",
     "mobx-react-lite": "^4.1.0",
     "phaser": "^3.88.2",
@@ -24,7 +25,6 @@
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
-    "game-db": "git+ssh://git@github.com/andrew-all-proj/game-db.git#v0.1.2",
     "@eslint/js": "^9.21.0",
     "@types/node": "^22.14.0",
     "@types/react": "^19.0.10",
@@ -34,6 +34,7 @@
     "eslint": "^9.21.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
+    "game-db": "git+ssh://git@github.com/andrew-all-proj/game-db.git#v0.1.2",
     "globals": "^15.15.0",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
