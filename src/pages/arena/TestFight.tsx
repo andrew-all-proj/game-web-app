@@ -4,9 +4,13 @@ import monsterStore from '../../stores/MonsterStore'
 import styles from './TestFight.module.css'
 import { connectSocket } from '../../api/socket'
 import userStore from '../../stores/UserStore'
-import { BattleRedis } from '../../types/BattleRedis'
+import { BattleRedis, LastActionLog } from '../../types/BattleRedis'
 import { useNavigate } from 'react-router-dom'
 import { SpriteAtlas } from '../../types/sprites'
+import BattleButton from '../../components/Button/BattleButton'
+import StatBar from '../../components/StatBar/StatBar'
+import smallEnergyIcon from '../../assets/icon/small-energy-icon.svg'
+import smallHeartIcon from '../../assets/icon/small-heart-icon.svg'
 
 interface TestFightProps {
   battleId: string
@@ -42,7 +46,7 @@ export default function TestFight({
   const [myDefenses, setMyDefenses] = useState<
     { id: number; name: string; modifier: number; energyCost: number; cooldown: number }[]
   >([])
-  const [lastAction, setLastAction] = useState('')
+  const [lastAction, setLastAction] = useState<LastActionLog | null>(null)
   const [yourStamina, setYourStamina] = useState(0)
   const [opponentStamina, setOpponentStamina] = useState(0)
   const navigate = useNavigate()
@@ -83,7 +87,7 @@ export default function TestFight({
             setMyDefenses(data.opponentDefenses || [])
           }
 
-          setLastAction(data.lastActionLog || '')
+          setLastAction(data.lastActionLog ?? null)
 
           yourHealthRef.current = isChallenger ? data.challengerMonsterHp : data.opponentMonsterHp
           opponentHealthRef.current = isChallenger
@@ -397,61 +401,71 @@ export default function TestFight({
           🕐 Ожидание готовности соперника...
         </div>
       )}
-      <div style={{ color: 'white', marginBottom: '10px' }}>Деиствие: {lastAction}</div>
-      <div style={{ color: 'white', marginBottom: '10px' }}>
-        {' '}
-        Ваш: {yourHealthRef.current} HP _______ Против: {opponentHealthRef.current} HP
+      <div className={styles.statBars}>
+        <StatBar
+          current={yourHealthRef.current ?? 0}
+          max={monsterStore.selectedMonster?.healthPoints ?? 0}
+          iconSrc={smallHeartIcon}
+          backgroundColor={'white'}
+          color={'red'}
+        />
+        <StatBar
+          current={opponentHealthRef.current ?? 0}
+          max={monsterStore.selectedMonster?.healthPoints ?? 0}
+          iconSrc={smallHeartIcon}
+          backgroundColor={'white'}
+          color={'red'}
+        />
+        <StatBar
+          current={yourStamina ?? 0}
+          max={monsterStore.selectedMonster?.stamina ?? 0}
+          iconSrc={smallEnergyIcon}
+          backgroundColor={'white'}
+          color={'yellow'}
+        />
+        <StatBar
+          current={opponentStamina ?? 0}
+          max={monsterStore.opponentMonster?.stamina ?? 0}
+          iconSrc={smallEnergyIcon}
+          backgroundColor={'white'}
+          color={'yellow'}
+        />
       </div>
-      <div style={{ color: 'white', marginBottom: '10px' }}>
-        {' '}
-        Ваш: {yourStamina} SP _______ Против: {opponentStamina} SP
-      </div>
-      <div style={{ marginTop: '70px', position: 'relative', width: 400, height: 300 }}>
-        {/* Your HP bar */}
-        <div className={styles.healthBar} style={{ top: 10, left: 20 }}>
-          <div
-            className={styles.healthFill}
-            style={{ width: `${yourHealthRef.current}%`, backgroundColor: '#4caf50' }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: 10,
-              left: 25,
-              color: 'white',
-              fontSize: '12px',
-              fontWeight: 'bold',
-            }}
-          ></div>
-        </div>
-
-        {/* Opponent HP bar */}
-        <div className={styles.healthBar} style={{ top: 10, right: 20 }}>
-          <div
-            className={styles.healthFill}
-            style={{ width: `${opponentHealthRef.current}%`, backgroundColor: '#f44336' }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: 10,
-              right: 25,
-              color: 'white',
-              fontSize: '12px',
-              fontWeight: 'bold',
-            }}
-          ></div>
-        </div>
-
+      <div className={styles.phaserContainerWrapper}>
+        {lastAction && (
+          <>
+            {lastAction.monsterId === monsterStore.selectedMonster?.id ? (
+              <>
+                <div className={`${styles.lastActionOverlay} ${styles.opponentOverlay}`}>
+                  -{lastAction.damage}HP
+                </div>
+                <div className={`${styles.lastActionOverlay} ${styles.yourOverlay}`}>
+                  +{lastAction.stamina}SP
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={`${styles.lastActionOverlay} ${styles.yourOverlay}`}>
+                  -{lastAction.damage}HP
+                </div>
+                <div className={`${styles.lastActionOverlay} ${styles.opponentOverlay}`}>
+                  +{lastAction.stamina}SP
+                </div>
+              </>
+            )}
+          </>
+        )}
         <div ref={containerRef} />
       </div>
 
       {!isBattleOver && (
         <div className={styles.wrapperButton}>
           {myAttacks.map((attack, idx) => (
-            <button
+            <BattleButton
               key={idx}
-              className={styles.attackButton}
+              spCost={attack.energyCost}
+              name={attack.name}
+              modifier={attack.modifier}
               onClick={() =>
                 handleAttack({
                   actionId: attack.id,
@@ -459,16 +473,15 @@ export default function TestFight({
                   energyCost: attack.energyCost,
                 })
               }
-              disabled={!isMyTurn || !isOpponentReady}
-            >
-              {attack.name} ({attack.modifier})
-            </button>
+            />
           ))}
 
           {myDefenses.map((defense, idx) => (
-            <button
+            <BattleButton
               key={`d-${idx}`}
-              className={styles.attackButton}
+              spCost={defense.energyCost}
+              name={`🛡 ${defense.name}`}
+              modifier={defense.modifier}
               onClick={() =>
                 handleAttack({
                   actionId: defense.id,
@@ -476,18 +489,21 @@ export default function TestFight({
                   energyCost: defense.energyCost,
                 })
               }
-              disabled={!isMyTurn || !isOpponentReady}
-            >
-              🛡 {defense.name} ({defense.modifier})
-            </button>
+            />
           ))}
-          <button
-            className={styles.attackButton}
-            onClick={() => handleAttack({ actionId: -1, actionType: 'pass', energyCost: 0 })}
-            disabled={!isMyTurn || !isOpponentReady}
-          >
-            Пропустить ход
-          </button>
+
+          <BattleButton
+            spCost={0}
+            name="Пропуск"
+            modifier={0}
+            onClick={() =>
+              handleAttack({
+                actionId: -1,
+                actionType: 'pass',
+                energyCost: 0,
+              })
+            }
+          />
         </div>
       )}
     </div>

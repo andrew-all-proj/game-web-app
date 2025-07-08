@@ -22,6 +22,13 @@ export interface MonsterDefense {
   cooldown: number
 }
 
+export interface LastActionLog {
+  monsterId: string
+  actionName: string
+  damage: number
+  stamina: number
+}
+
 export interface BattleRedis {
   battleId: string
   opponentMonsterId: string
@@ -44,7 +51,7 @@ export interface BattleRedis {
   currentTurnMonsterId: string
   turnStartTime: number
   turnTimeLimit: number
-  lastActionLog?: string
+  lastActionLog?: LastActionLog
 
   challengerSocketId: string
   opponentSocketId: string

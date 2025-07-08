@@ -1,7 +1,8 @@
 .main {
-  display: "flex";
-  flex-direction: "column";
-  align-items: "center";
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .wrapperButton {
@@ -34,17 +35,42 @@
   transform: scale(0.97);
 }
 
-.healthBar {
-  position: absolute;
-  width: 100px;
-  height: 10px;
-  background-color: #555;
-  border-radius: 5px;
-  overflow: hidden;
+.statBars {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  justify-content: center;
+  gap: 10px 80px;
+  width: fit-content;
+  margin: 0 auto;
 }
 
-.healthFill {
-  height: 100%;
-  background-color: #4caf50;
-  transition: width 0.3s ease;
+.phaserContainerWrapper {
+  position: relative;
+  width: 400px;
+  height: 300px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lastActionOverlay {
+  position: absolute;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  text-shadow: 0 0 5px black;
+  text-align: center;
+}
+
+.yourOverlay {
+  top: 10px;
+  left: 100px;
+  transform: translate(-50%, 0);
+}
+
+.opponentOverlay {
+  top: 10px;
+  left: 300px;
+  transform: translate(-50%, 0);
 }
