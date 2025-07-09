@@ -3,10 +3,9 @@ import { observer } from 'mobx-react-lite'
 import { useNavigate } from 'react-router-dom'
 import styles from './CreateMonster.module.css'
 import MainInput from '../../components/Input/MainInput'
-import PartSelector from '../../components/PartSelector/PartSelector'
-import headIcon from '../../assets/icon/head-icon.svg'
-import bodyIcon from '../../assets/icon/body-icon.svg'
-import emotionIcon from '../../assets/icon/emotion-icon.svg'
+import headIcon from '../../assets/icon/icon_head.svg'
+import bodyIcon from '../../assets/icon/icon_body.svg'
+import armsIcon from '../../assets/icon/icon_arms.svg'
 import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
 import { FILES } from '../../api/graphql/query'
 import { FileItem, GraphQLListResponse } from '../../types/GraphResponse'
@@ -16,7 +15,6 @@ import { FrameData, SpriteAtlas } from '../../types/sprites'
 import errorStore from '../../stores/ErrorStore'
 import PreviewMonster from './PreviewMonster'
 import { createPartPreviews } from './create-part-previews'
-import MonsterPartGrid from './MonsterPartGrid'
 import { assembleMonsterCanvas } from '../../functions/assemble-monster-canvas'
 import userStore from '../../stores/UserStore'
 import { MONSTER_CREATE } from '../../api/graphql/mutation'
@@ -24,6 +22,8 @@ import { uploadFile } from '../../api/upload-file'
 import monsterStore from '../../stores/MonsterStore'
 import SecondButton from '../../components/Button/SecondButton'
 import Loading from '../loading/Loading'
+import PartSelectorMonster from '../../components/PartSelector/PartSelectorMonster'
+import RoundButton from '../../components/Button/RoundButton'
 
 declare global {
   interface Window {
@@ -70,6 +70,9 @@ const CreateMonster = observer(() => {
   const [errorMsg, setErrorMsg] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [headIndex, setHeadIndex] = useState(0)
+  const [bodyIndex, setBodyIndex] = useState(0)
+  const [armsIndex, setArmsIndex] = useState(0)
 
   const [activeTab, setActiveTab] = useState<PartTab>('body')
   //const [isEditing, setIsEditing] = useState(false)  //TODO for future use
@@ -131,12 +134,6 @@ const CreateMonster = observer(() => {
 
     fetchMainSprite()
   }, [navigate])
-
-  const tabs: { key: keyof PartPreviews; icon: string; alt: string }[] = [
-    { key: 'head', icon: headIcon, alt: 'Head' },
-    { key: 'body', icon: bodyIcon, alt: 'Body' },
-    { key: 'arms', icon: emotionIcon, alt: 'Emotion' },
-  ]
 
   const handlePartSelect = (part: SelectablePart) => {
     if (!part) return
@@ -246,6 +243,9 @@ const CreateMonster = observer(() => {
 
   return (
     <div className={styles.laboratory}>
+      <div className={styles.navigate}>
+        <RoundButton onClick={() => navigate('/laboratory')} type='exit' />
+      </div>
       <div className={styles.wrapperMonster}>
         <PreviewMonster
           spriteAtlas={spriteAtlasJson}
@@ -266,24 +266,40 @@ const CreateMonster = observer(() => {
           onChange={(e) => setName(e.target.value)}
           placeholder="_введите имя"
           type="text"
+          onButtonClick={isSaving ? () => {} : handleSaveImage}
         />
       </div>
-      <div className={styles.buttonWrapper}>
-        <SecondButton onClick={isSaving ? () => {} : handleSaveImage}>Сохранить</SecondButton>
-        <SecondButton onClick={() => navigate('/laboratory')}>Лаборатория</SecondButton>
-      </div>
-      <PartSelector<keyof PartPreviews>
-        tabs={tabs}
+      <PartSelectorMonster
+        tabs={[
+          {
+            key: 'head',
+            icon: headIcon,
+            alt: 'Head',
+            parts: partPreviews.head,
+            selectedIndex: headIndex,
+            setSelectedIndex: setHeadIndex,
+          },
+          {
+            key: 'body',
+            icon: bodyIcon,
+            alt: 'Body',
+            parts: partPreviews.body,
+            selectedIndex: bodyIndex,
+            setSelectedIndex: setBodyIndex,
+          },
+          {
+            key: 'arms',
+            icon: armsIcon,
+            alt: 'Arms',
+            parts: partPreviews.arms,
+            selectedIndex: armsIndex,
+            setSelectedIndex: setArmsIndex,
+          },
+        ]}
         activeTab={activeTab}
-        onTabChange={setActiveTab}
-        renderGrid={() => (
-          <MonsterPartGrid
-            partPreviews={partPreviews}
-            activeTab={activeTab}
-            spriteUrl={spriteUrl}
-            handlePartSelect={handlePartSelect}
-          />
-        )}
+        onTabChange={(tabKey) => setActiveTab(tabKey as keyof PartPreviews)}
+        spriteUrl={spriteUrl}
+        onSelectPart={handlePartSelect}
       />
     </div>
   )
