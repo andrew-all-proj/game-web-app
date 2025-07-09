@@ -20,7 +20,6 @@ import userStore from '../../stores/UserStore'
 import { MONSTER_CREATE } from '../../api/graphql/mutation'
 import { uploadFile } from '../../api/upload-file'
 import monsterStore from '../../stores/MonsterStore'
-import SecondButton from '../../components/Button/SecondButton'
 import Loading from '../loading/Loading'
 import PartSelectorMonster from '../../components/PartSelector/PartSelectorMonster'
 import RoundButton from '../../components/Button/RoundButton'
@@ -244,7 +243,7 @@ const CreateMonster = observer(() => {
   return (
     <div className={styles.laboratory}>
       <div className={styles.navigate}>
-        <RoundButton onClick={() => navigate('/laboratory')} type='exit' />
+        <RoundButton onClick={() => navigate('/laboratory')} type="exit" />
       </div>
       <div className={styles.wrapperMonster}>
         <PreviewMonster

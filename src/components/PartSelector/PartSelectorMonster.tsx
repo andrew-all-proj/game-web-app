@@ -75,7 +75,7 @@ export default function PartSelectorMonster({
         {fullParts.map((item, index) => {
           const onClick = () => {
             if (item) {
-              onSelect(index) 
+              onSelect(index)
               onSelectPart(item)
             }
           }

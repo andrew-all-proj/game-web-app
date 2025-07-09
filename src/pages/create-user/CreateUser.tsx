@@ -24,12 +24,6 @@ interface PartTypeAvatar {
   icon: string
 }
 
-const tabs = [
-  { key: 'head', icon: hairIcon, alt: 'Голова' },
-  { key: 'body', icon: clothesIcon, alt: 'Одежда' },
-  { key: 'emotion', icon: emotionIcon, alt: 'Эмоции' },
-]
-
 interface MetadataSpriteAvatar {
   type: string
   attachToHead?: { x: number; y: number }
