@@ -241,21 +241,23 @@ const CreateMonster = observer(() => {
   }
 
   return (
-    <div className={styles.laboratory}>
+    <div className={styles.createMonster}>
       <div className={styles.navigate}>
         <RoundButton onClick={() => navigate('/laboratory')} type="exit" />
       </div>
-      <div className={styles.wrapperMonster}>
-        <PreviewMonster
-          spriteAtlas={spriteAtlasJson}
-          spriteSheets={spriteUrl}
-          partPreviews={partPreviews}
-          selectedPartsMonster={selectedPartsMonster}
-        />
-      </div>
-      <div className={styles.dotWrapper}>
-        <div className={styles.outerDot}>
-          <div className={styles.innerDot}></div>
+      <div className={styles.centerWrapper}>
+        <div className={styles.wrapperMonster}>
+          <PreviewMonster
+            spriteAtlas={spriteAtlasJson}
+            spriteSheets={spriteUrl}
+            partPreviews={partPreviews}
+            selectedPartsMonster={selectedPartsMonster}
+          />
+        </div>
+        <div className={styles.dotWrapper}>
+          <div className={styles.outerDot}>
+            <div className={styles.innerDot}></div>
+          </div>
         </div>
       </div>
       <div>{errorMsg && <div style={{ color: 'red' }}>{errorMsg}</div>}</div>
