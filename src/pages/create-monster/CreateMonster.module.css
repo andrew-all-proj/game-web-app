@@ -20,10 +20,35 @@
   width: 100%;
 }
 
-.navigate {
-  padding-top: 10px;
-  align-self: flex-end;
-  padding-right: 20px;
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.barWrapper {
+  position: relative;
+  display: inline-block;
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+.imageOverlap {
+  position: absolute;
+  top: 50%;
+  right: -20px;
+  top: 10px;
+  transform: translateY(-50%);
+  height: 60px;
+  width: auto;
+  pointer-events: none;
+  z-index: 2;
 }
 
 .wrapperMonster {
