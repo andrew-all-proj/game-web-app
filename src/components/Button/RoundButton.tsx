@@ -4,7 +4,8 @@ import styles from './RoundButton.module.css'
 interface RoundButtonProps {
   onClick: () => void
   size?: number
-  type?: 'back' | 'select' | 'exit'
+  type?: 'back' | 'select' | 'exit' | 'next'
+  color?: string
   className?: string
 }
 
@@ -12,6 +13,7 @@ export default function RoundButton({
   onClick,
   size = 46,
   type = 'back',
+  color = '#fb6b6b',
   className = '',
 }: RoundButtonProps) {
   const getIcon = () => {
@@ -48,6 +50,22 @@ export default function RoundButton({
             />
           </svg>
         )
+      case 'next':
+        return (
+          <svg
+            width="20"
+            height="22"
+            viewBox="0 0 20 22"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              opacity="0.3"
+              d="M18.3062 8.38037C20.3568 9.52483 20.3568 12.4752 18.3062 13.6196L4.96204 21.0671C2.96235 22.1831 0.500001 20.7375 0.500001 18.4475L0.500002 3.55254C0.500002 1.26251 2.96235 -0.18312 4.96203 0.932914L18.3062 8.38037Z"
+              fill="black"
+            />
+          </svg>
+        )
       case 'back':
       default:
         return (
@@ -70,16 +88,8 @@ export default function RoundButton({
 
   return (
     <button
-      className={clsx(
-        styles.roundButton,
-        {
-          [styles.select]: type === 'select',
-          [styles.exit]: type === 'exit',
-          [styles.back]: type === 'back',
-        },
-        className,
-      )}
-      style={{ width: size, height: size }}
+      className={clsx(styles.roundButton, className)}
+      style={{ width: size, height: size, backgroundColor: color }}
       onClick={onClick}
     >
       {getIcon()}

@@ -49,6 +49,7 @@ export interface Monster {
   id: string
   name?: string
   level?: number
+  nextLevelExp?: number
   isSelected?: boolean
   userId?: string
   files?: FileItem[]

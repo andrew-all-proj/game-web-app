@@ -368,22 +368,22 @@ const CreateUser = observer(() => {
   return (
     <div className={styles.createUser}>
       <div className={styles.navigate}>
-    <RoundButton onClick={() => navigate('/laboratory')} />
-  </div>
+        <RoundButton onClick={() => navigate('/laboratory')} />
+      </div>
 
-  <div className={styles.centerContent}>
-    <div className={styles.avatarWrapper}>
-      <canvas ref={canvasRef} width={142} height={142} className={styles.avatarCanvas} />
-    </div>
+      <div className={styles.centerContent}>
+        <div className={styles.avatarWrapper}>
+          <canvas ref={canvasRef} width={142} height={142} className={styles.avatarCanvas} />
+        </div>
 
-    <div className={styles.infoMessage}>{message}</div>
-      <MainInput
-        placeholder="_введите Имя"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        onButtonClick={handleSaveAvatar}
-      />
-  </div>
+        <div className={styles.infoMessage}>{message}</div>
+        <MainInput
+          placeholder="_введите Имя"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onButtonClick={handleSaveAvatar}
+        />
+      </div>
       <div className={clsx(styles.partSelectorWrapper, { [styles.visible]: animateIn })}>
         <PartSelector
           tabs={[
