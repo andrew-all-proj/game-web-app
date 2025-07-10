@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { observer } from 'mobx-react-lite'
-import headIcon from '../../assets/icon/head-icon.svg'
-import bodyIcon from '../../assets/icon/body-icon.svg'
-import emotionIcon from '../../assets/icon/emotion-icon.svg'
+import hairIcon from '../../assets/icon/icon_hair.svg'
+import clothesIcon from '../../assets/icon/icon_clothes.svg'
+import emotionIcon from '../../assets/icon/icon_face.svg'
 import userStore from '../../stores/UserStore'
 import styles from './CreateUser.module.css'
 import { uploadFile } from '../../api/upload-file'
@@ -15,20 +15,15 @@ import { getMaxVersion } from '../../functions/get-max-version'
 import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
 import MainInput from '../../components/Input/MainInput'
 import PartSelector from '../../components/PartSelector/PartSelector'
-import SecondButton from '../../components/Button/SecondButton'
 import Loading from '../loading/Loading'
 import errorStore from '../../stores/ErrorStore'
+import RoundButton from '../../components/Button/RoundButton'
+import clsx from 'clsx'
 
 interface PartTypeAvatar {
   part: string
   icon: string
 }
-
-const tabs = [
-  { key: 'head', icon: headIcon, alt: 'Голова' },
-  { key: 'body', icon: bodyIcon, alt: 'Тело' },
-  { key: 'emotion', icon: emotionIcon, alt: 'Эмоции' },
-]
 
 interface MetadataSpriteAvatar {
   type: string
@@ -56,6 +51,8 @@ const CreateUser = observer(() => {
 
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+
+  const [animateIn, setAnimateIn] = useState(false)
 
   useEffect(() => {
     const loadSvgSprite = async () => {
@@ -358,70 +355,68 @@ const CreateUser = observer(() => {
     }
   }
 
-  const renderGrid = (
-    parts: PartTypeAvatar[],
-    selectedIndex: number,
-    onSelect: (i: number) => void,
-  ) => {
-    if (!parts.length) return null
-    const fullParts: (PartTypeAvatar | null)[] = [...parts]
-    while (fullParts.length < 12) {
-      fullParts.push(null)
+  useEffect(() => {
+    if (!isLoading) {
+      setAnimateIn(true)
     }
-
-    return (
-      <div className={styles.grid}>
-        {fullParts.map((part, i) => (
-          <div
-            key={part?.icon || `empty-${i}`}
-            className={`${styles.partItem} ${part && i === selectedIndex ? styles.active : ''}`}
-            onClick={() => part && (onSelect(i), setIsEditing(false))}
-          >
-            {part ? (
-              <svg xmlns="http://www.w3.org/2000/svg" className={styles.partItemSvg}>
-                <use href={`#${part.icon}`} />
-              </svg>
-            ) : (
-              <div style={{ width: '100%', height: '100%' }} />
-            )}
-          </div>
-        ))}
-      </div>
-    )
-  }
+  }, [isLoading])
 
   if (isLoading) {
     return <Loading />
   }
 
   return (
-    <div className={styles.main}>
-      <div className={styles.avatarWrapper}>
-        <canvas ref={canvasRef} width={142} height={142} className={styles.avatarCanvas} />
-      </div>
-      <div className={styles.infoMessage}>
-        {message}
-        <MainInput
-          placeholder="_введите Имя"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <SecondButton onClick={handleSaveAvatar}>Сохранить</SecondButton>
-        <SecondButton onClick={() => navigate('/laboratory')}>Лаборатория</SecondButton>
-      </div>
+    <div className={styles.createUser}>
+      <div className={styles.navigate}>
+    <RoundButton onClick={() => navigate('/laboratory')} />
+  </div>
 
-      <PartSelector
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        renderGrid={() => {
-          if (activeTab === 'head') return renderGrid(headParts, headIndex, setHeadIndex)
-          if (activeTab === 'body') return renderGrid(bodyParts, bodyIndex, setBodyIndex)
-          if (activeTab === 'emotion')
-            return renderGrid(emotionParts, emotionIndex, setEmotionIndex)
-          return null
-        }}
+  <div className={styles.centerContent}>
+    <div className={styles.avatarWrapper}>
+      <canvas ref={canvasRef} width={142} height={142} className={styles.avatarCanvas} />
+    </div>
+
+    <div className={styles.infoMessage}>{message}</div>
+      <MainInput
+        placeholder="_введите Имя"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        onButtonClick={handleSaveAvatar}
       />
+  </div>
+      <div className={clsx(styles.partSelectorWrapper, { [styles.visible]: animateIn })}>
+        <PartSelector
+          tabs={[
+            {
+              key: 'head',
+              icon: hairIcon,
+              alt: 'Голова',
+              parts: headParts,
+              selectedIndex: headIndex,
+              setSelectedIndex: setHeadIndex,
+            },
+            {
+              key: 'body',
+              icon: clothesIcon,
+              alt: 'Одежда',
+              parts: bodyParts,
+              selectedIndex: bodyIndex,
+              setSelectedIndex: setBodyIndex,
+            },
+            {
+              key: 'emotion',
+              icon: emotionIcon,
+              alt: 'Эмоции',
+              parts: emotionParts,
+              selectedIndex: emotionIndex,
+              setSelectedIndex: setEmotionIndex,
+            },
+          ]}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          setIsEditing={setIsEditing}
+        />
+      </div>
     </div>
   )
 })

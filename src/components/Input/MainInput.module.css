@@ -1,15 +1,41 @@
-.mainInput {
-  width: 100%;
-  max-width: 205px;
-  height: 34px;
-  border: 5px solid #362f2d;
-  border-radius: 15px;
+.inputWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.inputField {
+  display: flex;
+  align-items: center;
+  background-color: #e8eaea;
+  border: 5px solid #2c2323;
+  border-radius: 25px;
+  padding: 6px 10px;
   box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);
-  font-size: 18px;
-  color: #c1c5fe;
-  text-align: center;
-  background: none;
-  font-family: var(--font-base);
-  font-weight: 700;
-  line-height: 2;
+  width: fit-content;
+}
+
+.mainInput::placeholder {
+  color: #2c2323;
+  opacity: 1;
+}
+
+.mainInput {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: "Nunito", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c2323;
+  padding: 4px;
+  height: 20px;
+  width: 220px;
+}
+
+.buttonOverlap {
+  position: absolute;
+  top: 50%;
+  right: -5px;
+  transform: translateY(-50%);
+  z-index: 2;
 }

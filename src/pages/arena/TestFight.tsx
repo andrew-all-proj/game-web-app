@@ -2,46 +2,37 @@ import { useEffect, useRef, useState } from 'react'
 import Phaser from 'phaser'
 import monsterStore from '../../stores/MonsterStore'
 import styles from './TestFight.module.css'
-import { FileItem, Monster } from '../../types/GraphResponse'
 import { connectSocket } from '../../api/socket'
 import userStore from '../../stores/UserStore'
-import { BattleRedis } from '../../types/BattleRedis'
+import { BattleRedis, LastActionLog } from '../../types/BattleRedis'
 import { useNavigate } from 'react-router-dom'
-import errorStore from '../../stores/ErrorStore'
 import { SpriteAtlas } from '../../types/sprites'
-
-const getSprite = async (
-  monster?: Monster,
-): Promise<{ atlasFile: FileItem | null; spriteFile: FileItem | null }> => {
-  if (!monster) return { atlasFile: null, spriteFile: null }
-
-  const atlasFile =
-    monster.files?.find((f) => f.fileType === 'JSON' && f.contentType === 'SPRITE_SHEET_MONSTER') ??
-    null
-
-  const spriteFile =
-    monster.files?.find(
-      (f) => f.fileType === 'IMAGE' && f.contentType === 'SPRITE_SHEET_MONSTER',
-    ) ?? null
-
-  return { atlasFile, spriteFile }
-}
+import BattleButton from '../../components/Button/BattleButton'
+import StatBar from '../../components/StatBar/StatBar'
+import smallEnergyIcon from '../../assets/icon/small-energy-icon.svg'
+import smallHeartIcon from '../../assets/icon/small-heart-icon.svg'
 
 interface TestFightProps {
-  battleId?: string
+  battleId: string
+  atlas: SpriteAtlas
+  atlasOpponent: SpriteAtlas
+  spriteUrlOpponent: string
+  spriteUrl: string
 }
 
-export default function TestFight({ battleId }: TestFightProps) {
+export default function TestFight({
+  battleId,
+  atlas,
+  atlasOpponent,
+  spriteUrl,
+  spriteUrlOpponent,
+}: TestFightProps) {
   const gameRef = useRef<Phaser.Game | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const yourHealthRef = useRef<number>(100)
   const opponentHealthRef = useRef<number>(100)
   const yourHealthBarRef = useRef<HTMLDivElement>(null)
   const opponentHealthBarRef = useRef<HTMLDivElement>(null)
-  const [atlas, setAtlas] = useState<SpriteAtlas | null>(null)
-  const [atlasOpponent, setAtlasOpponent] = useState<SpriteAtlas | null>(null)
-  const [spriteUrl, setSpriteUrl] = useState<string>('')
-  const [spriteUrlOpponent, setSpriteUrlOpponent] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
   const [isOpponentReady, setIsOpponentReady] = useState(false)
   const socketRef = useRef<ReturnType<typeof connectSocket> | null>(null)
@@ -49,34 +40,21 @@ export default function TestFight({ battleId }: TestFightProps) {
   const [turnTimer, setTurnTimer] = useState<number>(0)
   const [currentTurnMonsterId, setCurrentTurnMonsterId] = useState<string | null>(null)
   const [isBattleOver, setIsBattleOver] = useState(false)
+  const [myAttacks, setMyAttacks] = useState<
+    { id: number; name: string; modifier: number; energyCost: number; cooldown: number }[]
+  >([])
+  const [myDefenses, setMyDefenses] = useState<
+    { id: number; name: string; modifier: number; energyCost: number; cooldown: number }[]
+  >([])
+  const [lastAction, setLastAction] = useState<LastActionLog | null>(null)
+  const [yourStamina, setYourStamina] = useState(0)
+  const [opponentStamina, setOpponentStamina] = useState(0)
   const navigate = useNavigate()
 
   useEffect(() => {
     if (!isLoading) return
     ;(async () => {
       if (!monsterStore.selectedMonster || !monsterStore.opponentMonster) return
-
-      const { atlasFile, spriteFile } = await getSprite(monsterStore.selectedMonster)
-      if (atlasFile && spriteFile) {
-        const atlasJson = await fetch(atlasFile.url).then((res) => res.json())
-        setAtlas(atlasJson)
-        setSpriteUrl(spriteFile.url)
-      } else {
-        errorStore.setError({ error: true, message: 'Ошибка загрузки спрайтов' })
-        navigate('/error')
-      }
-
-      const { atlasFile: opponentAtlasFile, spriteFile: opponentSpriteFile } = await getSprite(
-        monsterStore.opponentMonster,
-      )
-      if (opponentAtlasFile && opponentSpriteFile) {
-        const atlasJson = await fetch(opponentAtlasFile.url).then((res) => res.json())
-        setAtlasOpponent(atlasJson)
-        setSpriteUrlOpponent(opponentSpriteFile.url)
-      } else {
-        errorStore.setError({ error: true, message: 'Ошибка загрузки спрайтов соперника' })
-        navigate('/error')
-      }
 
       if (!userStore.user?.token) return
 
@@ -99,6 +77,36 @@ export default function TestFight({ battleId }: TestFightProps) {
           const currentMonsterId = monsterStore.selectedMonster?.id
           if (!currentMonsterId) return
 
+          const isChallenger = currentMonsterId === data.challengerMonsterId
+
+          if (isChallenger) {
+            setMyAttacks(data.challengerAttacks || [])
+            setMyDefenses(data.challengerDefenses || [])
+          } else {
+            setMyAttacks(data.opponentAttacks || [])
+            setMyDefenses(data.opponentDefenses || [])
+          }
+
+          setLastAction(data.lastActionLog ?? null)
+
+          yourHealthRef.current = isChallenger ? data.challengerMonsterHp : data.opponentMonsterHp
+          opponentHealthRef.current = isChallenger
+            ? data.opponentMonsterHp
+            : data.challengerMonsterHp
+
+          const yourSt = isChallenger ? data.challengerMonsterStamina : data.opponentMonsterStamina
+          const opponentSt = isChallenger
+            ? data.opponentMonsterStamina
+            : data.challengerMonsterStamina
+
+          setYourStamina(yourSt)
+          setOpponentStamina(opponentSt)
+
+          if (yourHealthBarRef.current)
+            yourHealthBarRef.current.style.width = `${yourHealthRef.current}%`
+          if (opponentHealthBarRef.current)
+            opponentHealthBarRef.current.style.width = `${opponentHealthRef.current}%`
+
           if (data.winnerMonsterId) {
             setIsBattleOver(true)
 
@@ -115,19 +123,7 @@ export default function TestFight({ battleId }: TestFightProps) {
                 .setName('gameOverText')
             }
             return
-            return
           }
-
-          const isChallenger = currentMonsterId === data.challengerMonsterId
-          yourHealthRef.current = isChallenger ? data.challengerMonsterHp : data.opponentMonsterHp
-          opponentHealthRef.current = isChallenger
-            ? data.opponentMonsterHp
-            : data.challengerMonsterHp
-
-          if (yourHealthBarRef.current)
-            yourHealthBarRef.current.style.width = `${yourHealthRef.current}%`
-          if (opponentHealthBarRef.current)
-            opponentHealthBarRef.current.style.width = `${opponentHealthRef.current}%`
 
           setIsOpponentReady(
             isChallenger ? data.opponentReady === '1' : data.challengerReady === '1',
@@ -154,6 +150,7 @@ export default function TestFight({ battleId }: TestFightProps) {
   }, [battleId, isLoading, navigate])
 
   useEffect(() => {
+    //if reloading page setStartBattle
     if (!atlas || !spriteUrl || !containerRef.current || !spriteUrlOpponent || !atlasOpponent)
       return
     if (!isLoading) {
@@ -164,7 +161,23 @@ export default function TestFight({ battleId }: TestFightProps) {
         })
       }
     }
-  }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent, battleId, isLoading])
+
+    if (isLoading && !isOpponentReady) {
+      const intervalId = setInterval(() => {
+        if (!socketRef.current || isOpponentReady) {
+          clearInterval(intervalId)
+          return
+        }
+
+        socketRef.current.emit('startBattle', {
+          battleId,
+          monsterId: monsterStore.selectedMonster?.id,
+        })
+      }, 2000)
+
+      return () => clearInterval(intervalId)
+    }
+  }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent, battleId, isLoading, isOpponentReady])
 
   useEffect(() => {
     if (!atlas || !spriteUrl || !containerRef.current || !spriteUrlOpponent || !atlasOpponent)
@@ -324,14 +337,30 @@ export default function TestFight({ battleId }: TestFightProps) {
     }
   }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent])
 
-  const handleAttack = (damage: number) => {
+  const handleAttack = ({
+    actionId,
+    actionType,
+    energyCost,
+  }: {
+    actionId: number
+    actionType: 'attack' | 'defense' | 'pass'
+    energyCost: number
+  }) => {
     if (isLoading || !battleId || !monsterStore.selectedMonster?.id || !socketRef.current) return
 
     if (monsterStore.selectedMonster.id !== currentTurnMonsterId) return
 
+    if (energyCost > yourStamina) {
+      alert(
+        `Недостаточно SP для выполнения действия у Вас ${yourStamina} SP, требуется ${energyCost} SP`,
+      )
+      return
+    }
+
     socketRef.current.emit('attack', {
       battleId,
-      damage,
+      actionId,
+      actionType,
       monsterId: monsterStore.selectedMonster.id,
     })
 
@@ -372,52 +401,109 @@ export default function TestFight({ battleId }: TestFightProps) {
           🕐 Ожидание готовности соперника...
         </div>
       )}
-      <div style={{ marginTop: '70px', position: 'relative', width: 400, height: 300 }}>
-        <div className={styles.healthBar} style={{ top: 10, left: 20 }}>
-          <div
-            className={styles.healthFill}
-            style={{ width: `${yourHealthRef.current}%`, backgroundColor: '#4caf50' }}
-          />
-        </div>
-        <div className={styles.healthBar} style={{ top: 10, right: 20 }}>
-          <div
-            className={styles.healthFill}
-            style={{ width: `${opponentHealthRef.current}%`, backgroundColor: '#f44336' }}
-          />
-        </div>
+      <div className={styles.statBars}>
+        <StatBar
+          current={yourHealthRef.current ?? 0}
+          max={monsterStore.selectedMonster?.healthPoints ?? 0}
+          iconSrc={smallHeartIcon}
+          backgroundColor={'white'}
+          color={'red'}
+        />
+        <StatBar
+          current={opponentHealthRef.current ?? 0}
+          max={monsterStore.selectedMonster?.healthPoints ?? 0}
+          iconSrc={smallHeartIcon}
+          backgroundColor={'white'}
+          color={'red'}
+        />
+        <StatBar
+          current={yourStamina ?? 0}
+          max={monsterStore.selectedMonster?.stamina ?? 0}
+          iconSrc={smallEnergyIcon}
+          backgroundColor={'white'}
+          color={'yellow'}
+        />
+        <StatBar
+          current={opponentStamina ?? 0}
+          max={monsterStore.opponentMonster?.stamina ?? 0}
+          iconSrc={smallEnergyIcon}
+          backgroundColor={'white'}
+          color={'yellow'}
+        />
+      </div>
+      <div className={styles.phaserContainerWrapper}>
+        {lastAction && (
+          <>
+            {lastAction.monsterId === monsterStore.selectedMonster?.id ? (
+              <>
+                <div className={`${styles.lastActionOverlay} ${styles.opponentOverlay}`}>
+                  -{lastAction.damage}HP
+                </div>
+                <div className={`${styles.lastActionOverlay} ${styles.yourOverlay}`}>
+                  +{lastAction.stamina}SP
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={`${styles.lastActionOverlay} ${styles.yourOverlay}`}>
+                  -{lastAction.damage}HP
+                </div>
+                <div className={`${styles.lastActionOverlay} ${styles.opponentOverlay}`}>
+                  +{lastAction.stamina}SP
+                </div>
+              </>
+            )}
+          </>
+        )}
         <div ref={containerRef} />
       </div>
 
       {!isBattleOver && (
         <div className={styles.wrapperButton}>
-          <button
-            className={styles.attackButton}
-            onClick={() => handleAttack(10)}
-            disabled={!isMyTurn || !isOpponentReady}
-          >
-            Укусить
-          </button>
-          <button
-            className={styles.attackButton}
-            onClick={() => handleAttack(15)}
-            disabled={!isMyTurn || !isOpponentReady}
-          >
-            Удар рукой
-          </button>
-          <button
-            className={styles.attackButton}
-            onClick={() => handleAttack(20)}
-            disabled={!isMyTurn || !isOpponentReady}
-          >
-            Удар ногой
-          </button>
-          <button
-            className={styles.attackButton}
-            onClick={() => handleAttack(25)}
-            disabled={!isMyTurn || !isOpponentReady}
-          >
-            Удар хвостом
-          </button>
+          {myAttacks.map((attack, idx) => (
+            <BattleButton
+              key={idx}
+              spCost={attack.energyCost}
+              name={attack.name}
+              modifier={attack.modifier}
+              onClick={() =>
+                handleAttack({
+                  actionId: attack.id,
+                  actionType: 'attack',
+                  energyCost: attack.energyCost,
+                })
+              }
+            />
+          ))}
+
+          {myDefenses.map((defense, idx) => (
+            <BattleButton
+              key={`d-${idx}`}
+              spCost={defense.energyCost}
+              name={`🛡 ${defense.name}`}
+              modifier={defense.modifier}
+              onClick={() =>
+                handleAttack({
+                  actionId: defense.id,
+                  actionType: 'defense',
+                  energyCost: defense.energyCost,
+                })
+              }
+            />
+          ))}
+
+          <BattleButton
+            spCost={0}
+            name="Пропуск"
+            modifier={0}
+            onClick={() =>
+              handleAttack({
+                actionId: -1,
+                actionType: 'pass',
+                energyCost: 0,
+              })
+            }
+          />
         </div>
       )}
     </div>

@@ -4,11 +4,15 @@
   max-width: 500px;
   flex-direction: column;
   width: 100%;
+  margin: 0 auto;
 }
 
 .tabs {
   display: flex;
   justify-content: center;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .tabIcon {
@@ -33,18 +37,47 @@
 }
 
 .gridWrapper {
-  justify-content: center;
   align-items: center;
-  flex-grow: 1;
-  flex-shrink: 1;
-  min-height: 0;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  background: #fbc94b;
-  display: flex;
-  flex-direction: column;
+  overflow-y: auto;
+  display: grid;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  box-sizing: border-box;
 
   border-left: 5px solid #362f2d;
   border-right: 5px solid #362f2d;
   border-bottom: 5px solid #362f2d;
+
+  background: #fbc94b;
+  grid-template-columns: repeat(4, max-content);
+  gap: 10px;
+  justify-content: center;
+  align-content: start;
+  padding-bottom: 12px;
+}
+
+.partItem {
+  width: 70px;
+  height: 70px;
+  margin-top: 12px;
+  background: #e8eaea;
+  border-radius: 15px;
+  border: 5px solid #362f2d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease;
+}
+
+.partItemSvg {
+  width: 90%;
+  height: 90%;
+}
+
+.active {
+  background: #cdcecb;
+  border-color: #1a1a1a;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.4);
 }

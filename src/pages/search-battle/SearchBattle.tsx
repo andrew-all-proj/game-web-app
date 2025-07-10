@@ -181,6 +181,8 @@ const SearchBattle = observer(() => {
     setRequestbattleOpponent(null)
   }
 
+  console.log(registeredMonster)
+
   return (
     <>
       {requestBattleOpponent && (
@@ -195,7 +197,6 @@ const SearchBattle = observer(() => {
         />
       )}
       <div className={styles.searchBattle}>
-        {/* Выбранный монстр */}
         {monsterStore.selectedMonster && (
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
             {monsterStore.selectedMonster.avatar ? (
@@ -224,8 +225,6 @@ const SearchBattle = observer(() => {
         )}
 
         <h2>Поиск противника</h2>
-
-        <p>зарегистрирован для поиска {registeredMonster ? 'true' : 'false'}</p>
 
         {waitOpponentMessage ? <div>{waitOpponentMessage}</div> : <div></div>}
 

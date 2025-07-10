@@ -1,80 +1,16 @@
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
 .loadingPage {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
   height: 100vh;
-  color: #444;
-  padding: 1rem;
-  text-align: center;
 }
 
-.loadingTitle {
-  font-family: "Nunito", sans-serif;
-  font-weight: 900;
-  font-size: 48px;
-  line-height: 1.2;
-  color: #d2ff49;
-  text-align: center;
-  text-shadow:
-    -3px -3px 0 #362f2d,
-    3px -3px 0 #362f2d,
-    -3px 3px 0 #362f2d,
-    3px 3px 0 #362f2d,
-    0px 3px 0 #362f2d,
-    3px 0px 0 #362f2d,
-    -3px 0px 0 #362f2d,
-    0px -3px 0 #362f2d;
+.lottieWrapper {
+  width: 240px;
 }
 
-.spinner {
-  width: 10vw;
-  max-width: 48px;
-  height: 10vw;
-  max-height: 48px;
-  border: 0.8vw solid rgba(0, 0, 0, 0.1);
-  border-left-color: #4a90e2;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 2vh;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (max-width: 480px) {
-  .loadingPage {
-    font-size: 1rem;
-  }
-
-  .spinner {
-    width: 32px;
-    height: 32px;
-    border-width: 3px;
-    margin-bottom: 12px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .loadingPage {
-    font-size: 1.25rem;
-  }
-
-  .spinner {
-    width: 64px;
-    height: 64px;
-    border-width: 5px;
-    margin-bottom: 20px;
-  }
+.labelIcon {
+  margin-top: 20px;
+  height: 50px;
 }

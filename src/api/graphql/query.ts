@@ -23,18 +23,42 @@ export const MONSTERS = gql`
     Monsters(limit: $limit, offset: $offset, userId: $userId) {
       totalCount
       items {
+        createdAt
+        defense
+        evasion
+        experiencePoints
+        healthPoints
         id
-        name
+        isSelected
         level
+        name
+        stamina
+        strength
+        updatedAt
+        userId
         files {
-          id
-          url
-          name
           contentType
           fileType
+          id
+          url
+          version
         }
-        userId
-        isSelected
+        monsterAttacks {
+          cooldown
+          energyCost
+          id
+          modifier
+          monsterId
+          name
+        }
+        monsterDefenses {
+          cooldown
+          energyCost
+          id
+          modifier
+          monsterId
+          name
+        }
       }
     }
   }
@@ -43,8 +67,19 @@ export const MONSTERS = gql`
 export const MONSTER = gql`
   query Monster($monsterId: String!) {
     Monster(id: $monsterId) {
-      bodyMass
       createdAt
+      defense
+      evasion
+      experiencePoints
+      healthPoints
+      id
+      isSelected
+      level
+      name
+      stamina
+      strength
+      updatedAt
+      userId
       files {
         contentType
         fileType
@@ -52,12 +87,22 @@ export const MONSTER = gql`
         url
         version
       }
-      id
-      isSelected
-      level
-      name
-      userId
-      updatedAt
+      monsterAttacks {
+        cooldown
+        energyCost
+        id
+        modifier
+        monsterId
+        name
+      }
+      monsterDefenses {
+        cooldown
+        energyCost
+        id
+        modifier
+        monsterId
+        name
+      }
     }
   }
 `

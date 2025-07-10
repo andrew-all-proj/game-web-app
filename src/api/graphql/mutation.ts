@@ -47,7 +47,6 @@ export const MONSTER_CREATE = gql`
       id
       name
       level
-      bodyMass
       updatedAt
       userId
       files {
@@ -64,7 +63,6 @@ export const MONSTER_UPDATE = gql`
       id
       name
       level
-      bodyMass
       updatedAt
       userId
       isSelected
