@@ -1,17 +1,18 @@
+import clsx from 'clsx'
 import styles from './RoundButton.module.css'
 
 interface RoundButtonProps {
   onClick: () => void
   size?: number
   type?: 'back' | 'select' | 'exit'
-  backgroundColor?: string
+  className?: string
 }
 
 export default function RoundButton({
   onClick,
   size = 46,
   type = 'back',
-  backgroundColor = '#fb6b6b',
+  className = '',
 }: RoundButtonProps) {
   const getIcon = () => {
     switch (type) {
@@ -69,8 +70,16 @@ export default function RoundButton({
 
   return (
     <button
-      className={styles.roundButton}
-      style={{ width: size, height: size, backgroundColor: backgroundColor }}
+      className={clsx(
+        styles.roundButton,
+        {
+          [styles.select]: type === 'select',
+          [styles.exit]: type === 'exit',
+          [styles.back]: type === 'back',
+        },
+        className,
+      )}
+      style={{ width: size, height: size }}
       onClick={onClick}
     >
       {getIcon()}

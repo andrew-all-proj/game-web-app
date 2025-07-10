@@ -11,6 +11,32 @@
   overflow-x: hidden;
 }
 
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100%;
+  max-width: 500px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+.exitButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 100;
+}
+
+.characteristicMonster {
+  margin-top: 10px;
+}
+
 .centerWrapper {
   flex-grow: 1;
   display: flex;
@@ -18,25 +44,10 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-}
-
-.header {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-
-  width: 100%;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.barWrapper {
   position: relative;
-  display: inline-block;
-  margin-left: 12px;
-  margin-right: 12px;
+  z-index: 200;
+  margin-top: -60px;
+  transition: margin-top 0.3s ease;
 }
 
 .imageOverlap {

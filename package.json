@@ -13,6 +13,7 @@
   "dependencies": {
     "@apollo/client": "^3.13.8",
     "@twa-dev/sdk": "^8.0.2",
+    "clsx": "^2.1.1",
     "framer-motion": "^12.6.3",
     "graphql": "^16.10.0",
     "lottie-react": "^2.4.1",

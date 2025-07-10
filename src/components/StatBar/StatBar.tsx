@@ -27,7 +27,7 @@ export default function StatBar({
   const text = max ? `${current}/${max}` : `${current}`
 
   return (
-    <div className={styles.barBackground} style={{ backgroundColor, width,  height }}>
+    <div className={styles.barBackground} style={{ backgroundColor, width, height }}>
       <div className={styles.barFill} style={{ width: `${percent}%`, backgroundColor: color }} />
       {iconSrc ? (
         <div className={styles.barIcon}>

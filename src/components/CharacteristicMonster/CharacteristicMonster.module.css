@@ -4,17 +4,17 @@
   border-radius: 12px;
   padding: 10px;
   width: 92px;
-  height: 128px;
+  height: 148px;
   font-family: var(--font-base);
-  color: white;
+  color: #362f2d;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
 }
 
 .level {
+  color: #ffffff;
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 8px;
-  text-align: center;
 }
 
 .charLine {

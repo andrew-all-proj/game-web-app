@@ -16,7 +16,7 @@ export default function MainInput({ onButtonClick, ...props }: MainInputProps) {
         <RoundButton
           type="select"
           onClick={onButtonClick || (() => {})}
-          backgroundColor="#D2FF49"
+          className={styles.greenButton}
           size={46}
         />
       </div>

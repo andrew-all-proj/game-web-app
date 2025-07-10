@@ -18,6 +18,7 @@ import PartSelector from '../../components/PartSelector/PartSelector'
 import Loading from '../loading/Loading'
 import errorStore from '../../stores/ErrorStore'
 import RoundButton from '../../components/Button/RoundButton'
+import clsx from 'clsx'
 
 interface PartTypeAvatar {
   part: string
@@ -50,6 +51,8 @@ const CreateUser = observer(() => {
 
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+
+  const [animateIn, setAnimateIn] = useState(false)
 
   useEffect(() => {
     const loadSvgSprite = async () => {
@@ -352,6 +355,12 @@ const CreateUser = observer(() => {
     }
   }
 
+  useEffect(() => {
+    if (!isLoading) {
+      setAnimateIn(true)
+    }
+  }, [isLoading])
+
   if (isLoading) {
     return <Loading />
   }
@@ -359,54 +368,55 @@ const CreateUser = observer(() => {
   return (
     <div className={styles.createUser}>
       <div className={styles.navigate}>
-        <RoundButton onClick={() => navigate('/laboratory')} />
-      </div>
-      <div className={styles.avatarWrapper}>
-        <canvas ref={canvasRef} width={142} height={142} className={styles.avatarCanvas} />
-      </div>
-      <div className={styles.infoMessage}>
-        {message}
-        <div className={styles.inputWrapper}>
-          <MainInput
-            placeholder="_введите Имя"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onButtonClick={handleSaveAvatar}
-          />
-        </div>
-      </div>
+    <RoundButton onClick={() => navigate('/laboratory')} />
+  </div>
 
-      <PartSelector
-        tabs={[
-          {
-            key: 'head',
-            icon: hairIcon,
-            alt: 'Голова',
-            parts: headParts,
-            selectedIndex: headIndex,
-            setSelectedIndex: setHeadIndex,
-          },
-          {
-            key: 'body',
-            icon: clothesIcon,
-            alt: 'Одежда',
-            parts: bodyParts,
-            selectedIndex: bodyIndex,
-            setSelectedIndex: setBodyIndex,
-          },
-          {
-            key: 'emotion',
-            icon: emotionIcon,
-            alt: 'Эмоции',
-            parts: emotionParts,
-            selectedIndex: emotionIndex,
-            setSelectedIndex: setEmotionIndex,
-          },
-        ]}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        setIsEditing={setIsEditing}
+  <div className={styles.centerContent}>
+    <div className={styles.avatarWrapper}>
+      <canvas ref={canvasRef} width={142} height={142} className={styles.avatarCanvas} />
+    </div>
+
+    <div className={styles.infoMessage}>{message}</div>
+      <MainInput
+        placeholder="_введите Имя"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        onButtonClick={handleSaveAvatar}
       />
+  </div>
+      <div className={clsx(styles.partSelectorWrapper, { [styles.visible]: animateIn })}>
+        <PartSelector
+          tabs={[
+            {
+              key: 'head',
+              icon: hairIcon,
+              alt: 'Голова',
+              parts: headParts,
+              selectedIndex: headIndex,
+              setSelectedIndex: setHeadIndex,
+            },
+            {
+              key: 'body',
+              icon: clothesIcon,
+              alt: 'Одежда',
+              parts: bodyParts,
+              selectedIndex: bodyIndex,
+              setSelectedIndex: setBodyIndex,
+            },
+            {
+              key: 'emotion',
+              icon: emotionIcon,
+              alt: 'Эмоции',
+              parts: emotionParts,
+              selectedIndex: emotionIndex,
+              setSelectedIndex: setEmotionIndex,
+            },
+          ]}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          setIsEditing={setIsEditing}
+        />
+      </div>
     </div>
   )
 })

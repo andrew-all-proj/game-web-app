@@ -23,9 +23,7 @@ import monsterStore from '../../stores/MonsterStore'
 import Loading from '../loading/Loading'
 import PartSelectorMonster from '../../components/PartSelector/PartSelectorMonster'
 import RoundButton from '../../components/Button/RoundButton'
-import CharacteristicMonster from './CharacteristicMonster'
-import foodIcon from '../../assets/icon/icon_food.svg'
-import StatBar from '../../components/StatBar/StatBar'
+import CharacteristicMonster from '../../components/CharacteristicMonster/CharacteristicMonster'
 
 declare global {
   interface Window {
@@ -245,16 +243,23 @@ const CreateMonster = observer(() => {
 
   return (
     <div className={styles.createMonster}>
-     <div className={styles.header}>
-  <CharacteristicMonster level={1} hp={100} stamina={60} />
-  
-  <div className={styles.barWrapper}>
-    <StatBar current={20} max={100} height={32} width={97} />
-    <img src={foodIcon} className={styles.imageOverlap} />
-  </div>
-  
-  <RoundButton onClick={() => navigate('/laboratory')} type="exit" />
-</div>
+      <div className={styles.header}>
+        <RoundButton
+          onClick={() => navigate('/laboratory')}
+          type="exit"
+          className={styles.exitButton}
+        />
+        <CharacteristicMonster
+          level={1}
+          hp={100}
+          stamina={60}
+          defense={12}
+          strength={10}
+          evasion={5}
+          className={styles.characteristicMonster}
+        />
+      </div>
+
       <div className={styles.centerWrapper}>
         <div className={styles.wrapperMonster}>
           <PreviewMonster
