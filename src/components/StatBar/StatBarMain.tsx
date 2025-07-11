@@ -19,12 +19,12 @@ export default function StatBar({
   level,
   color = '#65fefb',
   backgroundColor = '#5ed6d4',
-  textColor = '#ffffff',
+  textColor = '#362f2d',
   width = 180,
-  height = 24,
+  height = 35,
 }: StatBarProps) {
   const percent = max ? Math.max(0, Math.min((current / max) * 100, 100)) : 100
-  console.log('StatBar', { current, max, percent })
+  const text = max ? `${current}/${max}` : `${current}`
   return (
     <div
       className={styles.barBackground}
@@ -40,7 +40,7 @@ export default function StatBar({
         <div className={styles.leftLabel} style={{ color: textColor }}>
           {name}
         </div>
-        <div className={styles.centerText}>exp</div>
+        <div className={styles.centerText}>{text}</div>
         <div className={styles.rightLabel} style={{ color: textColor }}>
           Lvl. {level ?? 0}
         </div>

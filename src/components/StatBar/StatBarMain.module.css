@@ -29,18 +29,21 @@
   align-items: center;
   width: 100%;
   padding: 0 8px;
-  font-size: 12px;
+  font-size: 19px;
   font-weight: bold;
 }
 
 .leftLabel,
 .rightLabel {
   white-space: nowrap;
-  -webkit-text-stroke: 0.8px black;
+  font-weight: bold;
+  font-family: var(--font-base);
 }
 
 .centerText {
   flex-grow: 1;
   text-align: center;
-  opacity: 0.8;
+  opacity: 0.6;
+  font-family: var(--font-base);
+  font-size: 14px;
 }

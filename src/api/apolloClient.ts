@@ -7,7 +7,6 @@ const httpLink = createHttpLink({
   uri: import.meta.env.VITE_API_URL,
 })
 
-// Добавляем токен
 const authLink = setContext((_, { headers }) => {
   const token = userStore.user?.token
   return {

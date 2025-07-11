@@ -105,7 +105,7 @@ const Laboratory = observer(() => {
           current={selectedMonster.experiencePoints ?? 0}
           max={selectedMonster.nextLevelExp}
           width={370}
-          height={30}
+          height={35}
         />
       </div>
       <div style={{ color: 'red' }}>{errorMsg}</div>
@@ -127,7 +127,7 @@ const Laboratory = observer(() => {
       <div className={styles.selectMonsters}>
         <RoundButton onClick={handlePrevMonster} color="#D2FF49" />
         <MainButton onClick={() => handleGoToArena(selectedMonster)}>Арена</MainButton>
-        <RoundButton onClick={handleNextMonster} type='next' color="#D2FF49" />
+        <RoundButton onClick={handleNextMonster} type="next" color="#D2FF49" />
       </div>
       <div className={styles.bottomMenu}>
         <div className={styles.menuItem}>
