@@ -25,7 +25,7 @@ interface monsterOpponent {
 
 const SearchBattle = observer(() => {
   const [opponents, setOpponents] = useState<monsterOpponent[]>([])
-  const [registeredMonster, setRegisteredMonster] = useState<boolean>(false)
+  //const [registeredMonster, setRegisteredMonster] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(true)
   const [waitOpponentMessage, setWaitOpponentMessage] = useState('')
   const [waitOpponent, setWaitOpponent] = useState(true)
@@ -78,8 +78,8 @@ const SearchBattle = observer(() => {
           setIsLoading(false)
         })
 
-        socket.on('registerMonster', (data) => {
-          setRegisteredMonster(data.result)
+        socket.on('registerMonster', () => {
+          //setRegisteredMonster(data.result)
         })
 
         socket.on('duelChallengeResponce', (data) => {
