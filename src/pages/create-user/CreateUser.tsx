@@ -276,6 +276,10 @@ const CreateUser = observer(() => {
       setMessage('Пожалуйста, введите имя.')
       return
     }
+    if (trimmedName.length > 15) {
+      setMessage('Имя не должно превышать 15 символов.')
+      return
+    }
 
     const nameChanged = trimmedName !== userStore.user?.nameProfessor
 

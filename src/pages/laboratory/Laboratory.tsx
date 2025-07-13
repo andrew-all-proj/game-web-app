@@ -38,12 +38,19 @@ const Laboratory = observer(() => {
         const selectedIndex = fetchedMonsters.findIndex((monster) => monster.isSelected)
 
         setMonsterIndex(selectedIndex !== -1 ? selectedIndex : 0)
+
+        await userStore.fetchUser(userStore.user.id)
       }
       setIsLoading(false)
     })()
   }, [navigate])
 
   const handleGoToArena = (monster: Monster) => {
+    if ((userStore.user?.energy ?? 0) < 125) {
+      setErrorMsg(`Недостаточно энергии для боя, нужно 125. У вас: ${userStore.user?.energy ?? 0}`)
+      userStore.fetchUser(userStore.user?.id) //TODO THINKING
+      return
+    }
     monsterStore.setSelectedMonster(monster.id)
     if (!monsterStore.selectedMonster) {
       setErrorMsg('Выберите питомца')
@@ -88,8 +95,8 @@ const Laboratory = observer(() => {
           <img alt="avatar user" src={userStore.user?.avatar?.url} />
         </div>
         <StatBarButton
-          current={30}
-          max={50}
+          current={userStore.user?.energy || 0}
+          max={1000}
           text="Энергия"
           color="#61FFBE"
           backgroundColor="#94c9b3"

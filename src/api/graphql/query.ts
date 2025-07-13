@@ -153,3 +153,20 @@ export const MONSTER_BATTLES = gql`
     }
   }
 `
+
+export const USER = gql`
+  query User($id: String!) {
+    User(id: $id) {
+      telegramId
+      nameProfessor
+      name
+      isRegistered
+      id
+      energy
+      avatarFileId
+      avatar {
+        url
+      }
+    }
+  }
+`
