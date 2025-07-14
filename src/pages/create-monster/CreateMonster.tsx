@@ -171,7 +171,7 @@ const CreateMonster = observer(() => {
   const handleSaveImage = async () => {
     if (isSaving) return
     if (!name.trim()) return setErrorMsg('Введите имя монстра')
-    if( name.length > 15) return setErrorMsg('Имя монстра не должно превышать 15 символов')
+    if (name.length > 15) return setErrorMsg('Имя монстра не должно превышать 15 символов')
     if (!selectedPartsMonster.current.body) return setErrorMsg('Выберите тело')
     if (!selectedPartsMonster.current.head) return setErrorMsg('Выберите голову')
     if (!selectedPartsMonster.current.leftArm) return setErrorMsg('Выберите руки')
@@ -220,11 +220,11 @@ const CreateMonster = observer(() => {
         })
 
         if (resultCreateMonster.errors) {
-          if( resultCreateMonster.errors[0].message === 'Not enough energy to create a monster'){
+          if (resultCreateMonster.errors[0].message === 'Not enough energy to create a monster') {
             setErrorMsg('Недостаточно энергии для создания монстра')
-          } else if(resultCreateMonster.errors[0].message === 'User already has 4 monsters') {
+          } else if (resultCreateMonster.errors[0].message === 'User already has 4 monsters') {
             setErrorMsg('У вас уже есть 4 монстра')
-          }else {
+          } else {
             setErrorMsg('Ошибка при создании монстра')
           }
           setIsSaving(false)

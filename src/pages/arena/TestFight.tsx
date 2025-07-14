@@ -344,7 +344,7 @@ export default function TestFight({
     energyCost,
   }: {
     actionId: number
-    actionType: ActionStatusEnum,
+    actionType: ActionStatusEnum
     energyCost: number
   }) => {
     if (isLoading || !battleId || !monsterStore.selectedMonster?.id || !socketRef.current) return
