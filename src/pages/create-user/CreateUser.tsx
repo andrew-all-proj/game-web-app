@@ -19,6 +19,7 @@ import Loading from '../loading/Loading'
 import errorStore from '../../stores/ErrorStore'
 import RoundButton from '../../components/Button/RoundButton'
 import clsx from 'clsx'
+import DebugLogPanel, { DebugLogHandle } from '../../components/DebugLogHandle/DebugLogHandle'
 
 interface PartTypeAvatar {
   part: string
@@ -47,6 +48,9 @@ const CreateUser = observer(() => {
 
   const [animateIn, setAnimateIn] = useState(false)
 
+  const debugLogRef = useRef<DebugLogHandle>(null)
+
+
   useEffect(() => {
     const loadSvgSprite = async () => {
       if (!userStore.user?.id) {
@@ -72,6 +76,8 @@ const CreateUser = observer(() => {
 
         const spriteFile = getMaxVersion(spriteFiles)
 
+        debugLogRef.current?.log(spriteFile)
+
         if (!spriteFile) {
           setMessage('SVG файл спрайта не найден.')
           errorStore.setError({
@@ -94,18 +100,22 @@ const CreateUser = observer(() => {
         const doc = parser.parseFromString(svgText, 'image/svg+xml')
         const symbols = Array.from(doc.querySelectorAll('symbol'))
 
+        debugLogRef.current?.log(symbols.length.toString())
+
         const heads: PartTypeAvatar[] = []
         const clothes: PartTypeAvatar[] = []
         const emotions: PartTypeAvatar[] = []
         for (const symbol of symbols) {
           const id = symbol.getAttribute('id') || ''
           const match = id.match(/^ava-(head|clothes|emotion)_icon_(\d+)$/)
+           debugLogRef.current?.log(match)
           if (!match) continue
 
           const [, type, index] = match
-          const partId = `ava-${type}_${index}` // <-- фикс здесь
+          const partId = `ava-${type}_${index}`
 
           const foundPart = symbols.find((s) => s.getAttribute('id') === partId)
+           debugLogRef.current?.log(foundPart)
           if (!foundPart) continue
 
           const entry = { icon: id, part: partId }
@@ -306,6 +316,7 @@ const CreateUser = observer(() => {
 
   return (
     <div className={styles.createUser}>
+     <DebugLogPanel ref={debugLogRef} />
       <div className={styles.navigate}>
         <RoundButton onClick={() => navigate('/laboratory')} />
       </div>
