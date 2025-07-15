@@ -65,6 +65,7 @@ const CreateUser = observer(() => {
             offset: 0,
             contentType: 'SPRITE_SHEET_USER_AVATAR',
           },
+          fetchPolicy: 'no-cache',
         })
 
 
@@ -73,9 +74,6 @@ const CreateUser = observer(() => {
         )
 
         const spriteFile = getMaxVersion(spriteFiles)
-        if (spriteFile && spriteFile.id !== undefined) {
-          setMessage(spriteFile.id.toString())
-        }
 
         if (!spriteFile) {
           setMessage('SVG файл спрайта не найден.')
@@ -86,8 +84,6 @@ const CreateUser = observer(() => {
           navigate('/error')
           return
         }
-
-        setMessage(spriteFile.url)
 
         const res = await fetch(spriteFile.url)
         const svgText = await res.text()
@@ -125,8 +121,6 @@ const CreateUser = observer(() => {
         if (userStore.user?.avatar?.url) {
           setIsEditing(true)
         }
-
-        setMessage(heads[0].icon)
 
         setHeadParts(heads)
         setClothesParts(clothes)
