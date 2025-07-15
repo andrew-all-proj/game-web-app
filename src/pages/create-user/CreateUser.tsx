@@ -126,6 +126,8 @@ const CreateUser = observer(() => {
           setIsEditing(true)
         }
 
+        setMessage(heads[0].icon)
+
         setHeadParts(heads)
         setClothesParts(clothes)
         setEmotionParts(emotions)
