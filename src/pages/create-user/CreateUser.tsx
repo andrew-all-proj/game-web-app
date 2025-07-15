@@ -85,7 +85,7 @@ const CreateUser = observer(() => {
           return
         }
 
-        const res = await fetch(spriteFile.url)
+        const res = await fetch(`${spriteFile.url}?t=${Date.now()}`)
         const svgText = await res.text()
 
         const container = document.createElement('div')
