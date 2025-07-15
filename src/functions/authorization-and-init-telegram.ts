@@ -36,12 +36,12 @@ export const authorizationAndInitTelegram = async (
     try {
       const userLogin = await userStore.loginUser(initData, tgUser)
       if (!userLogin) {
-        errorStore.setError({ error: true, message: 'Ошибка регистрации' })
+        errorStore.setError({ error: true, message: 'Ошибка регистрации!' })
         navigate('/error')
         return false
       }
-    } catch {
-      errorStore.setError({ error: true, message: 'Ошибка регистрации' })
+    } catch (err) {
+      errorStore.setError({ error: true, message: `Ошибка регистрации: ${err}` })
       navigate('/error')
       return false
     }

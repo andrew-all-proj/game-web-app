@@ -18,6 +18,7 @@ export default function MainInput({ onButtonClick, ...props }: MainInputProps) {
           onClick={onButtonClick || (() => {})}
           className={styles.greenButton}
           size={46}
+          color="#D2FF49"
         />
       </div>
     </div>

@@ -25,19 +25,12 @@ interface PartTypeAvatar {
   icon: string
 }
 
-interface MetadataSpriteAvatar {
-  type: string
-  attachToHead?: { x: number; y: number }
-  attachToBody?: { x: number; y: number }
-  attachToEmotion?: { x: number; y: number }
-}
-
 const CreateUser = observer(() => {
   const navigate = useNavigate()
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const [headParts, setHeadParts] = useState<PartTypeAvatar[]>([])
-  const [bodyParts, setBodyParts] = useState<PartTypeAvatar[]>([])
+  const [bodyParts, setClothesParts] = useState<PartTypeAvatar[]>([])
   const [emotionParts, setEmotionParts] = useState<PartTypeAvatar[]>([])
 
   const [headIndex, setHeadIndex] = useState(0)
@@ -53,6 +46,7 @@ const CreateUser = observer(() => {
   const [isLoading, setIsLoading] = useState(true)
 
   const [animateIn, setAnimateIn] = useState(false)
+
 
   useEffect(() => {
     const loadSvgSprite = async () => {
@@ -71,7 +65,9 @@ const CreateUser = observer(() => {
             offset: 0,
             contentType: 'SPRITE_SHEET_USER_AVATAR',
           },
+          fetchPolicy: 'no-cache',
         })
+
 
         const spriteFiles = data?.Files?.items?.filter(
           (item) => item.fileType === 'IMAGE' && item.url.endsWith('.svg'),
@@ -89,7 +85,7 @@ const CreateUser = observer(() => {
           return
         }
 
-        const res = await fetch(spriteFile.url)
+        const res = await fetch(`${spriteFile.url}?t=${Date.now()}`)
         const svgText = await res.text()
 
         const container = document.createElement('div')
@@ -101,25 +97,24 @@ const CreateUser = observer(() => {
         const doc = parser.parseFromString(svgText, 'image/svg+xml')
         const symbols = Array.from(doc.querySelectorAll('symbol'))
 
-        const heads: PartTypeAvatar[] = []
-        const bodies: PartTypeAvatar[] = []
-        const emotions: PartTypeAvatar[] = []
 
+        const heads: PartTypeAvatar[] = []
+        const clothes: PartTypeAvatar[] = []
+        const emotions: PartTypeAvatar[] = []
         for (const symbol of symbols) {
           const id = symbol.getAttribute('id') || ''
-          const match = id.match(/^(head|body|emotion)_icon_(\d+)$/)
+          const match = id.match(/^ava-(head|clothes|emotion)_icon_(\d+)$/)
           if (!match) continue
 
           const [, type, index] = match
-          const partId = `${type}_${index}`
+          const partId = `ava-${type}_${index}`
+
           const foundPart = symbols.find((s) => s.getAttribute('id') === partId)
-          if (!foundPart) {
-            continue
-          }
+          if (!foundPart) continue
 
           const entry = { icon: id, part: partId }
           if (type === 'head') heads.push(entry)
-          else if (type === 'body') bodies.push(entry)
+          else if (type === 'clothes') clothes.push(entry)
           else if (type === 'emotion') emotions.push(entry)
         }
 
@@ -128,7 +123,7 @@ const CreateUser = observer(() => {
         }
 
         setHeadParts(heads)
-        setBodyParts(bodies)
+        setClothesParts(clothes)
         setEmotionParts(emotions)
         setIsLoading(false)
       } catch (err) {
@@ -166,93 +161,41 @@ const CreateUser = observer(() => {
       return
     }
 
-    const serveData = (id: string | undefined, type: string) => {
+    const serveData = (id: string | undefined) => {
       if (!id) return null
       const symbol = document.getElementById(id) as unknown as SVGSymbolElement
       if (!symbol) return null
 
       const viewBox = symbol.getAttribute('viewBox')
-      const metadataElement = symbol.querySelector('metadata')
-      let metadata: MetadataSpriteAvatar | null = null
-
-      if (metadataElement?.textContent) {
-        try {
-          metadata = JSON.parse(metadataElement.textContent)
-        } catch (err) {
-          console.warn('Ошибка парсинга metadata:', err)
-        }
-      }
-
       if (!viewBox) return null
 
       const [, , vbWidth, vbHeight] = viewBox.split(' ').map(Number)
 
       const svgContent = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}">
-          ${symbol.innerHTML}
-        </svg>`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}">
+        ${symbol.innerHTML}
+      </svg>`
 
       const blob = new Blob([svgContent], { type: 'image/svg+xml' })
       const url = URL.createObjectURL(blob)
 
-      return { url, vbWidth, vbHeight, metadata, type }
+      return { url, vbWidth, vbHeight }
     }
 
     const parts = [
-      serveData(bodyParts[bodyIndex]?.part, 'body'),
-      serveData(headParts[headIndex]?.part, 'head'),
-      serveData(emotionParts[emotionIndex]?.part, 'emotion'),
-    ].filter(Boolean) as {
-      url: string
-      vbWidth: number
-      vbHeight: number
-      metadata: MetadataSpriteAvatar
-      type: string
-    }[]
-
-    let lastDrawn = {
-      x: canvas.width / 2,
-      y: 0,
-      metadata: null as unknown as MetadataSpriteAvatar,
-      type: '',
-    }
+      serveData(bodyParts[bodyIndex]?.part),
+      serveData(headParts[headIndex]?.part),
+      serveData(emotionParts[emotionIndex]?.part),
+    ].filter(Boolean) as { url: string; vbWidth: number; vbHeight: number }[]
 
     for (const part of parts) {
-      const { url, vbWidth, vbHeight, metadata, type } = part
+      const { url, vbWidth, vbHeight } = part
 
       await new Promise<void>((resolve) => {
         const img = new Image()
         img.onload = () => {
-          let x = 0,
-            y = 0
-
-          if (!lastDrawn.metadata || type === 'body') {
-            x = canvas.width / 2 - vbWidth / 2
-            y = 95 // is the vertical offset for body parts
-          } else {
-            const attachFromKey = `attachTo${capitalize(type)}` as keyof MetadataSpriteAvatar
-            const attachToKey =
-              `attachTo${capitalize(lastDrawn.type)}` as keyof MetadataSpriteAvatar
-
-            const attachFrom = (lastDrawn.metadata && lastDrawn.metadata[attachFromKey]) as
-              | { x: number; y: number }
-              | undefined
-            const attachTo = (metadata && metadata[attachToKey]) as
-              | { x: number; y: number }
-              | undefined
-
-            if (attachFrom && attachTo) {
-              x = lastDrawn.x + attachFrom.x - attachTo.x
-              y = lastDrawn.y + attachFrom.y - attachTo.y
-            } else {
-              x = canvas.width / 2 - vbWidth / 2
-              y = 0
-            }
-          }
-
-          ctx.drawImage(img, x, y, vbWidth, vbHeight)
-          lastDrawn = { x, y, metadata, type }
-
+          const scale = 0.85
+          ctx.drawImage(img, 0, 0, vbWidth * scale, vbHeight * scale)
           URL.revokeObjectURL(url)
           resolve()
         }
@@ -265,15 +208,15 @@ const CreateUser = observer(() => {
     drawAvatarToCanvas()
   }, [drawAvatarToCanvas])
 
-  function capitalize(str: string): string {
-    return str.charAt(0).toUpperCase() + str.slice(1)
-  }
-
   const handleSaveAvatar = async () => {
     const trimmedName = name.trim()
 
     if (!trimmedName) {
       setMessage('Пожалуйста, введите имя.')
+      return
+    }
+    if (trimmedName.length > 15) {
+      setMessage('Имя не должно превышать 15 символов.')
       return
     }
 
@@ -295,7 +238,7 @@ const CreateUser = observer(() => {
         !bodyParts[bodyIndex]?.part ||
         !emotionParts[emotionIndex]?.part
       ) {
-        setMessage('Пожалуйста, выберите голову, тело и лицо.')
+        setMessage('Пожалуйста, выберите голову, одежду и лицо.')
         return
       }
 
@@ -368,22 +311,22 @@ const CreateUser = observer(() => {
   return (
     <div className={styles.createUser}>
       <div className={styles.navigate}>
-    <RoundButton onClick={() => navigate('/laboratory')} />
-  </div>
+        <RoundButton onClick={() => navigate('/laboratory')} />
+      </div>
 
-  <div className={styles.centerContent}>
-    <div className={styles.avatarWrapper}>
-      <canvas ref={canvasRef} width={142} height={142} className={styles.avatarCanvas} />
-    </div>
+      <div className={styles.centerContent}>
+        <div className={styles.avatarWrapper}>
+          <canvas ref={canvasRef} width={142} height={142} className={styles.avatarCanvas} />
+        </div>
 
-    <div className={styles.infoMessage}>{message}</div>
-      <MainInput
-        placeholder="_введите Имя"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        onButtonClick={handleSaveAvatar}
-      />
-  </div>
+        <div className={styles.infoMessage}>{message}</div>
+        <MainInput
+          placeholder="_введите Имя"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onButtonClick={handleSaveAvatar}
+        />
+      </div>
       <div className={clsx(styles.partSelectorWrapper, { [styles.visible]: animateIn })}>
         <PartSelector
           tabs={[

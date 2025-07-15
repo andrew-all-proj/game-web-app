@@ -36,6 +36,7 @@ export const MONSTERS = gql`
         strength
         updatedAt
         userId
+        nextLevelExp
         files {
           contentType
           fileType
@@ -80,6 +81,7 @@ export const MONSTER = gql`
       strength
       updatedAt
       userId
+      nextLevelExp
       files {
         contentType
         fileType
@@ -148,6 +150,23 @@ export const MONSTER_BATTLES = gql`
         }
       }
       totalCount
+    }
+  }
+`
+
+export const USER = gql`
+  query User($id: String!) {
+    User(id: $id) {
+      telegramId
+      nameProfessor
+      name
+      isRegistered
+      id
+      energy
+      avatarFileId
+      avatar {
+        url
+      }
     }
   }
 `

@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import client from '../api/apolloClient'
 import { USER_LOGIN } from '../api/graphql/mutation'
+import { USER } from '../api/graphql/query'
 
 export interface User {
   id: string
@@ -9,6 +10,7 @@ export interface User {
   nameProfessor?: string
   isRegistered?: boolean
   avatar?: { id: string; url: string } | null
+  energy?: number
 }
 
 export type TelegramUser = {
@@ -27,6 +29,40 @@ class UserStore {
 
   constructor() {
     makeAutoObservable(this)
+  }
+
+  async fetchUser(id = this.user?.id): Promise<User | null> {
+    try {
+      const response = await client.query({
+        query: USER,
+        variables: {
+          id,
+        },
+        fetchPolicy: 'no-cache',
+      })
+
+      const user = response.data?.User
+
+      if (!user) {
+        return null
+      }
+
+      const transformedUser: User = {
+        id: user.id,
+        name: user.name,
+        nameProfessor: user.nameProfessor,
+        avatar: user.avatar ? { id: user.avatar.id, url: user.avatar.url } : null,
+        energy: user.energy,
+        isRegistered: user.isRegistered,
+        token: this.user?.token,
+      }
+
+      this.setUser(transformedUser)
+      return transformedUser
+    } catch (error) {
+      console.error('Failed to fetch user:', error)
+      return null
+    }
   }
 
   async loginUser(initData: string, tgUser: TelegramUser): Promise<User | null> {
@@ -51,6 +87,7 @@ class UserStore {
       token: user.token,
       isRegistered: user.isRegistered,
       avatar: user.avatar ? { id: user.avatar.id, url: user.avatar.url } : null,
+      energy: user.energy || 0,
     })
 
     return user

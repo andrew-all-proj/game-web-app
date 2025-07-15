@@ -11,16 +11,14 @@ import noAvatarMonster from '../../assets/images/no-avatar-monster.jpg'
 import MainButton from '../../components/Button/MainButton'
 import NotFoundMonsters from './NotFoundMonsters'
 import SecondButton from '../../components/Button/SecondButton'
-import smallHeartIcon from '../../assets/icon/small-heart-icon.svg'
-import smallEnergyIcon from '../../assets/icon/small-energy-icon.svg'
-import smallStrengthIcon from '../../assets/icon/small-strength-icon.svg'
 import foodIcon from '../../assets/icon/icon_food.svg'
 import labIcon from '../../assets/icon/icon_lab.svg'
 import upgradeIcon from '../../assets/icon/icon_upgrade.svg'
 import socialIcon from '../../assets/icon/icon_social.svg'
-import TriangleButton from '../../components/Button/TriangleButton'
 import { Monster } from '../../types/GraphResponse'
-import StatBar from '../../components/StatBar/StatBar'
+import StatBarButton from '../../components/Button/StatBarButton'
+import StatBarMain from '../../components/StatBar/StatBarMain'
+import RoundButton from '../../components/Button/RoundButton'
 
 const Laboratory = observer(() => {
   const navigate = useNavigate()
@@ -40,12 +38,19 @@ const Laboratory = observer(() => {
         const selectedIndex = fetchedMonsters.findIndex((monster) => monster.isSelected)
 
         setMonsterIndex(selectedIndex !== -1 ? selectedIndex : 0)
+
+        await userStore.fetchUser(userStore.user.id)
       }
       setIsLoading(false)
     })()
   }, [navigate])
 
   const handleGoToArena = (monster: Monster) => {
+    if ((userStore.user?.energy ?? 0) < 125) {
+      setErrorMsg(`Недостаточно энергии для боя, нужно 125. У вас: ${userStore.user?.energy ?? 0}`)
+      userStore.fetchUser(userStore.user?.id) //TODO THINKING
+      return
+    }
     monsterStore.setSelectedMonster(monster.id)
     if (!monsterStore.selectedMonster) {
       setErrorMsg('Выберите питомца')
@@ -85,39 +90,32 @@ const Laboratory = observer(() => {
   return (
     <div className={styles.laboratory}>
       <div className={styles.header}>
-        <SecondButton onClick={() => {}}>Энергия</SecondButton>
+        <SecondButton onClick={() => navigate('/create-monster')}>Создать</SecondButton>
         <div className={styles.avatarWrapper} onClick={handleGoToCreateUser}>
           <img alt="avatar user" src={userStore.user?.avatar?.url} />
         </div>
-        <SecondButton onClick={() => navigate('/create-monster')}>Создать</SecondButton>
+        <StatBarButton
+          current={userStore.user?.energy || 0}
+          max={1000}
+          text="Энергия"
+          color="#61FFBE"
+          backgroundColor="#94c9b3"
+          width={120}
+          height={48}
+          onClick={() => console.log('Clicked!')}
+        />
       </div>
       <div className={styles.wrapperCharacteristics}>
-        <div className={styles.characteristic}>Lvl. {selectedMonster.level}</div>
-        <div></div>
-        <div className={styles.characteristic}>
-          <StatBar current={selectedMonster.healthPoints ?? 0} max={600} iconSrc={smallHeartIcon} />
-        </div>
-        <div className={styles.characteristic}>
-          <StatBar
-            current={selectedMonster.stamina ?? 0}
-            iconSrc={smallEnergyIcon}
-            backgroundColor={'#6BE1FF'}
-            color={'#6BE1FF'}
-          />
-        </div>
-        <div></div>
-        <div className={styles.characteristic}>
-          <StatBar
-            current={selectedMonster.strength ?? 0}
-            max={100}
-            iconSrc={smallStrengthIcon}
-            backgroundColor={'#FCF8B5'}
-            color={'#e4e1ae'}
-          />
-        </div>
+        <StatBarMain
+          name={selectedMonster.name || '???'}
+          level={selectedMonster.level}
+          current={selectedMonster.experiencePoints ?? 0}
+          max={selectedMonster.nextLevelExp}
+          width={370}
+          height={35}
+        />
       </div>
       <div style={{ color: 'red' }}>{errorMsg}</div>
-      <div>{selectedMonster.name}</div>
       {monsterStore.selectedMonster?.id === selectedMonster.id && (
         <div className={styles.activeText}>активный</div>
       )}
@@ -134,9 +132,9 @@ const Laboratory = observer(() => {
         </div>
       </div>
       <div className={styles.selectMonsters}>
-        <TriangleButton rotate={0} onClick={handlePrevMonster} />
+        <RoundButton onClick={handlePrevMonster} color="#D2FF49" />
         <MainButton onClick={() => handleGoToArena(selectedMonster)}>Арена</MainButton>
-        <TriangleButton rotate={180} onClick={handleNextMonster} />
+        <RoundButton onClick={handleNextMonster} type="next" color="#D2FF49" />
       </div>
       <div className={styles.bottomMenu}>
         <div className={styles.menuItem}>

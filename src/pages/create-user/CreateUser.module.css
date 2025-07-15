@@ -17,7 +17,7 @@
   justify-content: center;
   flex-grow: 1;
   width: 100%;
-  padding-bottom: 300px
+  padding-bottom: 300px;
 }
 
 .navigate {
@@ -68,7 +68,6 @@
   transform: translateY(0);
   opacity: 1;
 }
-
 
 .avatarWrapper {
   width: 170px;

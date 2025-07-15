@@ -32,7 +32,6 @@ export default function PartSelector({
   const parts = currentTab?.parts || []
   const selectedIndex = currentTab?.selectedIndex ?? -1
   const onSelect = currentTab?.setSelectedIndex ?? (() => {})
-
   const fullParts: (PartTypeAvatar | null)[] = [...parts]
   while (fullParts.length < 8) {
     fullParts.push(null)

@@ -11,6 +11,7 @@ import BattleButton from '../../components/Button/BattleButton'
 import StatBar from '../../components/StatBar/StatBar'
 import smallEnergyIcon from '../../assets/icon/small-energy-icon.svg'
 import smallHeartIcon from '../../assets/icon/small-heart-icon.svg'
+import { ActionStatusEnum } from '../../types/enums/ActionStatusEnum'
 
 interface TestFightProps {
   battleId: string
@@ -343,7 +344,7 @@ export default function TestFight({
     energyCost,
   }: {
     actionId: number
-    actionType: 'attack' | 'defense' | 'pass'
+    actionType: ActionStatusEnum
     energyCost: number
   }) => {
     if (isLoading || !battleId || !monsterStore.selectedMonster?.id || !socketRef.current) return
@@ -469,7 +470,7 @@ export default function TestFight({
               onClick={() =>
                 handleAttack({
                   actionId: attack.id,
-                  actionType: 'attack',
+                  actionType: ActionStatusEnum.ATTACK,
                   energyCost: attack.energyCost,
                 })
               }
@@ -485,7 +486,7 @@ export default function TestFight({
               onClick={() =>
                 handleAttack({
                   actionId: defense.id,
-                  actionType: 'defense',
+                  actionType: ActionStatusEnum.DEFENSE,
                   energyCost: defense.energyCost,
                 })
               }
@@ -499,7 +500,7 @@ export default function TestFight({
             onClick={() =>
               handleAttack({
                 actionId: -1,
-                actionType: 'pass',
+                actionType: ActionStatusEnum.PASS,
                 energyCost: 0,
               })
             }
