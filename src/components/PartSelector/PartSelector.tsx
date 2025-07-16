@@ -7,8 +7,9 @@ interface PartTypeAvatar {
 
 interface TabItem {
   key: string
-  icon: string
-  alt: string
+  text?: string
+  icon?: string
+  alt?: string
   parts: PartTypeAvatar[]
   selectedIndex: number
   setSelectedIndex: (i: number) => void
@@ -16,6 +17,8 @@ interface TabItem {
 
 interface PartSelectorProps {
   tabs: TabItem[]
+  rows?: number
+  columns?: number
   activeTab: string
   onTabChange: (tabKey: string) => void
   setIsEditing: (value: boolean) => void
@@ -23,19 +26,25 @@ interface PartSelectorProps {
 
 export default function PartSelector({
   tabs,
+  rows = 2,
+  columns = 4,
   activeTab,
   onTabChange,
-  setIsEditing,
+  setIsEditing, //TODO remove
 }: PartSelectorProps) {
   const currentTab = tabs.find((tab) => tab.key === activeTab)
 
   const parts = currentTab?.parts || []
   const selectedIndex = currentTab?.selectedIndex ?? -1
   const onSelect = currentTab?.setSelectedIndex ?? (() => {})
+
+  const totalSlots = rows * columns
   const fullParts: (PartTypeAvatar | null)[] = [...parts]
-  while (fullParts.length < 8) {
+  while (fullParts.length < totalSlots) {
     fullParts.push(null)
   }
+
+  console.log('tabs', tabs)
 
   return (
     <div className={styles.selectPart}>
@@ -46,12 +55,18 @@ export default function PartSelector({
             className={`${styles.tabIcon} ${activeTab === tab.key ? styles.activeTab : ''}`}
             onClick={() => onTabChange(tab.key)}
           >
-            <img src={tab.icon} alt={tab.alt} className={styles.tabIconImage} />
+            {tab.icon && <img src={tab.icon} alt={tab.alt || ''} className={styles.tabIconImage} />}
+            {tab.text && <span className={styles.tabText}>{tab.text}</span>}
           </div>
         ))}
       </div>
 
-      <div className={styles.gridWrapper}>
+      <div
+        className={styles.gridWrapper}
+        style={{
+          gridTemplateColumns: `repeat(${columns}, max-content)`,
+        }}
+      >
         {fullParts.map((part, i) => (
           <div
             key={part?.icon || `empty-${i}`}

@@ -9,8 +9,8 @@ import { useNavigate } from 'react-router-dom'
 import { SpriteAtlas } from '../../types/sprites'
 import BattleButton from '../../components/Button/BattleButton'
 import StatBar from '../../components/StatBar/StatBar'
-import smallEnergyIcon from '../../assets/icon/small-energy-icon.svg'
-import smallHeartIcon from '../../assets/icon/small-heart-icon.svg'
+import smallEnergyIcon from '../../assets/icon/small-stamina-icon.svg'
+import smallHeartIcon from '../../assets/icon/small-hp-icon.svg'
 import { ActionStatusEnum } from '../../types/enums/ActionStatusEnum'
 
 interface TestFightProps {

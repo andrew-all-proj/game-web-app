@@ -64,4 +64,6 @@ export interface Monster {
   defense: number
   evasion: number
   experiencePoints: number
+  lastFedAt: Date
+  satiety: number
 }

@@ -12,7 +12,7 @@ interface StatBarProps {
   height?: number
 }
 
-export default function StatBar({
+export default function StatBarMain({
   current,
   max,
   name,

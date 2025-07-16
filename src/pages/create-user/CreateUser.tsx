@@ -47,7 +47,6 @@ const CreateUser = observer(() => {
 
   const [animateIn, setAnimateIn] = useState(false)
 
-
   useEffect(() => {
     const loadSvgSprite = async () => {
       if (!userStore.user?.id) {
@@ -67,7 +66,6 @@ const CreateUser = observer(() => {
           },
           fetchPolicy: 'no-cache',
         })
-
 
         const spriteFiles = data?.Files?.items?.filter(
           (item) => item.fileType === 'IMAGE' && item.url.endsWith('.svg'),
@@ -96,7 +94,6 @@ const CreateUser = observer(() => {
         const parser = new DOMParser()
         const doc = parser.parseFromString(svgText, 'image/svg+xml')
         const symbols = Array.from(doc.querySelectorAll('symbol'))
-
 
         const heads: PartTypeAvatar[] = []
         const clothes: PartTypeAvatar[] = []
@@ -355,6 +352,8 @@ const CreateUser = observer(() => {
               setSelectedIndex: setEmotionIndex,
             },
           ]}
+          rows={2}
+          columns={4}
           activeTab={activeTab}
           onTabChange={setActiveTab}
           setIsEditing={setIsEditing}

@@ -81,7 +81,6 @@ export const MONSTER = gql`
       strength
       updatedAt
       userId
-      nextLevelExp
       files {
         contentType
         fileType
@@ -105,6 +104,8 @@ export const MONSTER = gql`
         monsterId
         name
       }
+      lastFedAt
+      satiety
     }
   }
 `
