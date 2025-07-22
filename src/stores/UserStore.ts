@@ -1,7 +1,8 @@
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 import client from '../api/apolloClient'
 import { USER_LOGIN } from '../api/graphql/mutation'
 import { USER } from '../api/graphql/query'
+import { connectSocket, disconnectSocket, getSocket } from '../api/socket'
 
 export interface User {
   id: string
@@ -24,28 +25,56 @@ export type TelegramUser = {
   allows_write_to_pm?: boolean
 }
 
+export type SocketStatus = 'disconnected' | 'connecting' | 'connected' | 'error'
+
 class UserStore {
   user: User | null = null
+  socketStatus: SocketStatus = 'disconnected'
 
   constructor() {
     makeAutoObservable(this)
+  }
+
+  initSocketWatch() {
+    const socket = getSocket()
+    if (!socket) {
+      this.socketStatus = 'disconnected'
+      return
+    }
+    // reset
+    this.socketStatus = socket.connected ? 'connected' : 'disconnected'
+
+    socket.on('connect', () => {
+      runInAction(() => {
+        this.socketStatus = 'connected'
+      })
+    })
+    socket.on('disconnect', () => {
+      runInAction(() => {
+        this.socketStatus = 'disconnected'
+      })
+    })
+    socket.on('connect_error', () => {
+      runInAction(() => {
+        this.socketStatus = 'error'
+      })
+    })
+    socket.on('reconnecting', () => {
+      runInAction(() => {
+        this.socketStatus = 'connecting'
+      })
+    })
   }
 
   async fetchUser(id = this.user?.id): Promise<User | null> {
     try {
       const response = await client.query({
         query: USER,
-        variables: {
-          id,
-        },
+        variables: { id },
         fetchPolicy: 'no-cache',
       })
-
       const user = response.data?.User
-
-      if (!user) {
-        return null
-      }
+      if (!user) return null
 
       const transformedUser: User = {
         id: user.id,
@@ -56,7 +85,6 @@ class UserStore {
         isRegistered: user.isRegistered,
         token: this.user?.token,
       }
-
       this.setUser(transformedUser)
       return transformedUser
     } catch (error) {
@@ -75,10 +103,7 @@ class UserStore {
     })
 
     const user = response.data?.UserLogin
-
-    if (!user?.id) {
-      return null
-    }
+    if (!user?.id) return null
 
     this.setUser({
       id: user.id,
@@ -90,6 +115,11 @@ class UserStore {
       energy: user.energy || 0,
     })
 
+    if (user.token) {
+      connectSocket(user.token)
+      this.initSocketWatch()
+    }
+
     return user
   }
 
@@ -99,10 +129,12 @@ class UserStore {
 
   clearUser() {
     this.user = null
+    disconnectSocket()
+    this.socketStatus = 'disconnected'
   }
 
   get isAuthenticated() {
-    return this.user?.token
+    return !!this.user?.token
   }
 }
 

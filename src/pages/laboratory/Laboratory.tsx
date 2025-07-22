@@ -56,6 +56,10 @@ const Laboratory = observer(() => {
       setErrorMsg('Выберите питомца')
       return
     }
+    if(monsterStore.selectedMonster.satiety < 25){
+      setErrorMsg('Монстр голоден. Покорми!!!!')
+      return
+    }
     navigate('/search-battle')
   }
 
@@ -140,7 +144,16 @@ const Laboratory = observer(() => {
       </div>
       <div className={styles.bottomMenu}>
         <div className={styles.menuItem}>
-          <img src={foodIcon} alt="food" className={styles.tabIconImage} />
+          <img
+            src={foodIcon}
+            alt="food"
+            className={styles.tabIconImage}
+            onClick={() => {
+              if (userStore.user?.id) {
+                navigate(`/food-menu/${userStore.user.id}`)
+              }
+            }}
+          />
         </div>
         <div className={styles.menuItem}>
           <img src={labIcon} alt="lab" className={styles.tabIconImage} />

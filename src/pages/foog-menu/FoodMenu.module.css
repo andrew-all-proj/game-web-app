@@ -1,0 +1,65 @@
+.foodMenu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100dvh;
+  background-color: #fbc94b;
+  color: var(--color-text);
+  position: relative;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  background: #d2ff49;
+  border-radius: 0 0 20px 20px;
+  border: 5px solid #362f2d;
+  border-top: none;
+  box-shadow: 0px 6px 0px 0px #362f2d55;
+  height: 93px;
+  width: 100vw;
+  max-width: 450px;
+  min-width: 300px;
+  margin-bottom: 18px;
+  box-sizing: border-box;
+}
+
+.headerIcon {
+  width: 66px;
+  height: 66px;
+  margin-right: 16px;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+.headerTextBlock {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1 1 auto;
+  font-size: 24px;
+}
+
+.headerButton {
+  position: absolute;
+  top: 16px;
+  right: 22px;
+}
+
+.content {
+  padding-top: 0;
+  width: 100vw;
+  max-width: 500px;
+  margin: 0 auto;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}

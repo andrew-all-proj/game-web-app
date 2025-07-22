@@ -37,6 +37,8 @@ export const MONSTERS = gql`
         updatedAt
         userId
         nextLevelExp
+        lastFedAt
+        satiety
         files {
           contentType
           fileType
@@ -167,6 +169,40 @@ export const USER = gql`
       avatarFileId
       avatar {
         url
+      }
+    }
+  }
+`
+
+export const USER_INVENTORY = gql`
+  query UserInventories(
+    $limit: Float!
+    $offset: Float!
+    $name: StringFilter
+    $type: UserInventoryTypeFilter
+  ) {
+    UserInventories(limit: $limit, offset: $offset, name: $name, type: $type) {
+      totalCount
+      items {
+        food {
+          description
+          iconFileId
+          id
+          name
+          satietyBonus
+        }
+        mutagen {
+          description
+          effectDescription
+          iconFileId
+          id
+          name
+        }
+        quantity
+        mutagenId
+        type
+        id
+        foodId
       }
     }
   }
