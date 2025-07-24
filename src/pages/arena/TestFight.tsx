@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Phaser from 'phaser'
 import monsterStore from '../../stores/MonsterStore'
 import styles from './TestFight.module.css'
-import { connectSocket, getSocket } from '../../api/socket'
+import { getSocket } from '../../api/socket'
 import userStore from '../../stores/UserStore'
 import { LastActionLog } from '../../types/BattleRedis'
 import { useNavigate } from 'react-router-dom'
@@ -59,11 +59,10 @@ export default function TestFight({
       if (!monsterStore.selectedMonster || !monsterStore.opponentMonster) return
       if (!userStore.user?.token) return
 
-      let socket = getSocket()
-      if (!socket || !socket.connected) {
-        socket = connectSocket(userStore.user.token)
+      const socket = getSocket()
+      if (!socket) {
+        return
       }
-      if (!socket.connected) return // на всякий случай
 
       socket.emit('getBattle', {
         battleId,
@@ -77,7 +76,6 @@ export default function TestFight({
     })()
   }, [battleId, isLoading, navigate])
 
-  // Если не оба готовы, повторяем startBattle через 2 сек (если нужно)
   useEffect(() => {
     if (!atlas || !spriteUrl || !containerRef.current || !spriteUrlOpponent || !atlasOpponent)
       return
@@ -98,7 +96,6 @@ export default function TestFight({
     }
   }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent, battleId, isLoading, isOpponentReady])
 
-  // Событие от сервера: данные по битве
   useSocketEvent('responseBattle', (data) => {
     const currentMonsterId = monsterStore.selectedMonster?.id
     if (!currentMonsterId) return
@@ -150,7 +147,6 @@ export default function TestFight({
     setIsMyTurn(currentMonsterId === data.currentTurnMonsterId)
     setCurrentTurnMonsterId(data.currentTurnMonsterId)
 
-    // Таймер на ход
     const now = Date.now()
     const remaining = data.turnTimeLimit - (now - data.turnStartTime)
     setTurnTimer(Math.max(0, Math.floor(remaining / 1000)))

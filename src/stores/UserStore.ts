@@ -1,8 +1,8 @@
-import { makeAutoObservable, runInAction } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import client from '../api/apolloClient'
 import { USER_LOGIN } from '../api/graphql/mutation'
 import { USER } from '../api/graphql/query'
-import { connectSocket, disconnectSocket, getSocket } from '../api/socket'
+import socketStore from './SocketStore'
 
 export interface User {
   id: string
@@ -25,45 +25,11 @@ export type TelegramUser = {
   allows_write_to_pm?: boolean
 }
 
-export type SocketStatus = 'disconnected' | 'connecting' | 'connected' | 'error'
-
 class UserStore {
   user: User | null = null
-  socketStatus: SocketStatus = 'disconnected'
 
   constructor() {
     makeAutoObservable(this)
-  }
-
-  initSocketWatch() {
-    const socket = getSocket()
-    if (!socket) {
-      this.socketStatus = 'disconnected'
-      return
-    }
-    // reset
-    this.socketStatus = socket.connected ? 'connected' : 'disconnected'
-
-    socket.on('connect', () => {
-      runInAction(() => {
-        this.socketStatus = 'connected'
-      })
-    })
-    socket.on('disconnect', () => {
-      runInAction(() => {
-        this.socketStatus = 'disconnected'
-      })
-    })
-    socket.on('connect_error', () => {
-      runInAction(() => {
-        this.socketStatus = 'error'
-      })
-    })
-    socket.on('reconnecting', () => {
-      runInAction(() => {
-        this.socketStatus = 'connecting'
-      })
-    })
   }
 
   async fetchUser(id = this.user?.id): Promise<User | null> {
@@ -116,8 +82,7 @@ class UserStore {
     })
 
     if (user.token) {
-      connectSocket(user.token)
-      this.initSocketWatch()
+      socketStore.init(user.token)
     }
 
     return user
@@ -129,8 +94,6 @@ class UserStore {
 
   clearUser() {
     this.user = null
-    disconnectSocket()
-    this.socketStatus = 'disconnected'
   }
 
   get isAuthenticated() {

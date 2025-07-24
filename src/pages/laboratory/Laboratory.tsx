@@ -56,7 +56,7 @@ const Laboratory = observer(() => {
       setErrorMsg('Выберите питомца')
       return
     }
-    if(monsterStore.selectedMonster.satiety < 25){
+    if (monsterStore.selectedMonster.satiety < 25) {
       setErrorMsg('Монстр голоден. Покорми!!!!')
       return
     }

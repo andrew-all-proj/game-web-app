@@ -94,7 +94,7 @@ export interface Mutagen {
 export interface UserInventory {
   id: string
   userId: string
-  user: {}
+  //user: {}  TODO add user
   foodId: string
   food: Food
   mutagenId: string

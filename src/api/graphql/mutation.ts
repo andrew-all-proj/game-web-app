@@ -82,6 +82,7 @@ export const MONSTER_FEED = gql`
         error
         message
       }
+      success
     }
   }
 `

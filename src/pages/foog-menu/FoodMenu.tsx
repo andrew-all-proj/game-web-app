@@ -1,8 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { useNavigate, useParams } from 'react-router-dom'
-
+import { useEffect, useState, useCallback } from 'react'
 import styles from './FoodMenu.module.css'
-import { useEffect, useState } from 'react'
 import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
 import Loading from '../loading/Loading'
 import { USER_INVENTORY } from '../../api/graphql/query'
@@ -15,6 +14,7 @@ import CardFeedMonster from './CardFeedMonster'
 import monsterStore from '../../stores/MonsterStore'
 import { MONSTER_FEED } from '../../api/graphql/mutation'
 import RoundButton from '../../components/Button/RoundButton'
+import { ApolloError } from '@apollo/client'
 
 const FoodMenu = observer(() => {
   const navigate = useNavigate()
@@ -24,43 +24,46 @@ const FoodMenu = observer(() => {
   const [userInventories, setUserInventories] = useState<{ foodId: string; quantity: number }[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  const fetchInventoriesAndMonsters = async (withLoading: boolean) => {
-    try {
-      if (withLoading) setIsLoading(true)
-      await authorizationAndInitTelegram(navigate)
+  const fetchInventoriesAndMonsters = useCallback(
+    async (withLoading: boolean) => {
+      try {
+        if (withLoading) setIsLoading(true)
+        await authorizationAndInitTelegram(navigate)
 
-      const { data }: { data: { UserInventories: GraphQLListResponse<UserInventory> } } =
-        await client.query({
-          query: USER_INVENTORY,
-          variables: { limit: 10, offset: 0, type: { eq: UserInventoryTypeEnum.FOOD } },
-          fetchPolicy: 'no-cache',
-        })
+        const { data }: { data: { UserInventories: GraphQLListResponse<UserInventory> } } =
+          await client.query({
+            query: USER_INVENTORY,
+            variables: { limit: 10, offset: 0, type: { eq: UserInventoryTypeEnum.FOOD } },
+            fetchPolicy: 'no-cache',
+          })
 
-      const totalFood = data.UserInventories.items.reduce(
-        (acc, item) => acc + (item.quantity ?? 0),
-        0,
-      )
+        const totalFood = data.UserInventories.items.reduce(
+          (acc, item) => acc + (item.quantity ?? 0),
+          0,
+        )
 
-      const foods = data.UserInventories.items.map((food) => ({
-        foodId: food.id,
-        quantity: food.quantity,
-      }))
+        const foods = data.UserInventories.items.map((food) => ({
+          foodId: food.id,
+          quantity: food.quantity,
+        }))
 
-      setUserInventories(foods)
-      setQuantityFood(totalFood)
+        setUserInventories(foods)
+        setQuantityFood(totalFood)
 
-      await monsterStore.fetchMonsters()
+        await monsterStore.fetchMonsters()
 
-      setIsLoading(false)
-    } catch {
-      setInfoMessage('Ошибка при загрузке')
-      setIsLoading(false)
-    }
-  }
+        setIsLoading(false)
+      } catch {
+        setInfoMessage('Ошибка при загрузке')
+        setIsLoading(false)
+      }
+    },
+    [navigate],
+  )
 
   useEffect(() => {
     fetchInventoriesAndMonsters(true)
-  }, [monsterIdParams, navigate])
+  }, [monsterIdParams, fetchInventoriesAndMonsters])
 
   if (isLoading) {
     return <Loading />
@@ -79,14 +82,16 @@ const FoodMenu = observer(() => {
         fetchPolicy: 'no-cache',
       })
       await fetchInventoriesAndMonsters(false)
-    } catch (error: any) {
-      console.log(error)
-      const message =
-        error?.message ||
-        error?.graphQLErrors?.[0]?.message ||
-        error?.networkError?.result?.errors?.[0]?.message ||
-        error?.toString() ||
-        ''
+    } catch (error: unknown) {
+      let message = ''
+      if (error instanceof ApolloError) {
+        message =
+          error.message || error.graphQLErrors?.[0]?.message || error.networkError?.message || ''
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        message = (error as { message: string }).message
+      } else {
+        message = String(error)
+      }
       if (message.includes('The monster is already full')) {
         setInfoMessage('Монстр уже сыт')
       } else {
