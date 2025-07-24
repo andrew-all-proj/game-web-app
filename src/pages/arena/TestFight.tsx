@@ -4,7 +4,7 @@ import monsterStore from '../../stores/MonsterStore'
 import styles from './TestFight.module.css'
 import { getSocket } from '../../api/socket'
 import userStore from '../../stores/UserStore'
-import { LastActionLog } from '../../types/BattleRedis'
+import { BattleRedis, LastActionLog } from '../../types/BattleRedis'
 import { useNavigate } from 'react-router-dom'
 import { SpriteAtlas } from '../../types/sprites'
 import BattleButton from '../../components/Button/BattleButton'
@@ -96,7 +96,7 @@ export default function TestFight({
     }
   }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent, battleId, isLoading, isOpponentReady])
 
-  useSocketEvent('responseBattle', (data) => {
+  useSocketEvent<BattleRedis>('responseBattle', (data) => {
     const currentMonsterId = monsterStore.selectedMonster?.id
     if (!currentMonsterId) return
 

@@ -23,6 +23,16 @@ interface MonsterOpponent {
   avatar: string | null
 }
 
+interface DuelChallengeResponsePayload {
+  result: boolean
+  battleId?: string
+}
+
+interface OpponentsResponsePayload {
+  opponents: MonsterOpponent[]
+  nextCursor: string
+}
+
 const SearchBattle = observer(() => {
   const [opponents, setOpponents] = useState<MonsterOpponent[]>([])
   const [registeredMonster, setRegisteredMonster] = useState<boolean>(false)
@@ -83,13 +93,13 @@ const SearchBattle = observer(() => {
     initSearch()
   }, [navigate])
 
-  useSocketEvent('opponents', (data) => {
+  useSocketEvent<OpponentsResponsePayload>('opponents', (data) => {
     setOpponents(data.opponents)
     setNextCursor(data.nextCursor)
     setIsLoading(false)
   })
 
-  useSocketEvent('duelChallengeResponce', (data) => {
+  useSocketEvent<DuelChallengeResponsePayload>('duelChallengeResponce', (data) => {
     if (!data.result) {
       setWaitOpponent(true)
       setWaitOpponentMessage('Противник отказался')
@@ -102,11 +112,11 @@ const SearchBattle = observer(() => {
     }
   })
 
-  useSocketEvent('duelChallengeRequest', (data) => {
+  useSocketEvent<MonsterOpponent>('duelChallengeRequest', (data) => {
     setRequestbattleOpponent(data)
   })
 
-  useSocketEvent('registerMonster', (data) => {
+  useSocketEvent<{result: boolean}>('registerMonster', (data) => {
     setRegisteredMonster(data.result)
   })
 
