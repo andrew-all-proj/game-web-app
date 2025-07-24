@@ -74,3 +74,15 @@ export const MONSTER_UPDATE = gql`
     }
   }
 `
+
+export const MONSTER_FEED = gql`
+  mutation MonsterFeed($monsterId: String!, $quantity: Float, $userInventoryId: String!) {
+    MonsterFeed(monsterId: $monsterId, quantity: $quantity, userInventoryId: $userInventoryId) {
+      error {
+        error
+        message
+      }
+      success
+    }
+  }
+`

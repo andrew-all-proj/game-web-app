@@ -1,20 +1,20 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { observer } from 'mobx-react-lite'
 import styles from './SearchBattle.module.css'
 import monsterStore from '../../stores/MonsterStore'
-import userStore from '../../stores/UserStore'
 import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
 import { useNavigate } from 'react-router-dom'
 import Loading from '../loading/Loading'
 import MainButton from '../../components/Button/MainButton'
-import { connectSocket, disconnectSocket } from '../../api/socket'
+import { getSocket } from '../../api/socket'
 import SecondButton from '../../components/Button/SecondButton'
 import DuelRequestModal from './DuelRequestModal'
 import { GraphQLListResponse, MonsterBattles } from '../../types/GraphResponse'
 import { MONSTER_BATTLES } from '../../api/graphql/query'
 import client from '../../api/apolloClient'
+import { useSocketEvent } from '../../functions/useSocketEvent'
 
-interface monsterOpponent {
+interface MonsterOpponent {
   monsterId: string
   socketId: string
   findOpponent: boolean
@@ -23,21 +23,29 @@ interface monsterOpponent {
   avatar: string | null
 }
 
+interface DuelChallengeResponsePayload {
+  result: boolean
+  battleId?: string
+}
+
+interface OpponentsResponsePayload {
+  opponents: MonsterOpponent[]
+  nextCursor: string
+}
+
 const SearchBattle = observer(() => {
-  const [opponents, setOpponents] = useState<monsterOpponent[]>([])
-  //const [registeredMonster, setRegisteredMonster] = useState<boolean>(false)
+  const [opponents, setOpponents] = useState<MonsterOpponent[]>([])
+  const [registeredMonster, setRegisteredMonster] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(true)
   const [waitOpponentMessage, setWaitOpponentMessage] = useState('')
   const [waitOpponent, setWaitOpponent] = useState(true)
-  const [requestBattleOpponent, setRequestbattleOpponent] = useState<monsterOpponent | null>(null)
+  const [requestBattleOpponent, setRequestbattleOpponent] = useState<MonsterOpponent | null>(null)
   const [cursor, setCursor] = useState('0')
   const [nextCursor, setNextCursor] = useState('0')
   const navigate = useNavigate()
 
-  const socketRef = useRef<ReturnType<typeof connectSocket> | null>(null)
-
   useEffect(() => {
-    const fetchOpponents = async () => {
+    const initSearch = async () => {
       const success = await authorizationAndInitTelegram(navigate)
       if (!success) return
 
@@ -66,71 +74,63 @@ const SearchBattle = observer(() => {
       if (monsterStore.selectedMonster === null) {
         await monsterStore.fetchMonsters()
       }
+      const socket = getSocket()
 
-      if (!userStore.user?.token) return
+      if (!socket) return
 
-      const socket = connectSocket(userStore.user.token, () => {
-        socketRef.current = socket
-
-        socket.on('opponents', (data) => {
-          setOpponents(data.opponents)
-          setNextCursor(data.nextCursor)
-          setIsLoading(false)
-        })
-
-        socket.on('registerMonster', () => {
-          //setRegisteredMonster(data.result)
-        })
-
-        socket.on('duelChallengeResponce', (data) => {
-          if (!data.result) {
-            setWaitOpponent(true)
-            setWaitOpponentMessage('Противник отказался')
-          } else {
-            socketRef.current?.emit('registerMonsterForBattle', {
-              isFindOpponent: false,
-              monsterId: monsterStore.selectedMonster?.id,
-            })
-            navigate(`/arena/${data.battleId}`)
-          }
-        })
-
-        socket.on('duelChallengeRequest', (opponent) => {
-          setRequestbattleOpponent(opponent)
-        })
-
-        socket.emit('registerMonsterForBattle', {
-          isFindOpponent: true,
-          monsterId: monsterStore.selectedMonster?.id,
-        })
-
-        socket.emit('getOpponents', {
-          findOpponent: true,
-          monsterId: monsterStore.selectedMonster?.id,
-          cursor,
-          limit: 5,
-        })
+      socket.emit('registerMonsterForBattle', {
+        isFindOpponent: true,
+        monsterId: monsterStore.selectedMonster?.id,
+      })
+      socket.emit('getOpponents', {
+        findOpponent: true,
+        monsterId: monsterStore.selectedMonster?.id,
+        cursor: '0',
+        limit: 5,
       })
     }
 
-    fetchOpponents()
+    initSearch()
+  }, [navigate])
 
-    return () => {
-      disconnectSocket()
+  useSocketEvent<OpponentsResponsePayload>('opponents', (data) => {
+    setOpponents(data.opponents)
+    setNextCursor(data.nextCursor)
+    setIsLoading(false)
+  })
+
+  useSocketEvent<DuelChallengeResponsePayload>('duelChallengeResponce', (data) => {
+    if (!data.result) {
+      setWaitOpponent(true)
+      setWaitOpponentMessage('Противник отказался')
+    } else {
+      getSocket()?.emit('registerMonsterForBattle', {
+        isFindOpponent: false,
+        monsterId: monsterStore.selectedMonster?.id,
+      })
+      navigate(`/arena/${data.battleId}`)
     }
-  }, [navigate, cursor])
+  })
 
-  if (isLoading) {
+  useSocketEvent<MonsterOpponent>('duelChallengeRequest', (data) => {
+    setRequestbattleOpponent(data)
+  })
+
+  useSocketEvent<{result: boolean}>('registerMonster', (data) => {
+    setRegisteredMonster(data.result)
+  })
+
+  if (isLoading && registeredMonster) {
     return <Loading />
   }
 
-  const handleChallenge = (monster: monsterOpponent) => {
+  const handleChallenge = (monster: MonsterOpponent) => {
     if (!waitOpponent) return
 
     setWaitOpponentMessage('Ждите, когда противник примет ваш вызов на дуэль...')
     setWaitOpponent(false)
 
-    socketRef.current?.emit('requestDuelChallenge', {
+    getSocket()?.emit('requestDuelChallenge', {
       fromMonsterId: monsterStore.selectedMonster?.id,
       toMonsterId: monster.monsterId,
     })
@@ -142,7 +142,7 @@ const SearchBattle = observer(() => {
   }
 
   const handleGoToLab = () => {
-    socketRef.current?.emit('registerMonsterForBattle', {
+    getSocket()?.emit('registerMonsterForBattle', {
       isFindOpponent: false,
       monsterId: monsterStore.selectedMonster?.id,
     })
@@ -151,7 +151,8 @@ const SearchBattle = observer(() => {
 
   const handleUpdateSerch = () => {
     setIsLoading(true)
-    socketRef.current?.emit('getOpponents', {
+    console.log(getSocket()?.id)
+    getSocket()?.emit('getOpponents', {
       findOpponent: true,
       monsterId: monsterStore.selectedMonster?.id,
       cursor,
@@ -159,21 +160,21 @@ const SearchBattle = observer(() => {
     })
   }
 
-  const handleDuelAccepted = (requestbattleOpponent: monsterOpponent) => {
-    socketRef.current?.emit('duelAccepted', {
+  const handleDuelAccepted = (requestbattleOpponent: MonsterOpponent) => {
+    getSocket()?.emit('duelAccepted', {
       duelAccepted: true,
       fromMonsterId: requestbattleOpponent.monsterId,
       toMonsterId: monsterStore.selectedMonster?.id,
     })
     setRequestbattleOpponent(null)
-    socketRef.current?.emit('registerMonsterForBattle', {
+    getSocket()?.emit('registerMonsterForBattle', {
       isFindOpponent: false,
       monsterId: monsterStore.selectedMonster?.id,
     })
   }
 
-  const handleDuelDecline = (requestbattleOpponent: monsterOpponent) => {
-    socketRef.current?.emit('duelAccepted', {
+  const handleDuelDecline = (requestbattleOpponent: MonsterOpponent) => {
+    getSocket()?.emit('duelAccepted', {
       duelAccepted: false,
       fromMonsterId: requestbattleOpponent.monsterId,
       toMonsterId: monsterStore.selectedMonster?.id,
@@ -281,7 +282,7 @@ const SearchBattle = observer(() => {
                 onClick={() => {
                   setIsLoading(true)
                   setCursor(nextCursor)
-                  socketRef.current?.emit('getOpponents', {
+                  getSocket()?.emit('getOpponents', {
                     monsterId: monsterStore.selectedMonster?.id,
                     cursor: nextCursor,
                     limit: 5,

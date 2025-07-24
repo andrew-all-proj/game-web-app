@@ -2,16 +2,17 @@ import { useEffect, useRef, useState } from 'react'
 import Phaser from 'phaser'
 import monsterStore from '../../stores/MonsterStore'
 import styles from './TestFight.module.css'
-import { connectSocket } from '../../api/socket'
+import { getSocket } from '../../api/socket'
 import userStore from '../../stores/UserStore'
 import { BattleRedis, LastActionLog } from '../../types/BattleRedis'
 import { useNavigate } from 'react-router-dom'
 import { SpriteAtlas } from '../../types/sprites'
 import BattleButton from '../../components/Button/BattleButton'
 import StatBar from '../../components/StatBar/StatBar'
-import smallEnergyIcon from '../../assets/icon/small-energy-icon.svg'
-import smallHeartIcon from '../../assets/icon/small-heart-icon.svg'
+import smallEnergyIcon from '../../assets/icon/small-stamina-icon.svg'
+import smallHeartIcon from '../../assets/icon/small-hp-icon.svg'
 import { ActionStatusEnum } from '../../types/enums/ActionStatusEnum'
+import { useSocketEvent } from '../../functions/useSocketEvent'
 
 interface TestFightProps {
   battleId: string
@@ -36,7 +37,6 @@ export default function TestFight({
   const opponentHealthBarRef = useRef<HTMLDivElement>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isOpponentReady, setIsOpponentReady] = useState(false)
-  const socketRef = useRef<ReturnType<typeof connectSocket> | null>(null)
   const [isMyTurn, setIsMyTurn] = useState(false)
   const [turnTimer, setTurnTimer] = useState<number>(0)
   const [currentTurnMonsterId, setCurrentTurnMonsterId] = useState<string | null>(null)
@@ -52,134 +52,107 @@ export default function TestFight({
   const [opponentStamina, setOpponentStamina] = useState(0)
   const navigate = useNavigate()
 
+  // Init/connect socket and start battle
   useEffect(() => {
     if (!isLoading) return
     ;(async () => {
       if (!monsterStore.selectedMonster || !monsterStore.opponentMonster) return
-
       if (!userStore.user?.token) return
 
-      const socket = connectSocket(userStore.user.token, () => {
-        socketRef.current = socket
+      const socket = getSocket()
+      if (!socket) {
+        return
+      }
 
-        socket.emit('getBattle', {
-          battleId,
-          monsterId: monsterStore.selectedMonster?.id,
-        })
+      socket.emit('getBattle', {
+        battleId,
+        monsterId: monsterStore.selectedMonster?.id,
+      })
 
-        if (isLoading) {
-          socket.emit('startBattle', {
-            battleId,
-            monsterId: monsterStore.selectedMonster?.id,
-          })
-        }
-
-        socket.on('responseBattle', (data: BattleRedis) => {
-          const currentMonsterId = monsterStore.selectedMonster?.id
-          if (!currentMonsterId) return
-
-          const isChallenger = currentMonsterId === data.challengerMonsterId
-
-          if (isChallenger) {
-            setMyAttacks(data.challengerAttacks || [])
-            setMyDefenses(data.challengerDefenses || [])
-          } else {
-            setMyAttacks(data.opponentAttacks || [])
-            setMyDefenses(data.opponentDefenses || [])
-          }
-
-          setLastAction(data.lastActionLog ?? null)
-
-          yourHealthRef.current = isChallenger ? data.challengerMonsterHp : data.opponentMonsterHp
-          opponentHealthRef.current = isChallenger
-            ? data.opponentMonsterHp
-            : data.challengerMonsterHp
-
-          const yourSt = isChallenger ? data.challengerMonsterStamina : data.opponentMonsterStamina
-          const opponentSt = isChallenger
-            ? data.opponentMonsterStamina
-            : data.challengerMonsterStamina
-
-          setYourStamina(yourSt)
-          setOpponentStamina(opponentSt)
-
-          if (yourHealthBarRef.current)
-            yourHealthBarRef.current.style.width = `${yourHealthRef.current}%`
-          if (opponentHealthBarRef.current)
-            opponentHealthBarRef.current.style.width = `${opponentHealthRef.current}%`
-
-          if (data.winnerMonsterId) {
-            setIsBattleOver(true)
-
-            const isWin = monsterStore.selectedMonster?.id === data.winnerMonsterId
-            const scene = gameRef.current?.scene.scenes[0]
-            if (scene && !scene.children.getByName('gameOverText')) {
-              scene.add
-                .text(200, 40, isWin ? 'YOU WIN' : 'YOU LOSE', {
-                  fontSize: '32px',
-                  color: isWin ? '#00ff00' : '#ff0000',
-                  fontStyle: 'bold',
-                })
-                .setOrigin(0.5)
-                .setName('gameOverText')
-            }
-            return
-          }
-
-          setIsOpponentReady(
-            isChallenger ? data.opponentReady === '1' : data.challengerReady === '1',
-          )
-          setIsMyTurn(currentMonsterId === data.currentTurnMonsterId)
-          setCurrentTurnMonsterId(data.currentTurnMonsterId)
-
-          const now = Date.now()
-          const remaining = data.turnTimeLimit - (now - data.turnStartTime)
-          setTurnTimer(Math.max(0, Math.floor(remaining / 1000)))
-
-          const timerInterval = setInterval(() => {
-            setTurnTimer((prev) => {
-              if (prev <= 1) {
-                clearInterval(timerInterval)
-                return 0
-              }
-              return prev - 1
-            })
-          }, 1000)
-        })
+      socket.emit('startBattle', {
+        battleId,
+        monsterId: monsterStore.selectedMonster?.id,
       })
     })()
   }, [battleId, isLoading, navigate])
 
   useEffect(() => {
-    //if reloading page setStartBattle
     if (!atlas || !spriteUrl || !containerRef.current || !spriteUrlOpponent || !atlasOpponent)
       return
-    if (!isLoading) {
-      if (socketRef.current) {
-        socketRef.current.emit('startBattle', {
-          battleId: battleId,
-          monsterId: monsterStore.selectedMonster?.id,
-        })
-      }
-    }
 
     if (isLoading && !isOpponentReady) {
       const intervalId = setInterval(() => {
-        if (!socketRef.current || isOpponentReady) {
+        const socket = getSocket()
+        if (!socket || !socket.connected || isOpponentReady) {
           clearInterval(intervalId)
           return
         }
-
-        socketRef.current.emit('startBattle', {
+        socket.emit('startBattle', {
           battleId,
           monsterId: monsterStore.selectedMonster?.id,
         })
       }, 2000)
-
       return () => clearInterval(intervalId)
     }
   }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent, battleId, isLoading, isOpponentReady])
 
+  useSocketEvent<BattleRedis>('responseBattle', (data) => {
+    const currentMonsterId = monsterStore.selectedMonster?.id
+    if (!currentMonsterId) return
+
+    const isChallenger = currentMonsterId === data.challengerMonsterId
+
+    if (isChallenger) {
+      setMyAttacks(data.challengerAttacks || [])
+      setMyDefenses(data.challengerDefenses || [])
+    } else {
+      setMyAttacks(data.opponentAttacks || [])
+      setMyDefenses(data.opponentDefenses || [])
+    }
+
+    setLastAction(data.lastActionLog ?? null)
+
+    yourHealthRef.current = isChallenger ? data.challengerMonsterHp : data.opponentMonsterHp
+    opponentHealthRef.current = isChallenger ? data.opponentMonsterHp : data.challengerMonsterHp
+
+    const yourSt = isChallenger ? data.challengerMonsterStamina : data.opponentMonsterStamina
+    const opponentSt = isChallenger ? data.opponentMonsterStamina : data.challengerMonsterStamina
+
+    setYourStamina(yourSt)
+    setOpponentStamina(opponentSt)
+
+    if (yourHealthBarRef.current) yourHealthBarRef.current.style.width = `${yourHealthRef.current}%`
+    if (opponentHealthBarRef.current)
+      opponentHealthBarRef.current.style.width = `${opponentHealthRef.current}%`
+
+    if (data.winnerMonsterId) {
+      setIsBattleOver(true)
+
+      const isWin = monsterStore.selectedMonster?.id === data.winnerMonsterId
+      const scene = gameRef.current?.scene.scenes[0]
+      if (scene && !scene.children.getByName('gameOverText')) {
+        scene.add
+          .text(200, 40, isWin ? 'YOU WIN' : 'YOU LOSE', {
+            fontSize: '32px',
+            color: isWin ? '#00ff00' : '#ff0000',
+            fontStyle: 'bold',
+          })
+          .setOrigin(0.5)
+          .setName('gameOverText')
+      }
+      return
+    }
+
+    setIsOpponentReady(isChallenger ? data.opponentReady === '1' : data.challengerReady === '1')
+    setIsMyTurn(currentMonsterId === data.currentTurnMonsterId)
+    setCurrentTurnMonsterId(data.currentTurnMonsterId)
+
+    const now = Date.now()
+    const remaining = data.turnTimeLimit - (now - data.turnStartTime)
+    setTurnTimer(Math.max(0, Math.floor(remaining / 1000)))
+  })
+
+  // Phaser Game
   useEffect(() => {
     if (!atlas || !spriteUrl || !containerRef.current || !spriteUrlOpponent || !atlasOpponent)
       return
@@ -317,11 +290,9 @@ export default function TestFight({
     }
 
     function update(this: Phaser.Scene) {
-      //TODO DELETE!!!!!!!!!!!!
       if (opponentHealthRef.current <= 0) {
         opponentMonsterSprite.angle = 90
       }
-
       if (yourHealthRef.current <= 0) {
         yourMonster.angle = -90
       }
@@ -338,6 +309,7 @@ export default function TestFight({
     }
   }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent])
 
+  // Атака/действие
   const handleAttack = ({
     actionId,
     actionType,
@@ -347,18 +319,18 @@ export default function TestFight({
     actionType: ActionStatusEnum
     energyCost: number
   }) => {
-    if (isLoading || !battleId || !monsterStore.selectedMonster?.id || !socketRef.current) return
-
+    if (isLoading || !battleId || !monsterStore.selectedMonster?.id) return
     if (monsterStore.selectedMonster.id !== currentTurnMonsterId) return
-
     if (energyCost > yourStamina) {
       alert(
-        `Недостаточно SP для выполнения действия у Вас ${yourStamina} SP, требуется ${energyCost} SP`,
+        `Недостаточно SP для выполнения действия: у вас ${yourStamina} SP, требуется ${energyCost} SP`,
       )
       return
     }
+    const socket = getSocket()
+    if (!socket || !socket.connected) return
 
-    socketRef.current.emit('attack', {
+    socket.emit('attack', {
       battleId,
       actionId,
       actionType,
@@ -458,7 +430,6 @@ export default function TestFight({
         )}
         <div ref={containerRef} />
       </div>
-
       {!isBattleOver && (
         <div className={styles.wrapperButton}>
           {myAttacks.map((attack, idx) => (
@@ -476,7 +447,6 @@ export default function TestFight({
               }
             />
           ))}
-
           {myDefenses.map((defense, idx) => (
             <BattleButton
               key={`d-${idx}`}
@@ -492,7 +462,6 @@ export default function TestFight({
               }
             />
           ))}
-
           <BattleButton
             spCost={0}
             name="Пропуск"

@@ -2,6 +2,7 @@ import WebApp from '@twa-dev/sdk'
 import userStore from '../stores/UserStore'
 import errorStore from '../stores/ErrorStore'
 import { NavigateFunction } from 'react-router-dom'
+import { connectSocket } from '../api/socket'
 
 export const authorizationAndInitTelegram = async (
   navigate: NavigateFunction,
@@ -35,11 +36,12 @@ export const authorizationAndInitTelegram = async (
   if (tgUser && initData) {
     try {
       const userLogin = await userStore.loginUser(initData, tgUser)
-      if (!userLogin) {
+      if (!userLogin?.token) {
         errorStore.setError({ error: true, message: 'Ошибка регистрации!' })
         navigate('/error')
         return false
       }
+      await connectSocket(userLogin.token)
     } catch (err) {
       errorStore.setError({ error: true, message: `Ошибка регистрации: ${err}` })
       navigate('/error')

@@ -6,6 +6,8 @@ import Laboratory from '../pages/laboratory/Laboratory'
 import ErrorPage from '../pages/error/ErrorPage'
 import CreateMonster from '../pages/create-monster/CreateMonster'
 import SearchBattle from '../pages/search-battle/SearchBattle'
+import MonsterMenu from '../pages/monster-menu/MonsterMenu'
+import FoodMenu from '../pages/foog-menu/FoodMenu'
 
 const routes: RouteObject[] = [
   {
@@ -35,6 +37,14 @@ const routes: RouteObject[] = [
   {
     path: '/search-battle',
     element: <SearchBattle />,
+  },
+  {
+    path: '/monster-menu/:monsterIdParams',
+    element: <MonsterMenu />,
+  },
+  {
+    path: '/food-menu/:userIdParams',
+    element: <FoodMenu />,
   },
   {
     path: '/error',

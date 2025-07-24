@@ -81,3 +81,18 @@
   border-color: #1a1a1a;
   box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.4);
 }
+
+.tabIconSvg {
+  width: 24px;
+  height: 24px;
+  fill: #362f2d;
+  pointer-events: none;
+}
+
+.tabText {
+  font-size: 22px;
+  color: #362f2d;
+  margin-top: 4px;
+  text-align: center;
+  white-space: nowrap;
+}

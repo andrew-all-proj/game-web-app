@@ -7,11 +7,10 @@ import styles from './Laboratory.module.css'
 import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
 import Loading from '../loading/Loading'
 import monsterStore from '../../stores/MonsterStore'
-import noAvatarMonster from '../../assets/images/no-avatar-monster.jpg'
 import MainButton from '../../components/Button/MainButton'
 import NotFoundMonsters from './NotFoundMonsters'
 import SecondButton from '../../components/Button/SecondButton'
-import foodIcon from '../../assets/icon/icon_food.svg'
+import foodIcon from '../../assets/icon/food-icon.svg'
 import labIcon from '../../assets/icon/icon_lab.svg'
 import upgradeIcon from '../../assets/icon/icon_upgrade.svg'
 import socialIcon from '../../assets/icon/icon_social.svg'
@@ -19,6 +18,7 @@ import { Monster } from '../../types/GraphResponse'
 import StatBarButton from '../../components/Button/StatBarButton'
 import StatBarMain from '../../components/StatBar/StatBarMain'
 import RoundButton from '../../components/Button/RoundButton'
+import MonsterAvatarWithShadow from '../../components/MonsterAvatarWithShadow/MonsterAvatarWithShadow'
 
 const Laboratory = observer(() => {
   const navigate = useNavigate()
@@ -56,6 +56,10 @@ const Laboratory = observer(() => {
       setErrorMsg('Выберите питомца')
       return
     }
+    if (monsterStore.selectedMonster.satiety < 25) {
+      setErrorMsg('Монстр голоден. Покорми!!!!')
+      return
+    }
     navigate('/search-battle')
   }
 
@@ -65,6 +69,11 @@ const Laboratory = observer(() => {
 
   const handleSelectMonster = (monster: Monster) => {
     monsterStore.setSelectedMonster(monster.id)
+  }
+
+  const handleGoToMonsterMenu = (monster: Monster) => {
+    if (!monster?.id) return
+    navigate(`/monster-menu/${monster.id}`)
   }
 
   if (isLoading) {
@@ -91,8 +100,12 @@ const Laboratory = observer(() => {
     <div className={styles.laboratory}>
       <div className={styles.header}>
         <SecondButton onClick={() => navigate('/create-monster')}>Создать</SecondButton>
-        <div className={styles.avatarWrapper} onClick={handleGoToCreateUser}>
-          <img alt="avatar user" src={userStore.user?.avatar?.url} />
+        <div className={styles.avatarWrapper}>
+          <img
+            alt="avatar monster"
+            src={userStore.user?.avatar?.url}
+            onClick={handleGoToCreateUser}
+          />
         </div>
         <StatBarButton
           current={userStore.user?.energy || 0}
@@ -119,18 +132,11 @@ const Laboratory = observer(() => {
       {monsterStore.selectedMonster?.id === selectedMonster.id && (
         <div className={styles.activeText}>активный</div>
       )}
-      <div className={styles.wrapperMonster} onClick={() => handleSelectMonster(selectedMonster)}>
-        <img
-          src={selectedMonster.avatar || noAvatarMonster}
-          alt={selectedMonster.name}
-          className={styles.petImage}
-        />
-      </div>
-      <div className={styles.dotWrapper}>
-        <div className={styles.outerDot}>
-          <div className={styles.innerDot}></div>
-        </div>
-      </div>
+      <button onClick={() => handleSelectMonster(selectedMonster)}>Сделать основным</button>
+      <MonsterAvatarWithShadow
+        monster={selectedMonster}
+        onClick={() => handleGoToMonsterMenu(selectedMonster)}
+      />
       <div className={styles.selectMonsters}>
         <RoundButton onClick={handlePrevMonster} color="#D2FF49" />
         <MainButton onClick={() => handleGoToArena(selectedMonster)}>Арена</MainButton>
@@ -138,7 +144,16 @@ const Laboratory = observer(() => {
       </div>
       <div className={styles.bottomMenu}>
         <div className={styles.menuItem}>
-          <img src={foodIcon} alt="food" className={styles.tabIconImage} />
+          <img
+            src={foodIcon}
+            alt="food"
+            className={styles.tabIconImage}
+            onClick={() => {
+              if (userStore.user?.id) {
+                navigate(`/food-menu/${userStore.user.id}`)
+              }
+            }}
+          />
         </div>
         <div className={styles.menuItem}>
           <img src={labIcon} alt="lab" className={styles.tabIconImage} />
