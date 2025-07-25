@@ -3,41 +3,46 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 354px;
+  width: 100%;
+  max-width: 354px;
   height: 308px;
   margin: 0 auto;
+  background: transparent;
+  justify-content: flex-end; /* прижимаем детей к низу */
 }
 
-.wrapperMonster {
-  width: 292px;
-  height: 308px;
+.monsterZone {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  z-index: 2;
-  position: absolute;
-  top: 0;
+  justify-content: flex-end;
+  width: 100%;
+  height: 260px;
+  position: relative;
 }
 
 .monsterImage {
-  width: 100%;
-  height: 240px;
+  max-height: 260px;
   object-fit: contain;
   z-index: 2;
   cursor: pointer;
+  position: relative;
 }
 
 .dotWrapper {
-  margin-top: auto;
+  width: 100%;
   display: flex;
   justify-content: center;
-  z-index: 1;
   position: absolute;
   bottom: 0;
+  left: 0;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .outerDot {
-  width: 354px;
+  width: 80%;
+  max-width: 354px;
   height: 81px;
   background-color: rgba(0, 0, 0, 0.25);
   border-radius: 50%;
@@ -47,7 +52,7 @@
 }
 
 .innerDot {
-  width: 250px;
+  width: 70%;
   height: 50px;
   background-color: rgba(0, 0, 0, 0.3);
   border-radius: 50%;

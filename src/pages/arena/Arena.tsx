@@ -132,7 +132,6 @@ const Arena = observer(() => {
 
   return (
     <div className={styles.arena}>
-      <Header avatarUrl={userStore.user?.avatar?.url} />
       <main className={styles.main}>
         <div className={styles.logoPlaceholder}>{infoMessage ? `${infoMessage}` : ''}</div>
 
