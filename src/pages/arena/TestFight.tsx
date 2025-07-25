@@ -158,7 +158,7 @@ export default function TestFight({
       return
 
     const config: Phaser.Types.Core.GameConfig = {
-      type: Phaser.WEBGL,
+      type: Phaser.CANVAS,
       width: 400,
       height: 300,
       parent: containerRef.current,
