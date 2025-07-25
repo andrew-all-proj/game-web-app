@@ -156,7 +156,16 @@ const Laboratory = observer(() => {
           />
         </div>
         <div className={styles.menuItem}>
-          <img src={labIcon} alt="lab" className={styles.tabIconImage} />
+          <img
+            src={labIcon}
+            alt="lab"
+            className={styles.tabIconImage}
+            onClick={() => {
+              if (userStore.user?.id) {
+                navigate(`/mutagens-menu`)
+              }
+            }}
+          />
         </div>
         <div className={styles.menuItem}>
           <img src={upgradeIcon} alt="upgrade" className={styles.tabIconImage} />

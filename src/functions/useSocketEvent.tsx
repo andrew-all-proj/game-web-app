@@ -18,4 +18,3 @@ export function useSocketEvent<T>(event: string, handler: (payload: T) => void):
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [event, socketStore.status])
 }
-
