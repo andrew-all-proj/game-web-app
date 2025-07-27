@@ -128,11 +128,6 @@ const Laboratory = observer(() => {
           height={35}
         />
       </div>
-      <div style={{ color: 'red' }}>{errorMsg}</div>
-      {monsterStore.selectedMonster?.id === selectedMonster.id && (
-        <div className={styles.activeText}>активный</div>
-      )}
-      <button onClick={() => handleSelectMonster(selectedMonster)}>Сделать основным</button>
       <MonsterAvatarWithShadow
         monster={selectedMonster}
         onClick={() => handleGoToMonsterMenu(selectedMonster)}
@@ -174,6 +169,9 @@ const Laboratory = observer(() => {
           <img src={socialIcon} alt="social" className={styles.tabIconImage} />
         </div>
       </div>
+      <div style={{ marginTop: 16, color: '#888', fontSize: 14 }}>
+        Ширина: {window.innerWidth}px, Высота: {window.innerHeight}px
+     </div>
     </div>
   )
 })

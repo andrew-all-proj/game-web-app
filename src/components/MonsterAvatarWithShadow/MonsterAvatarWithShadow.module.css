@@ -5,10 +5,10 @@
   align-items: center;
   width: 100%;
   max-width: 354px;
-  height: 308px;
+  height: 300px;
   margin: 0 auto;
   background: transparent;
-  justify-content: flex-end; /* прижимаем детей к низу */
+  justify-content: flex-end;
 }
 
 .monsterZone {
