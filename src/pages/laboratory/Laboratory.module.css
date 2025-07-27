@@ -55,49 +55,6 @@
   color: #ffffff;
 }
 
-.wrapperMonster {
-  width: 292px;
-  height: 308px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  position: relative;
-}
-
-.monsterImage {
-  width: 100%;
-  height: 240px;
-  object-fit: contain;
-  z-index: 2;
-}
-
-.dotWrapper {
-  margin-top: -100px;
-  display: flex;
-  justify-content: center;
-  z-index: 1;
-  position: relative;
-}
-
-.outerDot {
-  width: 354px;
-  height: 81px;
-  background-color: rgba(0, 0, 0, 0.25);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.innerDot {
-  width: 250px;
-  height: 50px;
-  background-color: rgba(0, 0, 0, 0.3); /* Почти чёрный */
-  border-radius: 50%;
-}
-
 .selectMonsters {
   display: flex;
   flex-direction: row;

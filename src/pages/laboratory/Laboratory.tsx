@@ -67,9 +67,9 @@ const Laboratory = observer(() => {
     navigate('/create-user')
   }
 
-  const handleSelectMonster = (monster: Monster) => {
-    monsterStore.setSelectedMonster(monster.id)
-  }
+  // const handleSelectMonster = (monster: Monster) => {
+  //   monsterStore.setSelectedMonster(monster.id)
+  // }
 
   const handleGoToMonsterMenu = (monster: Monster) => {
     if (!monster?.id) return
@@ -95,6 +95,8 @@ const Laboratory = observer(() => {
     const newIndex = (monsterIndex + 1) % monsters.length
     setMonsterIndex(newIndex)
   }
+
+  console.log(errorMsg)
 
   return (
     <div className={styles.laboratory}>
