@@ -1,7 +1,7 @@
 .arena {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  height: var(--tg-vh, 100vh);
   background-color: var(--color-bg);
   color: var(--color-text);
   background-image: url("../../assets/images/background-arena.jpg");
@@ -9,7 +9,7 @@
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .main {
