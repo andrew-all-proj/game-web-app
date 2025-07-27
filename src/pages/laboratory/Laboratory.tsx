@@ -171,9 +171,6 @@ const Laboratory = observer(() => {
           <img src={socialIcon} alt="social" className={styles.tabIconImage} />
         </div>
       </div>
-      <div style={{ marginTop: 16, color: '#888', fontSize: 14 }}>
-        Ширина: {window.innerWidth}px, Высота: {window.innerHeight}px
-     </div>
     </div>
   )
 })
