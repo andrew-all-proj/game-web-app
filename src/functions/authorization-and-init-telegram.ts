@@ -17,6 +17,11 @@ export const authorizationAndInitTelegram = async (
   let tgUser = WebApp.initDataUnsafe?.user
   let initData = WebApp.initData
 
+  const vh = WebApp.viewportHeight
+  if (vh) {
+    document.documentElement.style.setProperty('--tg-vh', `${vh}px`)
+  }
+
   if (import.meta.env.VITE_LOCAL && (!tgUser || !initData)) {
     tgUser = {
       id: 123456789,

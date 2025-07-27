@@ -26,6 +26,7 @@
   --color-link: #646cff;
   --color-link-hover: #747bff;
   --color-button-bg: #f9f9f9;
+  --tg-vh: 100vh;
 
   font-family: var(--font-base);
   font-weight: 400;
