@@ -75,7 +75,7 @@ const Laboratory = observer(() => {
   }
 
   if (isLoading && !userStore.isAuthenticated) {
-    console.log("LODING!!!!!")
+    console.log('LODING!!!!!')
     return <Loading />
   }
 
@@ -141,7 +141,9 @@ const Laboratory = observer(() => {
         />
         <div className={styles.selectMonsters}>
           <RoundButton onClick={handlePrevMonster} color="#D2FF49" />
-          <MainButton width={210} onClick={() => handleGoToArena(selectedMonster)}>Арена</MainButton>
+          <MainButton width={210} onClick={() => handleGoToArena(selectedMonster)}>
+            Арена
+          </MainButton>
           <RoundButton onClick={handleNextMonster} type="next" color="#D2FF49" />
         </div>
       </div>

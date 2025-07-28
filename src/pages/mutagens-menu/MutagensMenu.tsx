@@ -51,9 +51,9 @@ const MutagensMenu = observer(() => {
   }
 
   return (
-    <div className={styles.foodMenu}>
+    <div className={styles.mutagensMenu}>
       <div className={styles.header}>
-        <img className={styles.headerIcon} alt="food" src={mutagenIcon} />
+        <img className={styles.headerIcon} alt="mutagen" src={mutagenIcon} />
         <div className={styles.headerTextBlock}>
           <span>Мутагены</span>
         </div>
@@ -63,15 +63,18 @@ const MutagensMenu = observer(() => {
       </div>
       <div className={styles.content}>
         {infoMessage}
-        <MutagenGrid userInventories={userInventories} />
+        <div className={styles.gridWrapper}>
+          <MutagenGrid userInventories={userInventories} />
+        </div>
+      <div className={styles.bottomMenu}>
         <MainButton
           onClick={() => navigate('/laboratory')}
           height={93}
-          width={300}
-          backgroundColor="#616cff"
+          backgroundColor="#FB6B6B"
         >
-          Главное Меню
+          Утилизировать
         </MainButton>
+      </div>
       </div>
     </div>
   )

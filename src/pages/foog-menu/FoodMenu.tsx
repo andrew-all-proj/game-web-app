@@ -54,7 +54,9 @@ const FoodMenu = observer(() => {
   }
 
   const handlerFeedMonster = async (monsterId: string) => {
-    const food = inventoriesStore.inventories.find((inventory) => inventory?.quantity > 0 && inventory.type ===  UserInventoryTypeEnum.FOOD )
+    const food = inventoriesStore.inventories.find(
+      (inventory) => inventory?.quantity > 0 && inventory.type === UserInventoryTypeEnum.FOOD,
+    )
     if (!food) {
       setInfoMessage('Нет еды для кормления')
       return
@@ -97,23 +99,19 @@ const FoodMenu = observer(() => {
       </div>
       <div className={styles.content}>
         {infoMessage}
-          {monsterStore.monsters.map((monster) => (
-            <CardFeedMonster
-              key={monster.id}
-              url={monster?.avatar || ''}
-              satiety={monster.satiety}
-              onButtonClick={() => handlerFeedMonster(monster.id)}
-            />
-          ))}
+        {monsterStore.monsters.map((monster) => (
+          <CardFeedMonster
+            key={monster.id}
+            url={monster?.avatar || ''}
+            satiety={monster.satiety}
+            onButtonClick={() => handlerFeedMonster(monster.id)}
+          />
+        ))}
         <div className={styles.bottomMenu}>
-        <MainButton
-          onClick={() => navigate('/laboratory')}
-          height={93}
-          backgroundColor="#616cff"
-        >
-          Главное Меню
-        </MainButton>
-       </div>
+          <MainButton onClick={() => navigate('/laboratory')} height={93} backgroundColor="#616cff">
+            Главное Меню
+          </MainButton>
+        </div>
       </div>
     </div>
   )

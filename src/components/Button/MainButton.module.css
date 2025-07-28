@@ -1,5 +1,6 @@
 .mainButton {
   width: 100%;
+  max-width: var(--max-weight);
   height: 67px;
 
   display: flex;

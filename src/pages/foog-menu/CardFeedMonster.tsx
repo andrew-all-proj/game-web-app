@@ -37,4 +37,3 @@ export default function CardFeedMonster({ url, satiety, onButtonClick }: CardFee
     </div>
   )
 }
-

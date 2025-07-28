@@ -17,7 +17,7 @@ export default function MainButton({
   height,
   color,
   backgroundColor,
-  className = ''
+  className = '',
 }: MainButtonProps) {
   return (
     <button
