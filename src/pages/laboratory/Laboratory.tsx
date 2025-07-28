@@ -33,13 +33,11 @@ const Laboratory = observer(() => {
     ;(async () => {
       const success = await authorizationAndInitTelegram(navigate)
       if (success && userStore.user?.id) {
+        await userStore.fetchUser(userStore.user.id)
         await monsterStore.fetchMonsters(userStore.user.id)
         const fetchedMonsters = monsterStore.monsters
         const selectedIndex = fetchedMonsters.findIndex((monster) => monster.isSelected)
-
         setMonsterIndex(selectedIndex !== -1 ? selectedIndex : 0)
-
-        await userStore.fetchUser(userStore.user.id)
       }
       setIsLoading(false)
     })()
@@ -76,7 +74,8 @@ const Laboratory = observer(() => {
     navigate(`/monster-menu/${monster.id}`)
   }
 
-  if (isLoading) {
+  if (isLoading && !userStore.isAuthenticated) {
+    console.log("LODING!!!!!")
     return <Loading />
   }
 
@@ -142,7 +141,7 @@ const Laboratory = observer(() => {
         />
         <div className={styles.selectMonsters}>
           <RoundButton onClick={handlePrevMonster} color="#D2FF49" />
-          <MainButton onClick={() => handleGoToArena(selectedMonster)}>Арена</MainButton>
+          <MainButton width={210} onClick={() => handleGoToArena(selectedMonster)}>Арена</MainButton>
           <RoundButton onClick={handleNextMonster} type="next" color="#D2FF49" />
         </div>
       </div>
