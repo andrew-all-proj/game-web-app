@@ -27,6 +27,8 @@
   --color-link-hover: #747bff;
   --color-button-bg: #f9f9f9;
   --tg-vh: 100vh;
+  --max-height: 1000px;
+  --max-weight: 500px;
 
   font-family: var(--font-base);
   font-weight: 400;

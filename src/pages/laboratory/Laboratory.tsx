@@ -101,7 +101,7 @@ const Laboratory = observer(() => {
   return (
     <div className={styles.laboratory}>
       <div className={styles.header}>
-        <SecondButton onClick={() => navigate('/create-monster')}>Создать</SecondButton>
+        <SecondButton className={styles.headerBtnCreate} onClick={() => navigate('/create-monster')}>Создать</SecondButton>
         <div className={styles.avatarWrapper}>
           <img
             alt="avatar monster"
@@ -118,26 +118,28 @@ const Laboratory = observer(() => {
           width={120}
           height={48}
           onClick={() => console.log('Clicked!')}
+          className={styles.headerBtnStatBar}
         />
-      </div>
-      <div className={styles.wrapperCharacteristics}>
         <StatBarMain
           name={selectedMonster.name || '???'}
           level={selectedMonster.level}
           current={selectedMonster.experiencePoints ?? 0}
           max={selectedMonster.nextLevelExp}
           width={370}
-          height={35}
+          height={40}
+          className={styles.headerStatBarMain}
         />
       </div>
-      <MonsterAvatarWithShadow
-        monster={selectedMonster}
-        onClick={() => handleGoToMonsterMenu(selectedMonster)}
-      />
-      <div className={styles.selectMonsters}>
-        <RoundButton onClick={handlePrevMonster} color="#D2FF49" />
-        <MainButton onClick={() => handleGoToArena(selectedMonster)}>Арена</MainButton>
-        <RoundButton onClick={handleNextMonster} type="next" color="#D2FF49" />
+      <div className={styles.centerContent}>
+        <MonsterAvatarWithShadow
+          monster={selectedMonster}
+          onClick={() => handleGoToMonsterMenu(selectedMonster)}
+        />
+        <div className={styles.selectMonsters}>
+          <RoundButton onClick={handlePrevMonster} color="#D2FF49" />
+          <MainButton onClick={() => handleGoToArena(selectedMonster)}>Арена</MainButton>
+          <RoundButton onClick={handleNextMonster} type="next" color="#D2FF49" />
+        </div>
       </div>
       <div className={styles.bottomMenu}>
         <div className={styles.menuItem}>

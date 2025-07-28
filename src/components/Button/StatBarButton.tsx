@@ -10,6 +10,7 @@ interface StatBarButtonProps {
   textColor?: string
   width?: number
   height?: number
+  className?: string
 }
 
 export default function StatBarButton({
@@ -22,12 +23,13 @@ export default function StatBarButton({
   textColor = '#2d2421',
   width = 60,
   height = 14,
+  className = '',
 }: StatBarButtonProps) {
   const percent = max ? Math.max(0, Math.min((current / max) * 100, 100)) : 100
 
   return (
     <button
-      className={styles.barButton}
+      className={`${styles.barButton} ${className}`.trim()}
       onClick={onClick}
       style={{
         width,
