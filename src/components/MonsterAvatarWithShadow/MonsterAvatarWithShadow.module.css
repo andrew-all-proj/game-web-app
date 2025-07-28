@@ -19,7 +19,7 @@
   align-items: center;
   justify-content: flex-end;
   width: 100%;
-  height: 87%;
+  height: 100%;
   position: relative;
 }
 
@@ -46,7 +46,7 @@
 }
 
 .outerDot {
-  width: 60%;
+  width: 80%;
   aspect-ratio: 5/1;
   background-color: rgba(0, 0, 0, 0.25);
   border-radius: 50%;
