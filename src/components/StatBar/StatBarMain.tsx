@@ -23,7 +23,7 @@ export default function StatBarMain({
   textColor = '#362f2d',
   width = 180,
   height = 35,
-  className = ''
+  className = '',
 }: StatBarProps) {
   const percent = max ? Math.max(0, Math.min((current / max) * 100, 100)) : 100
   const text = max ? `${current}/${max}` : `${current}`

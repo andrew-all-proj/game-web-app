@@ -3,6 +3,7 @@ import userStore from '../stores/UserStore'
 import errorStore from '../stores/ErrorStore'
 import { NavigateFunction } from 'react-router-dom'
 import { connectSocket } from '../api/socket'
+import inventoriesStore from '../stores/InventoriesStore'
 
 export const authorizationAndInitTelegram = async (
   navigate: NavigateFunction,
@@ -65,5 +66,7 @@ export const authorizationAndInitTelegram = async (
     navigate('/')
     return false
   }
+
+  await inventoriesStore.fetchInventories()
   return true
 }

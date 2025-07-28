@@ -101,7 +101,12 @@ const Laboratory = observer(() => {
   return (
     <div className={styles.laboratory}>
       <div className={styles.header}>
-        <SecondButton className={styles.headerBtnCreate} onClick={() => navigate('/create-monster')}>Создать</SecondButton>
+        <SecondButton
+          className={styles.headerBtnCreate}
+          onClick={() => navigate('/create-monster')}
+        >
+          Создать
+        </SecondButton>
         <div className={styles.avatarWrapper}>
           <img
             alt="avatar monster"

@@ -14,8 +14,8 @@
 
 .header {
   display: grid;
-  grid-template-columns: auto 1fr auto; 
-  grid-template-rows: auto auto; 
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto;
   align-items: center;
   width: 100%;
   max-width: 380px;
@@ -24,9 +24,9 @@
   gap: 8px;
 }
 
-.headerBtnCreate{
+.headerBtnCreate {
   grid-column: 1;
-  grid-row: 1
+  grid-row: 1;
 }
 
 .avatarWrapper {
@@ -51,9 +51,9 @@
   object-fit: cover;
 }
 
-.headerBtnStatBar{
+.headerBtnStatBar {
   grid-column: 3;
-  grid-row: 1
+  grid-row: 1;
 }
 
 .headerStatBarMain {
@@ -62,10 +62,10 @@
 }
 
 .centerContent {
-  flex: 1 1 auto;         
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;     
+  align-items: center;
   justify-content: center;
   width: 100%;
 }
