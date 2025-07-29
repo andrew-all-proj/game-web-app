@@ -2,6 +2,7 @@ import MainButton from '../../components/Button/MainButton'
 import RoundButton from '../../components/Button/RoundButton'
 import { Mutagen, UserInventory } from '../../types/GraphResponse'
 import styles from './InfoPopupMutagen.module.css'
+import mutagenIcon from '../../assets/icon/icon_mutagen.svg'
 
 interface InfoPopupMutagenProps {
   userInventory: UserInventory | null
@@ -29,7 +30,7 @@ const InfoPopupMutagen = ({ userInventory, onClose, onClick }: InfoPopupMutagenP
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.popup} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <img src={userInventory.mutagen.iconFile?.url} alt="" className={styles.icon} />
+          <img src={userInventory.mutagen.iconFile?.url || mutagenIcon} alt="" className={styles.icon} />
           <span className={styles.title}>{userInventory.mutagen.name || 'Мутаген'}</span>
           <RoundButton type={'back'} onClick={onClose} className={styles.closeBtn} />
         </div>
