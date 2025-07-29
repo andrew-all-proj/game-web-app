@@ -19,7 +19,6 @@ const FoodMenu = observer(() => {
   const navigate = useNavigate()
   const { monsterIdParams } = useParams()
   const [infoMessage, setInfoMessage] = useState('')
-  const [quantityFood, setQuantityFood] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
 
   const fetchInventoriesAndMonsters = useCallback(
@@ -29,11 +28,6 @@ const FoodMenu = observer(() => {
         await authorizationAndInitTelegram(navigate)
 
         await inventoriesStore.fetchInventories()
-
-        const totalFood = inventoriesStore.food.reduce((acc, item) => acc + (item.quantity ?? 0), 0)
-
-        setQuantityFood(totalFood)
-
         await monsterStore.fetchMonsters()
 
         setIsLoading(false)
@@ -91,7 +85,7 @@ const FoodMenu = observer(() => {
       <div className={styles.header}>
         <img className={styles.headerIcon} alt="food" src={foodIcon} />
         <div className={styles.headerTextBlock}>
-          <span>Еда в наличии: {quantityFood}</span>
+          <span>Еда в наличии: {inventoriesStore.quantityFood}</span>
         </div>
         <div className={styles.headerButton}>
           <RoundButton type="exit" onClick={() => navigate('/laboratory')} />

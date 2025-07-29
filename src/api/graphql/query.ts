@@ -197,6 +197,12 @@ export const USER_INVENTORY = gql`
           iconFileId
           id
           name
+          strength
+          defense
+          evasion
+          iconFile {
+            url
+          }
         }
         quantity
         mutagenId

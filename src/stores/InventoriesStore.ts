@@ -47,6 +47,10 @@ class InventoriesStore {
     return this.inventories.filter((item) => item.type === UserInventoryTypeEnum.MUTAGEN)
   }
 
+  get quantityFood() {
+    return inventoriesStore.food.reduce((acc, item) => acc + (item.quantity ?? 0), 0)
+  }
+
   clear() {
     this.inventories = []
     this.error = null
