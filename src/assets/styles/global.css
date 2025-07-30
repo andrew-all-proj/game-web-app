@@ -30,6 +30,9 @@
   --max-height: 1000px;
   --max-weight: 500px;
 
+  --green-primary-color: #5ff55a;
+  --green-secondary-color: #d2ff49;
+
   font-family: var(--font-base);
   font-weight: 400;
 

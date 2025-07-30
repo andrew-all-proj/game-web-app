@@ -1,4 +1,4 @@
-.cardFeedMonster {
+.cardMenuMonster {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -11,27 +11,7 @@
   width: 95%;
   max-width: var(--max-weight);
   box-sizing: border-box;
-  overflow: hidden;
-}
-
-.wrapperImage {
-  background: #ff968d;
-  border-radius: 15px;
-  border: 5px solid #362f2d;
-  width: 70px;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-left: -5px;
-  z-index: 1;
-}
-
-.monsterImage {
-  width: 56px;
-  height: 56px;
-  object-fit: contain;
+  overflow: visible;
 }
 
 .satietyInfo {
@@ -55,7 +35,7 @@
   margin-right: -5px;
 }
 
-.feedButton {
+.cardButton {
   width: 114px;
   height: 80px;
   border-radius: 18px;
@@ -67,30 +47,4 @@
   color: #362f2d;
   cursor: pointer;
   transition: background 0.15s;
-}
-
-.feedButton:disabled,
-.feedButtonDisabled {
-  background: #686868 !important;
-  cursor: not-allowed;
-  opacity: 0.9;
-}
-
-.satietyLow {
-  background: #ff7878;
-} /* 0–25 */
-.satietyMid {
-  background: #ffbb58;
-} /* 25–50 */
-.satietyHigh {
-  background: #7bdfff;
-} /* 50–75 */
-.satietyFull {
-  background: #57e065;
-} /* 75–100 */
-
-@media (max-height: 590px) {
-  .cardFeedMonster {
-    margin: 5px 0;
-  }
 }

@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(5, 1fr);
-  gap: 14px;
+  gap: 15px;
   padding: 16px;
   min-width: 320px;
   min-height: 400px;
@@ -42,4 +42,10 @@
   box-shadow:
     0 5px 0 #362f2d55,
     /* нижняя тень */ 0 0 0 4px #7c7cff inset; /* внутренняя синяя рамка */
+}
+
+@media (max-height: 670px) {
+  .grid {
+    gap: 10px;
+  }
 }

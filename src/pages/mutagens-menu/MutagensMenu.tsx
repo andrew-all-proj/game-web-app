@@ -11,12 +11,13 @@ import MutagenGrid from './MutagenGrid'
 import inventoriesStore from '../../stores/InventoriesStore'
 import InfoPopupMutagen from './InfoPopupMutagen'
 import { UserInventory } from '../../types/GraphResponse'
+import HeaderBar from '../../components/Header/HeaderBar'
 
 const MutagensMenu = observer(() => {
   const navigate = useNavigate()
   const [infoMessage, setInfoMessage] = useState('')
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedMutagen, setSelectedMutagen] = useState<UserInventory | null>(null)
+  const [selectedInventory, setSelectedInventory] = useState<UserInventory | null>(null)
 
   const fetchInventoriesAndMonsters = useCallback(
     async (withLoading: boolean) => {
@@ -35,12 +36,12 @@ const MutagensMenu = observer(() => {
     [navigate],
   )
 
-   const handlerApplyMutagen = (userInventory: UserInventory) => {
-    console.log(userInventory)
+  const handlerApplyMutagen = (userInventory: UserInventory) => {
+    navigate(`/monster-apply-mutagen/${userInventory.id}`)
   }
 
   const handlerShowInfoPopupMutagen = (item: UserInventory) => {
-    setSelectedMutagen(item)
+    setSelectedInventory(item)
   }
 
   const handlerSelectedMutagen = (item: UserInventory, idx: number) => {
@@ -58,15 +59,11 @@ const MutagensMenu = observer(() => {
 
   return (
     <div className={styles.mutagensMenu}>
-      <div className={styles.header}>
-        <img className={styles.headerIcon} alt="mutagen" src={mutagenIcon} />
-        <div className={styles.headerTextBlock}>
-          <span>Мутагены</span>
-        </div>
-        <div className={styles.headerButton}>
-          <RoundButton type="exit" onClick={() => navigate('/laboratory')} />
-        </div>
-      </div>
+      <HeaderBar
+        icon={mutagenIcon}
+        title={'Мутагены'}
+        rightContent={<RoundButton type="exit" onClick={() => navigate('/laboratory')} />}
+      />
       <div className={styles.content}>
         {infoMessage}
         <div className={styles.gridWrapper}>
@@ -77,11 +74,19 @@ const MutagensMenu = observer(() => {
           />
         </div>
         <div className={styles.bottomMenu}>
-          <MainButton onClick={() => navigate('/laboratory')} color='black' backgroundColor="#FB6B6B">
+          <MainButton
+            onClick={() => navigate('/laboratory')}
+            color="black"
+            backgroundColor="#FB6B6B"
+          >
             Утилизировать
           </MainButton>
         </div>
-        <InfoPopupMutagen userInventory={selectedMutagen} onClose={() => setSelectedMutagen(null)} onClick={handlerApplyMutagen} />
+        <InfoPopupMutagen
+          userInventory={selectedInventory}
+          onClose={() => setSelectedInventory(null)}
+          onClick={handlerApplyMutagen}
+        />
       </div>
     </div>
   )

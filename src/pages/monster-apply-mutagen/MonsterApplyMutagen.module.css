@@ -1,0 +1,74 @@
+.foodMenu {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: var(--tg-vh, 100vh);
+  max-height: var(--max-height);
+  width: 100%;
+  background-color: #fbc94b;
+  color: var(--color-text);
+  overflow: auto;
+}
+
+.header {
+  position: relative;
+  top: 0;
+  display: flex;
+  display: flex;
+  align-items: center;
+  background: #d2ff49;
+  border-radius: 0 0 20px 20px;
+  border: 5px solid #362f2d;
+  border-top: none;
+  box-shadow: 0px 6px 0px 0px #362f2d55;
+  height: 93px;
+  width: 100vw;
+  max-width: var(--max-weight);
+  min-width: 300px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+}
+
+.headerIcon {
+  width: 66px;
+  height: 66px;
+  margin-right: 16px;
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+.headerTextBlock {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1 1 auto;
+  font-size: 24px;
+}
+
+.headerButton {
+  position: absolute;
+  top: 16px;
+  right: 22px;
+}
+
+.content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.bottomMenu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 95%;
+  margin-top: auto;
+  padding-bottom: 10px;
+}

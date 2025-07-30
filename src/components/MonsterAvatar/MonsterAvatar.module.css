@@ -1,0 +1,32 @@
+.wrapperImage {
+  background: #ff968d;
+  border-radius: 15px;
+  border: 5px solid #362f2d;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: -5px;
+  z-index: 1;
+}
+
+.monsterImage {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.levelMax {
+  background: #ff7878;
+} /* 15–20 */
+.levelHigh {
+  background: #ffbb58;
+} /* 10–15 */
+.levelMid {
+  background: #7bdfff;
+} /* 5-10 */
+.levelLow {
+  background: #57e065;
+} /* 0–5 */

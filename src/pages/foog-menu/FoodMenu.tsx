@@ -10,10 +10,10 @@ import MainButton from '../../components/Button/MainButton'
 import CardFeedMonster from './CardFeedMonster'
 import monsterStore from '../../stores/MonsterStore'
 import { MONSTER_FEED } from '../../api/graphql/mutation'
-import RoundButton from '../../components/Button/RoundButton'
 import { ApolloError } from '@apollo/client'
 import inventoriesStore from '../../stores/InventoriesStore'
 import { UserInventoryTypeEnum } from '../../types/enums/UserInventoryTypeEnum'
+import HeaderBar from '../../components/Header/HeaderBar'
 
 const FoodMenu = observer(() => {
   const navigate = useNavigate()
@@ -82,15 +82,7 @@ const FoodMenu = observer(() => {
 
   return (
     <div className={styles.foodMenu}>
-      <div className={styles.header}>
-        <img className={styles.headerIcon} alt="food" src={foodIcon} />
-        <div className={styles.headerTextBlock}>
-          <span>Еда в наличии: {inventoriesStore.quantityFood}</span>
-        </div>
-        <div className={styles.headerButton}>
-          <RoundButton type="exit" onClick={() => navigate('/laboratory')} />
-        </div>
-      </div>
+      <HeaderBar icon={foodIcon} title={`Еда в наличии: ${inventoriesStore.quantityFood}`} />
       <div className={styles.content}>
         {infoMessage}
         {monsterStore.monsters.map((monster) => (

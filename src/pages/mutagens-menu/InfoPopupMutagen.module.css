@@ -3,7 +3,7 @@
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
   display: flex;
-  align-items: flex-end;     
+  align-items: flex-end;
   justify-content: center;
   z-index: 300;
 }
@@ -64,45 +64,29 @@
   flex-direction: row;
   margin-bottom: 10px;
   width: 100%;
+  position: relative;
+  padding-bottom: 5px;
 }
 
 .effect {
-  display: flex;
-  flex-direction: column; 
-  align-items: center;
   background: #fff966;
   border-radius: 15px;
-  padding: 8px;
+  padding: 5px;
   font-weight: bold;
   color: #181e23;
   border: 5px solid #333;
-  min-width: 85px;
-  text-align: right;
-  justify-content: flex-end;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   margin-left: auto;
+  min-width: 100px;
 }
 
 .desc {
   justify-content: flex-start;
-  margin-top: 8px;
-  padding: 10px;
   color: #222;
   font-size: 15px;
-}
-
-.applyBtn {
-  margin-top: 8px;
-  display: block;
-  width: 100%;
-  font-size: 21px;
-  background: #55ff55;
-  color: #181e23;
-  border-radius: 12px;
-  padding: 10px 0;
-  border: 3px solid #292929;
-  font-weight: bold;
-  cursor: pointer;
-  transition: filter 0.13s;
 }
 
 .effect > div {
