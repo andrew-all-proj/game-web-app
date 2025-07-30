@@ -12,12 +12,18 @@ import inventoriesStore from '../../stores/InventoriesStore'
 import InfoPopupMutagen from './InfoPopupMutagen'
 import { UserInventory } from '../../types/GraphResponse'
 import HeaderBar from '../../components/Header/HeaderBar'
+import PopupCard from './PopupCard'
+import client from '../../api/apolloClient'
+import { ApolloError } from '@apollo/client'
+import { USER_INVENTORY_DELETE } from '../../api/graphql/mutation'
 
 const MutagensMenu = observer(() => {
   const navigate = useNavigate()
   const [infoMessage, setInfoMessage] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [selectedInventory, setSelectedInventory] = useState<UserInventory | null>(null)
+  const [openPopupCard, setOpenPopupCard] = useState(false)
+  const [inventoryToDelete, setInventoryToDelete] = useState<UserInventory | null>(null)
 
   const fetchInventoriesAndMonsters = useCallback(
     async (withLoading: boolean) => {
@@ -36,7 +42,15 @@ const MutagensMenu = observer(() => {
     [navigate],
   )
 
-  const handlerApplyMutagen = (userInventory: UserInventory) => {
+  useEffect(() => {
+    fetchInventoriesAndMonsters(true)
+  }, [navigate, fetchInventoriesAndMonsters])
+
+  if (isLoading && inventoriesStore.inventories.length === 0) {
+    return <Loading />
+  }
+
+    const handlerApplyMutagen = (userInventory: UserInventory) => {
     navigate(`/monster-apply-mutagen/${userInventory.id}`)
   }
 
@@ -44,17 +58,47 @@ const MutagensMenu = observer(() => {
     setSelectedInventory(item)
   }
 
-  const handlerSelectedMutagen = (item: UserInventory, idx: number) => {
-    console.log('selected:', item, idx)
+  const handlerSelectedMutagen = (item: UserInventory) => {
+    setInventoryToDelete(item)
   }
 
-  useEffect(() => {
-    fetchInventoriesAndMonsters(true)
-  }, [navigate, fetchInventoriesAndMonsters])
+  const showPopupCard = () => {
+    if (!inventoryToDelete) {
+      setInfoMessage('Выберите мутаген для утилизации!')
+      return
+    }
+    setInventoryToDelete(inventoryToDelete)
+    setOpenPopupCard(true)
+  }
 
-  if (isLoading && inventoriesStore.inventories.length === 0) {
-    console.log('LODING!!!!!!!!!')
-    return <Loading />
+  const handlerDeleteMutagen = async (userInventory: UserInventory) => {
+     try {
+      await client.query({
+        query: USER_INVENTORY_DELETE,
+        variables: {userInventoryDeleteId: userInventory.id},
+        fetchPolicy: 'no-cache',
+      })
+      await inventoriesStore.fetchInventories()
+    } catch (error: unknown) {
+      //TODO UPDATE ERROR
+      let message = ''
+      if (error instanceof ApolloError) {
+        message =
+          error.message || error.graphQLErrors?.[0]?.message || error.networkError?.message || ''
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        message = (error as { message: string }).message
+      } else {
+        message = String(error)
+      }
+      if (message.includes('Mutagen not found in user inventory')) {
+        setInfoMessage('Мутаген не найден')
+      } else {
+        setInfoMessage('Ошибка при мутации')
+      }
+    }
+    setOpenPopupCard(false)
+    setInventoryToDelete(null)
+    setSelectedInventory(null)
   }
 
   return (
@@ -74,11 +118,7 @@ const MutagensMenu = observer(() => {
           />
         </div>
         <div className={styles.bottomMenu}>
-          <MainButton
-            onClick={() => navigate('/laboratory')}
-            color="black"
-            backgroundColor="#FB6B6B"
-          >
+          <MainButton onClick={showPopupCard} color="black" backgroundColor="#FB6B6B">
             Утилизировать
           </MainButton>
         </div>
@@ -87,6 +127,14 @@ const MutagensMenu = observer(() => {
           onClose={() => setSelectedInventory(null)}
           onClick={handlerApplyMutagen}
         />
+        {openPopupCard && inventoryToDelete && (
+          <PopupCard
+            title={`Утилизировать ${inventoryToDelete.mutagen?.name || 'мутаген'}?`}
+            subtitle={'Это действие нельзя отменить'}
+            onClose={() => setOpenPopupCard(false)}
+            onButtonClick={() => handlerDeleteMutagen(inventoryToDelete)}
+          />
+        )}
       </div>
     </div>
   )

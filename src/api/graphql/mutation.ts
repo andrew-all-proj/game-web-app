@@ -98,3 +98,10 @@ export const MONSTER_APPLY_MUTAGEN = gql`
     }
   }
 `
+export const USER_INVENTORY_DELETE = gql`
+  mutation UserInventoryDelete($userInventoryDeleteId: String!) {
+    UserInventoryDelete(id: $userInventoryDeleteId) {
+      success
+    }
+  }
+`

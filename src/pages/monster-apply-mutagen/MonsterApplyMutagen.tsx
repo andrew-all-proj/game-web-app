@@ -12,10 +12,10 @@ import inventoriesStore from '../../stores/InventoriesStore'
 import { Monster, Mutagen, UserInventory } from '../../types/GraphResponse'
 import HeaderBar from '../../components/Header/HeaderBar'
 import CardMenuMonster from '../../components/CardMenuMonster/CardMenuMonster'
-import PopupCard from './PopupCard'
 import client from '../../api/apolloClient'
 import { MONSTER_APPLY_MUTAGEN } from '../../api/graphql/mutation'
 import { ApolloError } from '@apollo/client'
+import PopupCardApplyMutagen from './PopupCardApplyMutagen'
 
 const MonsterApplyMutagen = observer(() => {
   const navigate = useNavigate()
@@ -158,7 +158,7 @@ const MonsterApplyMutagen = observer(() => {
         </div>
       </div>
       {openPopupCard && selectedMonster && (
-        <PopupCard
+        <PopupCardApplyMutagen
           icon={selectedMonster.avatar || ''}
           title={selectedMonster.name || ''}
           subtitle={getMonsterCharacteristicLines(selectedMonster, selectedInventory?.mutagen)}
