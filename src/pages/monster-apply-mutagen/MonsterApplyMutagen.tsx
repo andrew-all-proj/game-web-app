@@ -9,14 +9,67 @@ import MainButton from '../../components/Button/MainButton'
 import monsterStore from '../../stores/MonsterStore'
 import RoundButton from '../../components/Button/RoundButton'
 import inventoriesStore from '../../stores/InventoriesStore'
-import { Monster, UserInventory } from '../../types/GraphResponse'
+import { Monster, Mutagen, UserInventory } from '../../types/GraphResponse'
 import HeaderBar from '../../components/Header/HeaderBar'
 import CardMenuMonster from '../../components/CardMenuMonster/CardMenuMonster'
 import client from '../../api/apolloClient'
 import { MONSTER_APPLY_MUTAGEN } from '../../api/graphql/mutation'
 import { ApolloError } from '@apollo/client'
 import PopupCardApplyMutagen from './PopupCardApplyMutagen'
-import {MonsterApplyMutagenResponse} from '../../types/GraphResponse'
+import { MonsterApplyMutagenResponse } from '../../types/GraphResponse'
+
+const getMonsterCharacteristicLines = (
+  monster: Monster | null,
+  mutagen?: Mutagen,
+): JSX.Element | null => {
+  if (!monster || !mutagen) return null
+
+  const lines: JSX.Element[] = []
+
+  if (mutagen?.defense) {
+    lines.push(<div key="defense">Защита {monster.defense}</div>)
+  }
+  if (mutagen.strength) {
+    lines.push(<div key="strength">Сила {monster.strength}</div>)
+  }
+  if (mutagen.evasion) {
+    lines.push(<div key="evasion">Уклонение {monster.evasion}</div>)
+  }
+
+  return lines.length > 0 ? <>{lines}</> : null
+}
+
+const getMonsterNewCharacteristicLines = (
+  newChar?: MonsterApplyMutagenResponse | null,
+): JSX.Element | null => {
+  if (!newChar) return null
+
+  const lines: JSX.Element[] = []
+
+  if (newChar.defense) {
+    lines.push(
+      <div key="defense">
+        Защита {newChar.oldDefense} → {newChar.defense}
+      </div>,
+    )
+  }
+  if (newChar.strength) {
+    lines.push(
+      <div key="strength">
+        Сила {newChar.oldStrength} → {newChar.strength}
+      </div>,
+    )
+  }
+  if (newChar.evasion) {
+    lines.push(
+      <div key="evasion">
+        Уклонение {newChar.oldEvasion} → {newChar.evasion}
+      </div>,
+    )
+  }
+
+  return lines.length > 0 ? <>{lines}</> : null
+}
 
 const MonsterApplyMutagen = observer(() => {
   const navigate = useNavigate()
@@ -70,11 +123,12 @@ const MonsterApplyMutagen = observer(() => {
   const applyMutagenToMonster = async (monster: Monster) => {
     setSelectedMonster(monster)
     try {
-      const {data}: {data: {MonsterApplyMutagen: MonsterApplyMutagenResponse}} = await client.query({
-        query: MONSTER_APPLY_MUTAGEN,
-        variables: { monsterId: monster.id, userInventoryId: selectedInventory?.id },
-        fetchPolicy: 'no-cache',
-      })
+      const { data }: { data: { MonsterApplyMutagen: MonsterApplyMutagenResponse } } =
+        await client.query({
+          query: MONSTER_APPLY_MUTAGEN,
+          variables: { monsterId: monster.id, userInventoryId: selectedInventory?.id },
+          fetchPolicy: 'no-cache',
+        })
 
       setNewCharMonster(data.MonsterApplyMutagen)
     } catch (error: unknown) {
@@ -97,38 +151,6 @@ const MonsterApplyMutagen = observer(() => {
     setOpenPopupCard(true)
   }
 
-  const getMonsterCharacteristicLines = (
-    newChar?: MonsterApplyMutagenResponse | null,
-  ): JSX.Element | null => {
-    if (!newChar) return null
-
-    const lines: JSX.Element[] = []
-
-    if (newChar.defense) {
-      lines.push(
-        <div key="defense">
-          Защита {newChar.oldDefense} → {newChar.defense}
-        </div>,
-      )
-    }
-    if (newChar.strength) {
-      lines.push(
-        <div key="strength">
-          Сила {newChar.oldStrength} → {newChar.strength} 
-        </div>,
-      )
-    }
-    if (newChar.evasion) {
-      lines.push(
-        <div key="evasion">
-          Уклонение {newChar.oldEvasion} → {newChar.evasion}
-        </div>,
-      )
-    }
-
-    return lines.length > 0 ? <>{lines}</> : null
-  }
-
   return (
     <div className={styles.foodMenu}>
       <HeaderBar
@@ -147,7 +169,7 @@ const MonsterApplyMutagen = observer(() => {
             textButton={'Выбрать'}
           >
             <span>{monster.name}</span>
-            {monster.defense}
+            {getMonsterCharacteristicLines(monster, selectedInventory?.mutagen)}
           </CardMenuMonster>
         ))}
         <div className={styles.bottomMenu}>
@@ -164,7 +186,7 @@ const MonsterApplyMutagen = observer(() => {
         <PopupCardApplyMutagen
           icon={selectedMonster.avatar || ''}
           title={selectedMonster.name || ''}
-          subtitle={ getMonsterCharacteristicLines(newCharMonster)}
+          subtitle={getMonsterNewCharacteristicLines(newCharMonster)}
           onButtonClick={handleClosePopupCard}
           onClose={() => setOpenPopupCard(false)}
           levelMonster={selectedMonster.level}

@@ -113,13 +113,13 @@ const MutagensMenu = observer(() => {
       />
       <div className={styles.content}>
         {infoMessage}
-          <SimpleBar className={styles.scrollArea}>
-            <MutagenGrid
-              userInventories={inventoriesStore.inventories}
-              onSelect={handlerSelectedMutagen}
-              onDoubleClick={handlerShowInfoPopupMutagen}
-            />
-          </SimpleBar>
+        <SimpleBar className={styles.scrollArea}>
+          <MutagenGrid
+            userInventories={inventoriesStore.inventories}
+            onSelect={handlerSelectedMutagen}
+            onDoubleClick={handlerShowInfoPopupMutagen}
+          />
+        </SimpleBar>
         <div className={styles.bottomMenu}>
           <MainButton onClick={showPopupCard} color="black" backgroundColor="#FB6B6B">
             Утилизировать
