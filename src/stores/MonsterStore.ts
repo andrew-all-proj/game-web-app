@@ -10,6 +10,7 @@ class MonsterStore {
   selectedMonster: Monster | null = null
   opponentMonster: Monster | null = null
   error: string | null = null
+  isLoading: boolean = false
 
   constructor() {
     makeAutoObservable(this)
@@ -49,6 +50,7 @@ class MonsterStore {
 
   async fetchMonsters(userId = userStore.user?.id) {
     this.error = null
+    this.isLoading = true
 
     try {
       const { data }: { data: { Monsters: GraphQLListResponse<Monster> } } = await client.query({
@@ -77,10 +79,12 @@ class MonsterStore {
                 (monster: Monster & { avatar?: string }) => monster.isSelected,
               ) || null
             : null
+        this.isLoading = false
       })
     } catch (err: unknown) {
       runInAction(() => {
         this.error = err instanceof Error ? err.message : String(err)
+        this.isLoading = false
       })
       console.error('Failed to fetch monsters:', err)
     }

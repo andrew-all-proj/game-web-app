@@ -73,11 +73,9 @@ const Laboratory = observer(() => {
     navigate(`/monster-menu/${monster.id}`)
   }
 
-  if (isLoading || !userStore.isAuthenticated) {
-    console.log('LODING!!!!!')
+  if (isLoading || monsterStore.isLoading) {
     return <Loading />
   }
-
   if (monsterStore.monsters.length === 0) {
     return <NotFoundMonsters />
   }
@@ -124,10 +122,10 @@ const Laboratory = observer(() => {
           className={styles.headerBtnStatBar}
         />
         <StatBarMain
-          name={selectedMonster.name || '???'}
-          level={selectedMonster.level}
-          current={selectedMonster.experiencePoints ?? 0}
-          max={selectedMonster.nextLevelExp}
+          name={selectedMonster?.name || '???'}
+          level={selectedMonster?.level}
+          current={selectedMonster?.experiencePoints ?? 0}
+          max={selectedMonster?.nextLevelExp}
           width={370}
           height={40}
           className={styles.headerStatBarMain}
