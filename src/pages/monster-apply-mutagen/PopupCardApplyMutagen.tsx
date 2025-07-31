@@ -13,7 +13,7 @@ interface PopupCardProps {
   onClose?: () => void
 }
 
-const PopupCardApplyMutagen: React.FC<PopupCardProps> = ({
+const PopupCardNewChar: React.FC<PopupCardProps> = ({
   icon,
   title,
   subtitle,
@@ -44,4 +44,4 @@ const PopupCardApplyMutagen: React.FC<PopupCardProps> = ({
   )
 }
 
-export default PopupCardApplyMutagen
+export default PopupCardNewChar

@@ -16,7 +16,7 @@ function getEffectLines(mutagen: Mutagen) {
     effects.push(
       <div key="strength">
         <b>
-          {mutagen.strength > 0 ? '+' : ''}
+          {mutagen.strength > 0 ? '±' : ''}
           {mutagen.strength}
         </b>
         <br />к Силе
@@ -26,7 +26,7 @@ function getEffectLines(mutagen: Mutagen) {
     effects.push(
       <div key="defense">
         <b>
-          {mutagen.defense > 0 ? '+' : ''}
+          {mutagen.defense > 0 ? '±' : ''}
           {mutagen.defense}
         </b>
         <br />к Защите
@@ -36,7 +36,7 @@ function getEffectLines(mutagen: Mutagen) {
     effects.push(
       <div key="evasion">
         <b>
-          {mutagen.evasion > 0 ? '+' : ''}
+          {mutagen.evasion > 0 ? '±' : ''}
           {mutagen.evasion}
         </b>
         <br />к Увороту

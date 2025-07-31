@@ -16,6 +16,7 @@ import client from '../../api/apolloClient'
 import { MONSTER_APPLY_MUTAGEN } from '../../api/graphql/mutation'
 import { ApolloError } from '@apollo/client'
 import PopupCardApplyMutagen from './PopupCardApplyMutagen'
+import {MonsterApplyMutagenResponse} from '../../types/GraphResponse'
 
 const MonsterApplyMutagen = observer(() => {
   const navigate = useNavigate()
@@ -25,6 +26,7 @@ const MonsterApplyMutagen = observer(() => {
   const [selectedMonster, setSelectedMonster] = useState<Monster | null>(null)
   const [openPopupCard, setOpenPopupCard] = useState(false)
   const [selectedInventory, setSelectedInventory] = useState<UserInventory | null>(null)
+  const [newCharMonster, setNewCharMonster] = useState<MonsterApplyMutagenResponse | null>(null)
 
   const fetchInventoriesAndMonsters = useCallback(
     async (withLoading: boolean) => {
@@ -60,19 +62,21 @@ const MonsterApplyMutagen = observer(() => {
     return <Loading />
   }
 
-  const handleOpenPopupCard = (monster: Monster) => {
-    setSelectedMonster(monster)
-    setOpenPopupCard(true)
+  const handleClosePopupCard = () => {
+    setOpenPopupCard(false)
+    navigate('/mutagens-menu')
   }
 
-  const applyMutagenToMonster = async () => {
+  const applyMutagenToMonster = async (monster: Monster) => {
+    setSelectedMonster(monster)
     try {
-      await client.query({
+      const {data}: {data: {MonsterApplyMutagen: MonsterApplyMutagenResponse}} = await client.query({
         query: MONSTER_APPLY_MUTAGEN,
-        variables: { monsterId: selectedMonster?.id, userInventoryId: selectedInventory?.id },
+        variables: { monsterId: monster.id, userInventoryId: selectedInventory?.id },
         fetchPolicy: 'no-cache',
       })
-      navigate('/mutagens-menu')
+
+      setNewCharMonster(data.MonsterApplyMutagen)
     } catch (error: unknown) {
       //TODO UPDATE ERROR
       let message = ''
@@ -90,35 +94,34 @@ const MonsterApplyMutagen = observer(() => {
         setInfoMessage('Ошибка при мутации')
       }
     }
-    setOpenPopupCard(false)
+    setOpenPopupCard(true)
   }
 
   const getMonsterCharacteristicLines = (
-    monster: Monster,
-    mutagen?: Mutagen,
+    newChar?: MonsterApplyMutagenResponse | null,
   ): JSX.Element | null => {
-    if (!mutagen) return null
+    if (!newChar) return null
 
     const lines: JSX.Element[] = []
 
-    if (mutagen.defense) {
+    if (newChar.defense) {
       lines.push(
         <div key="defense">
-          Защита {monster.defense} ➡ {monster.defense + (mutagen.defense || 0)}
+          Защита {newChar.oldDefense} → {newChar.defense}
         </div>,
       )
     }
-    if (mutagen.strength) {
+    if (newChar.strength) {
       lines.push(
         <div key="strength">
-          Сила {monster.strength} ➡ {monster.strength + (mutagen.strength || 0)}
+          Сила {newChar.oldStrength} → {newChar.strength} 
         </div>,
       )
     }
-    if (mutagen.evasion) {
+    if (newChar.evasion) {
       lines.push(
         <div key="evasion">
-          Уклонение {monster.evasion} ➡ {monster.evasion + (mutagen.evasion || 0)}
+          Уклонение {newChar.oldEvasion} → {newChar.evasion}
         </div>,
       )
     }
@@ -140,11 +143,11 @@ const MonsterApplyMutagen = observer(() => {
             key={monster.id}
             url={monster?.avatar || ''}
             level={monster.level || 0}
-            onButtonClick={() => handleOpenPopupCard(monster)}
+            onButtonClick={() => applyMutagenToMonster(monster)}
             textButton={'Выбрать'}
           >
             <span>{monster.name}</span>
-            {getMonsterCharacteristicLines(monster, selectedInventory?.mutagen)}
+            {monster.defense}
           </CardMenuMonster>
         ))}
         <div className={styles.bottomMenu}>
@@ -161,8 +164,8 @@ const MonsterApplyMutagen = observer(() => {
         <PopupCardApplyMutagen
           icon={selectedMonster.avatar || ''}
           title={selectedMonster.name || ''}
-          subtitle={getMonsterCharacteristicLines(selectedMonster, selectedInventory?.mutagen)}
-          onButtonClick={applyMutagenToMonster}
+          subtitle={ getMonsterCharacteristicLines(newCharMonster)}
+          onButtonClick={handleClosePopupCard}
           onClose={() => setOpenPopupCard(false)}
           levelMonster={selectedMonster.level}
         />

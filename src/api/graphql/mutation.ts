@@ -90,11 +90,13 @@ export const MONSTER_FEED = gql`
 export const MONSTER_APPLY_MUTAGEN = gql`
   mutation MonsterApplyMutagen($monsterId: String!, $userInventoryId: String!) {
     MonsterApplyMutagen(monsterId: $monsterId, userInventoryId: $userInventoryId) {
-      error {
-        error
-        message
-      }
-      success
+      defense
+      evasion
+      monsterId
+      oldDefense
+      oldEvasion
+      oldStrength
+      strength
     }
   }
 `

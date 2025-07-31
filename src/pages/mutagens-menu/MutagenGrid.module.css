@@ -41,7 +41,7 @@
 .selected {
   box-shadow:
     0 5px 0 #362f2d55,
-    /* нижняя тень */ 0 0 0 4px #7c7cff inset; /* внутренняя синяя рамка */
+    0 0 0 4px #7c7cff inset; 
 }
 
 @media (max-height: 670px) {

@@ -12,34 +12,29 @@
 }
 
 .content {
-  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
   align-items: center;
-  justify-content: center;
+  min-height: 0;  
   width: 100%;
-  min-height: 0;
   box-sizing: border-box;
 }
 
-.gridWrapper {
-  flex: 1 1 auto;
+.scrollArea {
+  flex: 1 1 auto; 
+  min-height: 0;     
+  max-height: none;  
   width: 100%;
-  max-width: 600px;
-  min-height: 0;
-  max-height: 600px;
-  overflow-y: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  max-width: var(--max-weight);
+  padding: 0 0 16px 0; 
 }
 
 .bottomMenu {
+  flex-shrink: 0;
+  padding: 10px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 100%;
   justify-content: center;
-  width: 95%;
-  margin-top: auto;
-  padding-bottom: 10px;
+  background: transparent;
 }

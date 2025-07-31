@@ -16,6 +16,9 @@ import PopupCard from './PopupCard'
 import client from '../../api/apolloClient'
 import { ApolloError } from '@apollo/client'
 import { USER_INVENTORY_DELETE } from '../../api/graphql/mutation'
+import SimpleBar from 'simplebar-react'
+import 'simplebar-react/dist/simplebar.min.css'
+import '../../assets/styles/simplebar-overrides.css'
 
 const MutagensMenu = observer(() => {
   const navigate = useNavigate()
@@ -50,7 +53,7 @@ const MutagensMenu = observer(() => {
     return <Loading />
   }
 
-    const handlerApplyMutagen = (userInventory: UserInventory) => {
+  const handlerApplyMutagen = (userInventory: UserInventory) => {
     navigate(`/monster-apply-mutagen/${userInventory.id}`)
   }
 
@@ -72,10 +75,10 @@ const MutagensMenu = observer(() => {
   }
 
   const handlerDeleteMutagen = async (userInventory: UserInventory) => {
-     try {
+    try {
       await client.query({
         query: USER_INVENTORY_DELETE,
-        variables: {userInventoryDeleteId: userInventory.id},
+        variables: { userInventoryDeleteId: userInventory.id },
         fetchPolicy: 'no-cache',
       })
       await inventoriesStore.fetchInventories()
@@ -110,13 +113,13 @@ const MutagensMenu = observer(() => {
       />
       <div className={styles.content}>
         {infoMessage}
-        <div className={styles.gridWrapper}>
-          <MutagenGrid
-            userInventories={inventoriesStore.inventories}
-            onSelect={handlerSelectedMutagen}
-            onDoubleClick={handlerShowInfoPopupMutagen}
-          />
-        </div>
+          <SimpleBar className={styles.scrollArea}>
+            <MutagenGrid
+              userInventories={inventoriesStore.inventories}
+              onSelect={handlerSelectedMutagen}
+              onDoubleClick={handlerShowInfoPopupMutagen}
+            />
+          </SimpleBar>
         <div className={styles.bottomMenu}>
           <MainButton onClick={showPopupCard} color="black" backgroundColor="#FB6B6B">
             Утилизировать

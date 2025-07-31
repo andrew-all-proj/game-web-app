@@ -48,3 +48,9 @@
   cursor: pointer;
   transition: background 0.15s;
 }
+
+@media (max-height: 600px) {
+  .cardMenuMonster {
+    margin: 8px 0;
+  }
+}

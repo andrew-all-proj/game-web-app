@@ -111,3 +111,13 @@ export interface UserInventory {
   updatedAt?: Date
   createdAt?: Date
 }
+
+export interface MonsterApplyMutagenResponse {
+  monsterId: string
+  strength: number
+  defense: number
+  evasion: number
+  oldStrength: number
+  oldDefense: number
+  oldEvasion: number
+}
