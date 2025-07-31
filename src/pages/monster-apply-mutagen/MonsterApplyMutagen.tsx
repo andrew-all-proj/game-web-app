@@ -104,7 +104,7 @@ const MonsterApplyMutagen = observer(() => {
         setIsLoading(false)
       }
     },
-    [navigate],
+    [navigate, inventoryIdParams],
   )
 
   useEffect(() => {

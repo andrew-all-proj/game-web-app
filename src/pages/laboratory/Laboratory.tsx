@@ -34,12 +34,11 @@ const Laboratory = observer(() => {
       const success = await authorizationAndInitTelegram(navigate)
       if (success && userStore.user?.id) {
         await userStore.fetchUser(userStore.user.id)
-        await monsterStore.fetchMonsters(userStore.user.id)
         const fetchedMonsters = monsterStore.monsters
         const selectedIndex = fetchedMonsters.findIndex((monster) => monster.isSelected)
         setMonsterIndex(selectedIndex !== -1 ? selectedIndex : 0)
+        setIsLoading(false)
       }
-      setIsLoading(false)
     })()
   }, [navigate])
 
@@ -74,7 +73,7 @@ const Laboratory = observer(() => {
     navigate(`/monster-menu/${monster.id}`)
   }
 
-  if (isLoading && !userStore.isAuthenticated) {
+  if (isLoading || !userStore.isAuthenticated) {
     console.log('LODING!!!!!')
     return <Loading />
   }
