@@ -323,41 +323,42 @@ const CreateUser = observer(() => {
           onChange={(e) => setName(e.target.value)}
           onButtonClick={handleSaveAvatar}
         />
-      </div>
-      <div className={clsx(styles.partSelectorWrapper, { [styles.visible]: animateIn })}>
-        <PartSelector
-          tabs={[
-            {
-              key: 'head',
-              icon: hairIcon,
-              alt: 'Голова',
-              parts: headParts,
-              selectedIndex: headIndex,
-              setSelectedIndex: setHeadIndex,
-            },
-            {
-              key: 'body',
-              icon: clothesIcon,
-              alt: 'Одежда',
-              parts: bodyParts,
-              selectedIndex: bodyIndex,
-              setSelectedIndex: setBodyIndex,
-            },
-            {
-              key: 'emotion',
-              icon: emotionIcon,
-              alt: 'Эмоции',
-              parts: emotionParts,
-              selectedIndex: emotionIndex,
-              setSelectedIndex: setEmotionIndex,
-            },
-          ]}
-          rows={2}
-          columns={4}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          setIsEditing={setIsEditing}
-        />
+
+        <div className={clsx(styles.partSelectorWrapper, { [styles.visible]: animateIn })}>
+          <PartSelector
+            tabs={[
+              {
+                key: 'head',
+                icon: hairIcon,
+                alt: 'Голова',
+                parts: headParts,
+                selectedIndex: headIndex,
+                setSelectedIndex: setHeadIndex,
+              },
+              {
+                key: 'body',
+                icon: clothesIcon,
+                alt: 'Одежда',
+                parts: bodyParts,
+                selectedIndex: bodyIndex,
+                setSelectedIndex: setBodyIndex,
+              },
+              {
+                key: 'emotion',
+                icon: emotionIcon,
+                alt: 'Эмоции',
+                parts: emotionParts,
+                selectedIndex: emotionIndex,
+                setSelectedIndex: setEmotionIndex,
+              },
+            ]}
+            rows={2}
+            columns={4}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            setIsEditing={setIsEditing}
+          />
+        </div>
       </div>
     </div>
   )
