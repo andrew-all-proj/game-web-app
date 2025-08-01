@@ -1,33 +1,25 @@
 .createUser {
-  min-height: var(--tg-vh, 100vh);
+  min-height: var(--tg-vh);
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto;
-  box-sizing: border-box;
-  padding: 0 20px;
+  overflow: hidden;
+}
+
+.navigate {
+  width: 100%;
+  max-width:  var(--max-weight);
+  padding-left: 30px;
+  padding-top: 20px;
 }
 
 .centerContent {
-  margin-top: auto;
+   margin-top: auto;
   margin-bottom: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.navigate {
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 500px;
-  display: flex;
-  justify-content: flex-start;
-  padding-left: 20px;
-  box-sizing: border-box;
-  z-index: 2;
+  justify-content: center;
 }
 
 .avatarCanvas {
@@ -48,16 +40,14 @@
 }
 
 .partSelectorWrapper {
-  position: fixed;
-  bottom: 0;
   left: 0;
+  bottom: 0;
   width: 100%;
   transform: translateY(100%);
   opacity: 0;
   transition:
     transform 0.4s ease-out,
     opacity 0.4s ease-out;
-  z-index: 3;
 }
 
 .partSelectorWrapper.visible {
@@ -82,10 +72,4 @@
   flex-shrink: 0;
   flex-grow: 0;
   margin: auto;
-}
-
-@media (max-height: 670px) {
-  .centerContent {
-    padding-bottom: 160px;
-  }
 }
