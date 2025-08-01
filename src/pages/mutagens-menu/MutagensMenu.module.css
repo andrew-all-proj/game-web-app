@@ -1,4 +1,4 @@
-.foodMenu {
+.mutagensMenu {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -9,25 +9,33 @@
   width: 100%;
   background-color: #fbc94b;
   color: var(--color-text);
-  overflow: auto;
 }
 
 .content {
-  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
   align-items: center;
-  justify-content: center;
+  min-height: 0;
   width: 100%;
   box-sizing: border-box;
 }
 
+.scrollArea {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  width: 100%;
+  max-width: var(--max-weight);
+  padding: 0 0 16px 0;
+}
+
 .bottomMenu {
+  flex-shrink: 0;
+  margin: 10px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 97%;
   justify-content: center;
-  width: 95%;
-  margin-top: auto;
-  padding-bottom: 10px;
+  background: transparent;
+  z-index: 1000;
 }

@@ -6,10 +6,19 @@ interface CardFeedMonsterProps {
   onButtonClick: () => void
 }
 
+function getSatietyClass(satiety: number) {
+  if (satiety < 25) return styles.satietyLow
+  if (satiety < 50) return styles.satietyMid
+  if (satiety < 75) return styles.satietyHigh
+  return styles.satietyFull
+}
+
 export default function CardFeedMonster({ url, satiety, onButtonClick }: CardFeedMonsterProps) {
+  const isMax = satiety >= 100
+
   return (
     <div className={styles.cardFeedMonster}>
-      <div className={styles.wrapperImage}>
+      <div className={`${styles.wrapperImage} ${getSatietyClass(satiety)}`}>
         <img className={styles.monsterImage} alt="monster" src={url} />
       </div>
       <div className={styles.satietyInfo}>
@@ -17,7 +26,11 @@ export default function CardFeedMonster({ url, satiety, onButtonClick }: CardFee
         <span>{satiety}/100</span>
       </div>
       <div className={styles.buttonWrapper}>
-        <button className={styles.feedButton} onClick={onButtonClick}>
+        <button
+          className={`${styles.feedButton} ${isMax ? styles.feedButtonDisabled : ''}`}
+          onClick={onButtonClick}
+          disabled={isMax}
+        >
           Кормить
         </button>
       </div>

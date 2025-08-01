@@ -116,7 +116,7 @@ const SearchBattle = observer(() => {
     setRequestbattleOpponent(data)
   })
 
-  useSocketEvent<{result: boolean}>('registerMonster', (data) => {
+  useSocketEvent<{ result: boolean }>('registerMonster', (data) => {
     setRegisteredMonster(data.result)
   })
 

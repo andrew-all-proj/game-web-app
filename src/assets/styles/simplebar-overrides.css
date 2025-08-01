@@ -1,0 +1,22 @@
+.simplebar-scrollbar::before {
+  background: #d81111;
+  border-radius: 8px;
+  opacity: 1; /* Сделать всегда видимой */
+}
+
+.simplebar-track.simplebar-vertical {
+  width: 10px !important; /* Толщина полосы */
+  right: 3px; /* Можно чуть сместить от края */
+  background: #ffe680; /* Фон трека — твой */
+  border-radius: 8px;
+}
+
+/* Если нужна полоса только при скролле, а не всегда: */
+.simplebar-scrollbar {
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.simplebar-track.simplebar-vertical:hover .simplebar-scrollbar,
+.simplebar-scrollbar.simplebar-visible:before {
+  opacity: 1;
+}

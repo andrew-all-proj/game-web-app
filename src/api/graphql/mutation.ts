@@ -86,3 +86,24 @@ export const MONSTER_FEED = gql`
     }
   }
 `
+
+export const MONSTER_APPLY_MUTAGEN = gql`
+  mutation MonsterApplyMutagen($monsterId: String!, $userInventoryId: String!) {
+    MonsterApplyMutagen(monsterId: $monsterId, userInventoryId: $userInventoryId) {
+      defense
+      evasion
+      monsterId
+      oldDefense
+      oldEvasion
+      oldStrength
+      strength
+    }
+  }
+`
+export const USER_INVENTORY_DELETE = gql`
+  mutation UserInventoryDelete($userInventoryDeleteId: String!) {
+    UserInventoryDelete(id: $userInventoryDeleteId) {
+      success
+    }
+  }
+`

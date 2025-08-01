@@ -10,17 +10,17 @@ interface Props {
 const MonsterAvatarWithShadow = ({ monster, onClick }: Props) => {
   return (
     <div className={styles.container}>
-      <div className={styles.wrapperMonster}>
+      <div className={styles.monsterZone}>
         <img
           src={monster.avatar || noAvatarMonster}
           alt={monster.name}
           className={styles.monsterImage}
           onClick={onClick}
         />
-      </div>
-      <div className={styles.dotWrapper}>
-        <div className={styles.outerDot}>
-          <div className={styles.innerDot}></div>
+        <div className={styles.dotWrapper}>
+          <div className={styles.outerDot}>
+            <div className={styles.innerDot}></div>
+          </div>
         </div>
       </div>
     </div>

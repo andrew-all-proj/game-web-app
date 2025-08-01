@@ -10,6 +10,7 @@ interface StatBarProps {
   textColor?: string
   width?: number
   height?: number
+  className?: string
 }
 
 export default function StatBarMain({
@@ -22,12 +23,13 @@ export default function StatBarMain({
   textColor = '#362f2d',
   width = 180,
   height = 35,
+  className = '',
 }: StatBarProps) {
   const percent = max ? Math.max(0, Math.min((current / max) * 100, 100)) : 100
   const text = max ? `${current}/${max}` : `${current}`
   return (
     <div
-      className={styles.barBackground}
+      className={`${styles.barBackground} ${className}`.trim()}
       style={{
         backgroundColor,
         width,
@@ -40,7 +42,7 @@ export default function StatBarMain({
         <div className={styles.leftLabel} style={{ color: textColor }}>
           {name}
         </div>
-        <div className={styles.centerText}>{text}</div>
+        <div className={styles.centerText}>EXP {text}</div>
         <div className={styles.rightLabel} style={{ color: textColor }}>
           Lvl. {level ?? 0}
         </div>

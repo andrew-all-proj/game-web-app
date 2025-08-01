@@ -8,6 +8,8 @@ import CreateMonster from '../pages/create-monster/CreateMonster'
 import SearchBattle from '../pages/search-battle/SearchBattle'
 import MonsterMenu from '../pages/monster-menu/MonsterMenu'
 import FoodMenu from '../pages/foog-menu/FoodMenu'
+import MutagensMenu from '../pages/mutagens-menu/MutagensMenu'
+import MonsterApplyMutagen from '../pages/monster-apply-mutagen/MonsterApplyMutagen'
 
 const routes: RouteObject[] = [
   {
@@ -45,6 +47,14 @@ const routes: RouteObject[] = [
   {
     path: '/food-menu/:userIdParams',
     element: <FoodMenu />,
+  },
+  {
+    path: '/mutagens-menu',
+    element: <MutagensMenu />,
+  },
+  {
+    path: '/monster-apply-mutagen/:inventoryIdParams',
+    element: <MonsterApplyMutagen />,
   },
   {
     path: '/error',

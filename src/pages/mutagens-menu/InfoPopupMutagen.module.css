@@ -1,0 +1,109 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 300;
+}
+
+.popup {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 15px 15px 0 0;
+  border: 5px solid #362f2d;
+  padding: 15px;
+  max-width: 500px;
+  position: relative;
+  animation: slideup 0.35s ease-out;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-width: 0;
+  padding: 0 16px;
+  gap: 10px;
+  margin-bottom: 10px;
+  height: 90px;
+  box-sizing: border-box;
+}
+
+.icon {
+  width: 70px;
+  flex-shrink: 0;
+}
+
+.title {
+  flex: 1 1 auto;
+  text-align: center;
+  font-weight: bold;
+  font-size: 26px;
+  color: #292929;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.closeBtn {
+  flex-shrink: 0;
+  display: flex;
+  padding: 0;
+}
+
+.body {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+  width: 100%;
+  position: relative;
+  padding-bottom: 5px;
+}
+
+.effect {
+  background: #fff966;
+  border-radius: 15px;
+  padding: 5px;
+  font-weight: bold;
+  color: #181e23;
+  border: 5px solid #333;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: auto;
+  min-width: 100px;
+}
+
+.desc {
+  justify-content: flex-start;
+  color: #222;
+  font-size: 15px;
+}
+
+.effect > div {
+  font-size: 16px;
+  text-align: left;
+}
+.effect b {
+  font-size: 30px;
+}
+
+@keyframes slideup {
+  from {
+    transform: translateY(100%);
+    opacity: 0.7;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

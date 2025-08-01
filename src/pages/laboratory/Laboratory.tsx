@@ -33,15 +33,12 @@ const Laboratory = observer(() => {
     ;(async () => {
       const success = await authorizationAndInitTelegram(navigate)
       if (success && userStore.user?.id) {
-        await monsterStore.fetchMonsters(userStore.user.id)
+        await userStore.fetchUser(userStore.user.id)
         const fetchedMonsters = monsterStore.monsters
         const selectedIndex = fetchedMonsters.findIndex((monster) => monster.isSelected)
-
         setMonsterIndex(selectedIndex !== -1 ? selectedIndex : 0)
-
-        await userStore.fetchUser(userStore.user.id)
+        setIsLoading(false)
       }
-      setIsLoading(false)
     })()
   }, [navigate])
 
@@ -67,19 +64,18 @@ const Laboratory = observer(() => {
     navigate('/create-user')
   }
 
-  const handleSelectMonster = (monster: Monster) => {
-    monsterStore.setSelectedMonster(monster.id)
-  }
+  // const handleSelectMonster = (monster: Monster) => {
+  //   monsterStore.setSelectedMonster(monster.id)
+  // }
 
   const handleGoToMonsterMenu = (monster: Monster) => {
     if (!monster?.id) return
     navigate(`/monster-menu/${monster.id}`)
   }
 
-  if (isLoading) {
+  if (isLoading || monsterStore.isLoading) {
     return <Loading />
   }
-
   if (monsterStore.monsters.length === 0) {
     return <NotFoundMonsters />
   }
@@ -96,10 +92,17 @@ const Laboratory = observer(() => {
     setMonsterIndex(newIndex)
   }
 
+  console.log(errorMsg)
+
   return (
     <div className={styles.laboratory}>
       <div className={styles.header}>
-        <SecondButton onClick={() => navigate('/create-monster')}>Создать</SecondButton>
+        <SecondButton
+          className={styles.headerBtnCreate}
+          onClick={() => navigate('/create-monster')}
+        >
+          Создать
+        </SecondButton>
         <div className={styles.avatarWrapper}>
           <img
             alt="avatar monster"
@@ -116,31 +119,30 @@ const Laboratory = observer(() => {
           width={120}
           height={48}
           onClick={() => console.log('Clicked!')}
+          className={styles.headerBtnStatBar}
         />
-      </div>
-      <div className={styles.wrapperCharacteristics}>
         <StatBarMain
-          name={selectedMonster.name || '???'}
-          level={selectedMonster.level}
-          current={selectedMonster.experiencePoints ?? 0}
-          max={selectedMonster.nextLevelExp}
+          name={selectedMonster?.name || '???'}
+          level={selectedMonster?.level}
+          current={selectedMonster?.experiencePoints ?? 0}
+          max={selectedMonster?.nextLevelExp}
           width={370}
-          height={35}
+          height={40}
+          className={styles.headerStatBarMain}
         />
       </div>
-      <div style={{ color: 'red' }}>{errorMsg}</div>
-      {monsterStore.selectedMonster?.id === selectedMonster.id && (
-        <div className={styles.activeText}>активный</div>
-      )}
-      <button onClick={() => handleSelectMonster(selectedMonster)}>Сделать основным</button>
-      <MonsterAvatarWithShadow
-        monster={selectedMonster}
-        onClick={() => handleGoToMonsterMenu(selectedMonster)}
-      />
-      <div className={styles.selectMonsters}>
-        <RoundButton onClick={handlePrevMonster} color="#D2FF49" />
-        <MainButton onClick={() => handleGoToArena(selectedMonster)}>Арена</MainButton>
-        <RoundButton onClick={handleNextMonster} type="next" color="#D2FF49" />
+      <div className={styles.centerContent}>
+        <MonsterAvatarWithShadow
+          monster={selectedMonster}
+          onClick={() => handleGoToMonsterMenu(selectedMonster)}
+        />
+        <div className={styles.selectMonsters}>
+          <RoundButton onClick={handlePrevMonster} color="#D2FF49" />
+          <MainButton width={210} height={63} onClick={() => handleGoToArena(selectedMonster)}>
+            Арена
+          </MainButton>
+          <RoundButton onClick={handleNextMonster} type="next" color="#D2FF49" />
+        </div>
       </div>
       <div className={styles.bottomMenu}>
         <div className={styles.menuItem}>
@@ -156,7 +158,16 @@ const Laboratory = observer(() => {
           />
         </div>
         <div className={styles.menuItem}>
-          <img src={labIcon} alt="lab" className={styles.tabIconImage} />
+          <img
+            src={labIcon}
+            alt="lab"
+            className={styles.tabIconImage}
+            onClick={() => {
+              if (userStore.user?.id) {
+                navigate(`/mutagens-menu`)
+              }
+            }}
+          />
         </div>
         <div className={styles.menuItem}>
           <img src={upgradeIcon} alt="upgrade" className={styles.tabIconImage} />

@@ -287,6 +287,27 @@ export default function TestFight({
 
       yourMonster.play('monster_stay')
       opponentMonsterSprite.play('opponent_stay')
+
+      if (!this.textures.exists('raindrop')) {
+        const graphics = this.make.graphics({ x: 0, y: 0 })
+        graphics.fillStyle(0xffffff, 0.2)
+        graphics.fillRect(0, 0, 2, 12)
+        graphics.generateTexture('raindrop', 2, 12)
+        graphics.destroy()
+      }
+
+      this.add.particles(0, 0, 'raindrop', {
+        x: { min: 0, max: 400 },
+        y: 0,
+        lifespan: 1200,
+        speedY: { min: 250, max: 320 },
+        scale: { start: 1, end: 0.3 },
+        quantity: 4,
+        frequency: 40,
+        alpha: { start: 0.5, end: 0 },
+        angle: { min: 85, max: 95 },
+        blendMode: 'ADD',
+      })
     }
 
     function update(this: Phaser.Scene) {

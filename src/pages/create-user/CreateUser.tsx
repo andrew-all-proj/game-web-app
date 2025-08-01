@@ -324,6 +324,7 @@ const CreateUser = observer(() => {
           onButtonClick={handleSaveAvatar}
         />
       </div>
+
       <div className={clsx(styles.partSelectorWrapper, { [styles.visible]: animateIn })}>
         <PartSelector
           tabs={[

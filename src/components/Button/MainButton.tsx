@@ -7,6 +7,7 @@ interface MainButtonProps {
   height?: string | number
   color?: string
   backgroundColor?: string
+  className?: string
 }
 
 export default function MainButton({
@@ -16,10 +17,11 @@ export default function MainButton({
   height,
   color,
   backgroundColor,
+  className = '',
 }: MainButtonProps) {
   return (
     <button
-      className={styles.mainButton}
+      className={`${styles.mainButton} ${className}`.trim()}
       onClick={onClick}
       style={{
         width,

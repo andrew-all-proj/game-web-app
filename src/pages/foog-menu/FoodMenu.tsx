@@ -4,24 +4,21 @@ import { useEffect, useState, useCallback } from 'react'
 import styles from './FoodMenu.module.css'
 import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
 import Loading from '../loading/Loading'
-import { USER_INVENTORY } from '../../api/graphql/query'
 import client from '../../api/apolloClient'
-import { GraphQLListResponse, UserInventory } from '../../types/GraphResponse'
-import { UserInventoryTypeEnum } from '../../types/enums/UserInventoryTypeEnum'
 import foodIcon from '../../assets/icon/food-icon.svg'
 import MainButton from '../../components/Button/MainButton'
 import CardFeedMonster from './CardFeedMonster'
 import monsterStore from '../../stores/MonsterStore'
 import { MONSTER_FEED } from '../../api/graphql/mutation'
-import RoundButton from '../../components/Button/RoundButton'
 import { ApolloError } from '@apollo/client'
+import inventoriesStore from '../../stores/InventoriesStore'
+import { UserInventoryTypeEnum } from '../../types/enums/UserInventoryTypeEnum'
+import HeaderBar from '../../components/Header/HeaderBar'
 
 const FoodMenu = observer(() => {
   const navigate = useNavigate()
   const { monsterIdParams } = useParams()
   const [infoMessage, setInfoMessage] = useState('')
-  const [quantityFood, setQuantityFood] = useState(0)
-  const [userInventories, setUserInventories] = useState<{ foodId: string; quantity: number }[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   const fetchInventoriesAndMonsters = useCallback(
@@ -30,26 +27,7 @@ const FoodMenu = observer(() => {
         if (withLoading) setIsLoading(true)
         await authorizationAndInitTelegram(navigate)
 
-        const { data }: { data: { UserInventories: GraphQLListResponse<UserInventory> } } =
-          await client.query({
-            query: USER_INVENTORY,
-            variables: { limit: 10, offset: 0, type: { eq: UserInventoryTypeEnum.FOOD } },
-            fetchPolicy: 'no-cache',
-          })
-
-        const totalFood = data.UserInventories.items.reduce(
-          (acc, item) => acc + (item.quantity ?? 0),
-          0,
-        )
-
-        const foods = data.UserInventories.items.map((food) => ({
-          foodId: food.id,
-          quantity: food.quantity,
-        }))
-
-        setUserInventories(foods)
-        setQuantityFood(totalFood)
-
+        await inventoriesStore.fetchInventories()
         await monsterStore.fetchMonsters()
 
         setIsLoading(false)
@@ -65,12 +43,14 @@ const FoodMenu = observer(() => {
     fetchInventoriesAndMonsters(true)
   }, [monsterIdParams, fetchInventoriesAndMonsters])
 
-  if (isLoading) {
+  if (isLoading && inventoriesStore.inventories.length === 0) {
     return <Loading />
   }
 
   const handlerFeedMonster = async (monsterId: string) => {
-    const food = userInventories.find((food) => food?.quantity > 0)
+    const food = inventoriesStore.inventories.find(
+      (inventory) => inventory?.quantity > 0 && inventory.type === UserInventoryTypeEnum.FOOD,
+    )
     if (!food) {
       setInfoMessage('Нет еды для кормления')
       return
@@ -78,7 +58,7 @@ const FoodMenu = observer(() => {
     try {
       await client.query({
         query: MONSTER_FEED,
-        variables: { monsterId, quantity: 1, userInventoryId: food.foodId },
+        variables: { monsterId, quantity: 1, userInventoryId: food.id },
         fetchPolicy: 'no-cache',
       })
       await fetchInventoriesAndMonsters(false)
@@ -102,36 +82,22 @@ const FoodMenu = observer(() => {
 
   return (
     <div className={styles.foodMenu}>
-      <div className={styles.header}>
-        <img className={styles.headerIcon} alt="food" src={foodIcon} />
-        <div className={styles.headerTextBlock}>
-          <span>Еда в наличии:</span>
-          <span>{quantityFood}</span>
-        </div>
-        <div className={styles.headerButton}>
-          <RoundButton type="exit" onClick={() => navigate('/laboratory')} />
-        </div>
-      </div>
+      <HeaderBar icon={foodIcon} title={`Еда в наличии: ${inventoriesStore.quantityFood}`} />
       <div className={styles.content}>
         {infoMessage}
-        <div>
-          {monsterStore.monsters.map((monster) => (
-            <CardFeedMonster
-              key={monster.id}
-              url={monster?.avatar || ''}
-              satiety={monster.satiety}
-              onButtonClick={() => handlerFeedMonster(monster.id)}
-            />
-          ))}
+        {monsterStore.monsters.map((monster) => (
+          <CardFeedMonster
+            key={monster.id}
+            url={monster?.avatar || ''}
+            satiety={monster.satiety}
+            onButtonClick={() => handlerFeedMonster(monster.id)}
+          />
+        ))}
+        <div className={styles.bottomMenu}>
+          <MainButton onClick={() => navigate('/laboratory')} height={93} backgroundColor="#616cff">
+            Главное Меню
+          </MainButton>
         </div>
-        <MainButton
-          onClick={() => navigate('/laboratory')}
-          height={93}
-          width={300}
-          backgroundColor="#616cff"
-        >
-          Главное Меню
-        </MainButton>
       </div>
     </div>
   )

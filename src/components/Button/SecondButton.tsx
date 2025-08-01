@@ -1,13 +1,10 @@
 import styles from './SecondButton.module.css'
 
-interface MainButtonProps {
-  children: React.ReactNode
-  onClick: () => void
-}
+interface MainButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
-export default function SecondButton({ children, onClick }: MainButtonProps) {
+export default function SecondButton({ children, className = '', ...rest }: MainButtonProps) {
   return (
-    <button className={styles.mainButton} onClick={onClick}>
+    <button className={`${styles.secondButton} ${className}`.trim()} {...rest}>
       {children}
     </button>
   )

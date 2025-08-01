@@ -6,6 +6,10 @@ export interface GraphQLListResponse<T> {
   items: T[]
 }
 
+export interface File {
+  url: string
+}
+
 export interface FileItem {
   id: string
   name: string
@@ -85,6 +89,9 @@ export interface Mutagen {
   name?: string
   description?: string
   effectDescription?: string
+  strength: number
+  defense: number
+  evasion: number
   iconFileId: string
   iconFile?: File
   updatedAt?: Date
@@ -103,4 +110,14 @@ export interface UserInventory {
   type: UserInventoryTypeEnum
   updatedAt?: Date
   createdAt?: Date
+}
+
+export interface MonsterApplyMutagenResponse {
+  monsterId: string
+  strength: number
+  defense: number
+  evasion: number
+  oldStrength: number
+  oldDefense: number
+  oldEvasion: number
 }
