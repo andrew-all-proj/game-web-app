@@ -1,25 +1,20 @@
 .monsterMenu {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  height: var(--tg-vh, 100vh);
-  width: 100vw;
-  max-width: 500px;
-  margin: 0 auto;
-  box-sizing: border-box;
+  height: var(--tg-vh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   overflow: hidden;
-  position: relative;
 }
 
 .header {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  width: 100%;
-  max-width: 500px;
-  padding: 0 10px;
+  max-width: var(--max-width);
   padding-top: 15px;
   position: relative;
   margin: 0 auto;
+  z-index: 200;
 }
 
 .left {
@@ -51,30 +46,28 @@
   width: 60px;
   height: 60px;
   pointer-events: none;
+  z-index: 1000;
 }
 
 .centerWrapper {
-  grid-row: 2;
+  width: 100%;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  min-height: 0;
-  transform: translateY(-70px);
+  z-index: 1;
 }
 
 .partSelectorWrapper {
   position: fixed;
   bottom: 0;
-  left: 0;
   width: 100%;
   transform: translateY(100%);
   opacity: 0;
   transition:
     transform 0.4s ease-out,
     opacity 0.4s ease-out;
-  z-index: 3;
 }
 
 .partSelectorWrapper.visible {
