@@ -6,19 +6,19 @@ import { MonsterOpponent } from '../../types/BattleRedis'
 interface OpponentListProps {
   opponents: MonsterOpponent[]
   onChallenge: (monster: MonsterOpponent) => void
-  cursor: string
-  nextCursor: string
-  onNext: () => void
-  onPrev: () => void
+  // cursor: string
+  // nextCursor: string
+  // onNext: () => void
+  // onPrev: () => void
 }
 
 const OpponentList: React.FC<OpponentListProps> = ({
   opponents,
   onChallenge,
-  cursor,
-  nextCursor,
-  onNext,
-  onPrev,
+  // cursor,
+  // nextCursor,
+  // onNext,
+  // onPrev,
 }) => {
   // Сохраняем id "заблокированных" монстров и их время разблокировки
   const [lockedButtons, setLockedButtons] = useState<{ [monsterId: string]: number }>({})

@@ -34,8 +34,8 @@ const SearchBattle = observer(() => {
   const [isLoading, setIsLoading] = useState(true)
   const [waitOpponent, setWaitOpponent] = useState(true)
   const [duelInvites, setDuelInvites] = useState<MonsterOpponent[]>([])
-  const [cursor, setCursor] = useState('0')
-  const [nextCursor, setNextCursor] = useState('0')
+  // const [cursor, setCursor] = useState('0')
+  // const [nextCursor, setNextCursor] = useState('0')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -89,7 +89,7 @@ const SearchBattle = observer(() => {
 
   useSocketEvent<OpponentsResponsePayload>('opponents', (data) => {
     setOpponents(data.opponents)
-    setNextCursor(data.nextCursor)
+    //setNextCursor(data.nextCursor)
     setIsLoading(false)
   })
 
@@ -181,22 +181,22 @@ const SearchBattle = observer(() => {
     setDuelInvites((prev) => prev.filter((o) => o.monsterId !== opponent.monsterId))
   }
 
-  const handleNext = () => {
-    setIsLoading(true)
-    setCursor(nextCursor)
-    getSocket()?.emit('getOpponents', {
-      monsterId: monsterStore.selectedMonster?.id,
-      cursor: nextCursor,
-      limit: 5,
-    })
-  }
+  // const handleNext = () => {
+  //   setIsLoading(true)
+  //   setCursor(nextCursor)
+  //   getSocket()?.emit('getOpponents', {
+  //     monsterId: monsterStore.selectedMonster?.id,
+  //     cursor: nextCursor,
+  //     limit: 5,
+  //   })
+  // }
 
-  const handlePrev = () => {
-    // Реализуй если нужен функционал назад, сейчас как пример:
-    // setIsLoading(true)
-    // setCursor(prevCursor)
-    // getSocket()?.emit('getOpponents', { ... })
-  }
+  // const handlePrev = () => {
+  //   // Реализуй если нужен функционал назад, сейчас как пример:
+  //   // setIsLoading(true)
+  //   // setCursor(prevCursor)
+  //   // getSocket()?.emit('getOpponents', { ... })
+  // }
 
   return (
     <div className={styles.searchBattle}>
@@ -210,10 +210,6 @@ const SearchBattle = observer(() => {
               <OpponentList
                 opponents={opponents}
                 onChallenge={handleChallenge}
-                cursor={cursor}
-                nextCursor={nextCursor}
-                onNext={handleNext}
-                onPrev={handlePrev}
               />
             </SimpleBar>
 
