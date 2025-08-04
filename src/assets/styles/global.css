@@ -30,8 +30,17 @@
   --max-height: 1000px;
   --max-weight: 500px;
 
+  --wh-button-bg: #f9f9f9;
+
+  --blue-primary-color: #616cff;
   --green-primary-color: #5ff55a;
+  --pink-secondary-color: #ff6ba8;
+  --yellow-primary-color: #fbc94b;
+  --red-primary-color: #fb6b6b;
   --green-secondary-color: #d2ff49;
+  --orange-secondary-color: #fd9a48;
+  --white-primary-color: #f9f9f9;
+  --light-gray-primary-color: #e8eaea;
 
   font-family: var(--font-base);
   font-weight: 400;

@@ -29,6 +29,20 @@ export interface LastActionLog {
   stamina: number
 }
 
+export interface GetBattleReward {
+  food?: {
+    id: string
+    name: string
+    quantity: number
+  }
+  exp: number
+  mutagen?: {
+    id: string
+    name: string
+    quantity: number
+  }
+}
+
 export interface BattleRedis {
   battleId: string
   opponentMonsterId: string
@@ -59,4 +73,16 @@ export interface BattleRedis {
   opponentReady: '1' | '0'
   winnerMonsterId?: string
   chatId?: string | null
+
+  opponentGetReward?: GetBattleReward
+  challengerGetReward?: GetBattleReward
+}
+
+export interface MonsterOpponent {
+  monsterId: string
+  socketId: string
+  findOpponent: boolean
+  name: string
+  level: number
+  avatar: string | null
 }

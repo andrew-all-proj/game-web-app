@@ -4,7 +4,7 @@ import monsterStore from '../../stores/MonsterStore'
 import styles from './TestFight.module.css'
 import { getSocket } from '../../api/socket'
 import userStore from '../../stores/UserStore'
-import { BattleRedis, LastActionLog } from '../../types/BattleRedis'
+import { BattleRedis, GetBattleReward, LastActionLog } from '../../types/BattleRedis'
 import { useNavigate } from 'react-router-dom'
 import { SpriteAtlas } from '../../types/sprites'
 import BattleButton from '../../components/Button/BattleButton'
@@ -13,6 +13,7 @@ import smallEnergyIcon from '../../assets/icon/small-stamina-icon.svg'
 import smallHeartIcon from '../../assets/icon/small-hp-icon.svg'
 import { ActionStatusEnum } from '../../types/enums/ActionStatusEnum'
 import { useSocketEvent } from '../../functions/useSocketEvent'
+import ResultBattle from '../result-battle/ResultBattle'
 
 interface TestFightProps {
   battleId: string
@@ -51,6 +52,10 @@ export default function TestFight({
   const [yourStamina, setYourStamina] = useState(0)
   const [opponentStamina, setOpponentStamina] = useState(0)
   const navigate = useNavigate()
+  const [battleResult, setBattleResult] = useState<{
+    win: boolean
+    reward: GetBattleReward | null
+  } | null>(null)
 
   // Init/connect socket and start battle
   useEffect(() => {
@@ -140,7 +145,13 @@ export default function TestFight({
           .setOrigin(0.5)
           .setName('gameOverText')
       }
-      return
+
+      const reward = isChallenger ? data.challengerGetReward : data.opponentGetReward
+
+      setBattleResult({
+        win: isWin,
+        reward: reward || null,
+      })
     }
 
     setIsOpponentReady(isChallenger ? data.opponentReady === '1' : data.challengerReady === '1')
@@ -377,6 +388,10 @@ export default function TestFight({
         })
       }
     }
+  }
+
+  if (battleResult) {
+    return <ResultBattle win={battleResult.win} battleReward={battleResult.reward} />
   }
 
   return (
