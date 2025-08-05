@@ -9,7 +9,7 @@
   width: 100%;
   background-color: var(--color-bg);
   color: var(--color-text);
-  overflow: auto;
+  overflow: hidden;
 }
 
 .header {

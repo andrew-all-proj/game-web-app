@@ -13,7 +13,6 @@ import smallEnergyIcon from '../../assets/icon/small-stamina-icon.svg'
 import smallHeartIcon from '../../assets/icon/small-hp-icon.svg'
 import { ActionStatusEnum } from '../../types/enums/ActionStatusEnum'
 import { useSocketEvent } from '../../functions/useSocketEvent'
-import ResultBattle from '../result-battle/ResultBattle'
 
 interface TestFightProps {
   battleId: string
@@ -21,6 +20,9 @@ interface TestFightProps {
   atlasOpponent: SpriteAtlas
   spriteUrlOpponent: string
   spriteUrl: string
+  setBattleResult: React.Dispatch<
+    React.SetStateAction<{ win: boolean; reward: GetBattleReward | null } | null>
+  >
 }
 
 export default function TestFight({
@@ -29,6 +31,7 @@ export default function TestFight({
   atlasOpponent,
   spriteUrl,
   spriteUrlOpponent,
+  setBattleResult,
 }: TestFightProps) {
   const gameRef = useRef<Phaser.Game | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -52,10 +55,6 @@ export default function TestFight({
   const [yourStamina, setYourStamina] = useState(0)
   const [opponentStamina, setOpponentStamina] = useState(0)
   const navigate = useNavigate()
-  const [battleResult, setBattleResult] = useState<{
-    win: boolean
-    reward: GetBattleReward | null
-  } | null>(null)
 
   // Init/connect socket and start battle
   useEffect(() => {
@@ -388,10 +387,6 @@ export default function TestFight({
         })
       }
     }
-  }
-
-  if (battleResult) {
-    return <ResultBattle win={battleResult.win} battleReward={battleResult.reward} />
   }
 
   return (

@@ -200,30 +200,24 @@ const SearchBattle = observer(() => {
 
   return (
     <div className={styles.searchBattle}>
-      <HeaderBar icon={attackIcon} title="Выбрать противника" />
+      <HeaderBar title="Выбрать противника" />
       <div className={styles.content}>
         {opponents.length === 0 ? (
           <div>Нет доступных противников</div>
         ) : (
-          <div className={styles.content}>
-            <SimpleBar className={styles.scrollArea}>
-              <OpponentList
-                opponents={opponents}
-                onChallenge={handleChallenge}
-              />
-            </SimpleBar>
-
-            <div className={styles.duelInvitesWrapper}>
-              <SimpleBar className={styles.scrollArea}>
-                <DuelInvites
-                  invites={duelInvites}
-                  onAccept={handleDuelAccepted}
-                  onDecline={handleDuelDecline}
-                />
-              </SimpleBar>
-            </div>
-          </div>
+          <SimpleBar className={styles.scrollArea}>
+            <OpponentList opponents={opponents} onChallenge={handleChallenge} />
+          </SimpleBar>
         )}
+        <div className={styles.duelInvitesWrapper}>
+          <SimpleBar className={styles.scrollArea}>
+            <DuelInvites
+              invites={duelInvites}
+              onAccept={handleDuelAccepted}
+              onDecline={handleDuelDecline}
+            />
+          </SimpleBar>
+        </div>
       </div>
       <div className={styles.bottomMenu}>
         <MainButton onClick={handleGoToLab}>Лаборатория</MainButton>
