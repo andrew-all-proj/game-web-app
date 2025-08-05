@@ -4,7 +4,7 @@ import monsterStore from '../../stores/MonsterStore'
 import styles from './TestFight.module.css'
 import { getSocket } from '../../api/socket'
 import userStore from '../../stores/UserStore'
-import { BattleRedis, LastActionLog } from '../../types/BattleRedis'
+import { BattleRedis, GetBattleReward, LastActionLog } from '../../types/BattleRedis'
 import { useNavigate } from 'react-router-dom'
 import { SpriteAtlas } from '../../types/sprites'
 import BattleButton from '../../components/Button/BattleButton'
@@ -20,6 +20,9 @@ interface TestFightProps {
   atlasOpponent: SpriteAtlas
   spriteUrlOpponent: string
   spriteUrl: string
+  setBattleResult: React.Dispatch<
+    React.SetStateAction<{ win: boolean; reward: GetBattleReward | null } | null>
+  >
 }
 
 export default function TestFight({
@@ -28,6 +31,7 @@ export default function TestFight({
   atlasOpponent,
   spriteUrl,
   spriteUrlOpponent,
+  setBattleResult,
 }: TestFightProps) {
   const gameRef = useRef<Phaser.Game | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -140,7 +144,13 @@ export default function TestFight({
           .setOrigin(0.5)
           .setName('gameOverText')
       }
-      return
+
+      const reward = isChallenger ? data.challengerGetReward : data.opponentGetReward
+
+      setBattleResult({
+        win: isWin,
+        reward: reward || null,
+      })
     }
 
     setIsOpponentReady(isChallenger ? data.opponentReady === '1' : data.challengerReady === '1')

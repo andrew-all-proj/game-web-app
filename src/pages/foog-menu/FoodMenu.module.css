@@ -7,9 +7,9 @@
   height: var(--tg-vh, 100vh);
   max-height: var(--max-height);
   width: 100%;
-  background-color: #fbc94b;
+  background-color: var(--orange-secondary-color, #fd9a48);
   color: var(--color-text);
-  overflow: auto;
+  overflow: hidden;
 }
 
 .content {

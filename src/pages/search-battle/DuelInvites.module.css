@@ -1,0 +1,12 @@
+.duelInvites {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+}
+
+.titleDuelInvites {
+  color: var(--light-gray-primary-color);
+  align-self: flex-start;
+  margin-left: 15px;
+}

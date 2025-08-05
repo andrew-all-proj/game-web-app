@@ -14,6 +14,8 @@ import SecondButton from '../../components/Button/SecondButton'
 import monsterStore from '../../stores/MonsterStore'
 import { SpriteAtlas } from '../../types/sprites'
 import errorStore from '../../stores/ErrorStore'
+import { GetBattleReward } from '../../types/BattleRedis'
+import ResultBattle from '../result-battle/ResultBattle'
 
 const getSprite = async (
   monster?: Monster | null,
@@ -42,6 +44,10 @@ const Arena = observer(() => {
   const [atlasOpponent, setAtlasOpponent] = useState<SpriteAtlas | null>(null)
   const [spriteUrl, setSpriteUrl] = useState<string>('')
   const [spriteUrlOpponent, setSpriteUrlOpponent] = useState<string>('')
+  const [battleResult, setBattleResult] = useState<{
+    win: boolean
+    reward: GetBattleReward | null
+  } | null>(null)
 
   const handleGoToLab = () => {
     navigate('/laboratory')
@@ -128,6 +134,10 @@ const Arena = observer(() => {
     return <Loading />
   }
 
+  if (battleResult) {
+    return <ResultBattle win={battleResult.win} battleReward={battleResult.reward} />
+  }
+
   return (
     <div className={styles.arena}>
       <main className={styles.main}>
@@ -140,6 +150,7 @@ const Arena = observer(() => {
             atlasOpponent={atlasOpponent}
             spriteUrl={spriteUrl}
             spriteUrlOpponent={spriteUrlOpponent}
+            setBattleResult={setBattleResult}
           />
         ) : null}
         <SecondButton onClick={handleGoToLab}>Лаборатория</SecondButton>

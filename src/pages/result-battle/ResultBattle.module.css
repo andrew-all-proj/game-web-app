@@ -1,0 +1,107 @@
+.resultBattle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: var(--tg-vh, 100vh);
+  width: 100%;
+  color: var(--color-text, #222);
+  overflow: auto;
+  position: relative;
+  transition: background 0.3s;
+}
+
+.header {
+  text-align: center;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 24px;
+}
+
+.monsterAvatar {
+  height: 230px;
+  margin-bottom: 14px;
+  user-select: none;
+  pointer-events: none;
+}
+
+.messageBubble {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff8;
+  border-radius: 18px;
+  font-size: 1.12rem;
+  font-weight: 600;
+  padding: 12px 22px;
+  margin-bottom: 18px;
+  color: #226;
+  border: 2px solid #0003;
+}
+
+.rewardBlock {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 8px;
+}
+
+.expReward {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 12px;
+  border: 2px solid #222;
+  padding: 8px 18px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  box-shadow: 0 1px 4px #0002;
+}
+.expLabel {
+  color: #40c949;
+  margin-right: 6px;
+  font-weight: bold;
+}
+.expValue {
+  color: #222;
+}
+
+.foodReward {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 12px;
+  border: 2px solid #222;
+  padding: 8px 14px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  gap: 8px;
+  box-shadow: 0 1px 4px #0002;
+}
+.foodIcon {
+  width: 32px;
+  height: 32px;
+}
+.foodValue {
+  color: #fd9a48;
+  margin-left: 2px;
+}
+
+.bottomMenu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 95%;
+  margin-top: auto;
+  padding-bottom: 10px;
+}

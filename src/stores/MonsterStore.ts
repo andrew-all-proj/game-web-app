@@ -10,7 +10,7 @@ class MonsterStore {
   selectedMonster: Monster | null = null
   opponentMonster: Monster | null = null
   error: string | null = null
-  isLoading: boolean = false
+  isLoading: boolean = true
 
   constructor() {
     makeAutoObservable(this)
@@ -50,7 +50,6 @@ class MonsterStore {
 
   async fetchMonsters(userId = userStore.user?.id) {
     this.error = null
-    this.isLoading = true
 
     try {
       const { data }: { data: { Monsters: GraphQLListResponse<Monster> } } = await client.query({

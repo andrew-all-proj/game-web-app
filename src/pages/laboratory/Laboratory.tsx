@@ -73,7 +73,7 @@ const Laboratory = observer(() => {
     navigate(`/monster-menu/${monster.id}`)
   }
 
-  if (isLoading || monsterStore.isLoading) {
+  if (isLoading && monsterStore.isLoading) {
     return <Loading />
   }
   if (monsterStore.monsters.length === 0) {
@@ -91,8 +91,6 @@ const Laboratory = observer(() => {
     const newIndex = (monsterIndex + 1) % monsters.length
     setMonsterIndex(newIndex)
   }
-
-  console.log(errorMsg)
 
   return (
     <div className={styles.laboratory}>
@@ -132,6 +130,7 @@ const Laboratory = observer(() => {
         />
       </div>
       <div className={styles.centerContent}>
+        {errorMsg}
         <MonsterAvatarWithShadow
           monster={selectedMonster}
           onClick={() => handleGoToMonsterMenu(selectedMonster)}

@@ -8,7 +8,7 @@
 
 .navigate {
   width: 100%;
-  max-width:  var(--max-weight);
+  max-width: var(--max-weight);
   padding-left: 30px;
   padding-top: 20px;
 }

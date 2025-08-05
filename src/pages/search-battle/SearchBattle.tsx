@@ -7,21 +7,15 @@ import { useNavigate } from 'react-router-dom'
 import Loading from '../loading/Loading'
 import MainButton from '../../components/Button/MainButton'
 import { getSocket } from '../../api/socket'
-import SecondButton from '../../components/Button/SecondButton'
-import DuelRequestModal from './DuelRequestModal'
 import { GraphQLListResponse, MonsterBattles } from '../../types/GraphResponse'
 import { MONSTER_BATTLES } from '../../api/graphql/query'
 import client from '../../api/apolloClient'
 import { useSocketEvent } from '../../functions/useSocketEvent'
-
-interface MonsterOpponent {
-  monsterId: string
-  socketId: string
-  findOpponent: boolean
-  name: string
-  level: number
-  avatar: string | null
-}
+import HeaderBar from '../../components/Header/HeaderBar'
+import OpponentList from './OpponentList'
+import { MonsterOpponent } from '../../types/BattleRedis'
+import DuelInvites from './DuelInvites'
+import SimpleBar from 'simplebar-react'
 
 interface DuelChallengeResponsePayload {
   result: boolean
@@ -37,11 +31,10 @@ const SearchBattle = observer(() => {
   const [opponents, setOpponents] = useState<MonsterOpponent[]>([])
   const [registeredMonster, setRegisteredMonster] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [waitOpponentMessage, setWaitOpponentMessage] = useState('')
   const [waitOpponent, setWaitOpponent] = useState(true)
-  const [requestBattleOpponent, setRequestbattleOpponent] = useState<MonsterOpponent | null>(null)
-  const [cursor, setCursor] = useState('0')
-  const [nextCursor, setNextCursor] = useState('0')
+  const [duelInvites, setDuelInvites] = useState<MonsterOpponent[]>([])
+  // const [cursor, setCursor] = useState('0')
+  // const [nextCursor, setNextCursor] = useState('0')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -95,14 +88,13 @@ const SearchBattle = observer(() => {
 
   useSocketEvent<OpponentsResponsePayload>('opponents', (data) => {
     setOpponents(data.opponents)
-    setNextCursor(data.nextCursor)
+    //setNextCursor(data.nextCursor)
     setIsLoading(false)
   })
 
   useSocketEvent<DuelChallengeResponsePayload>('duelChallengeResponce', (data) => {
     if (!data.result) {
       setWaitOpponent(true)
-      setWaitOpponentMessage('Противник отказался')
     } else {
       getSocket()?.emit('registerMonsterForBattle', {
         isFindOpponent: false,
@@ -113,7 +105,10 @@ const SearchBattle = observer(() => {
   })
 
   useSocketEvent<MonsterOpponent>('duelChallengeRequest', (data) => {
-    setRequestbattleOpponent(data)
+    setDuelInvites((prev) => {
+      if (prev.find((o) => o.monsterId === data.monsterId)) return prev
+      return [...prev, data]
+    })
   })
 
   useSocketEvent<{ result: boolean }>('registerMonster', (data) => {
@@ -127,7 +122,6 @@ const SearchBattle = observer(() => {
   const handleChallenge = (monster: MonsterOpponent) => {
     if (!waitOpponent) return
 
-    setWaitOpponentMessage('Ждите, когда противник примет ваш вызов на дуэль...')
     setWaitOpponent(false)
 
     getSocket()?.emit('requestDuelChallenge', {
@@ -137,8 +131,7 @@ const SearchBattle = observer(() => {
 
     setTimeout(() => {
       setWaitOpponent(true)
-      setWaitOpponentMessage('')
-    }, 30000)
+    }, 15000)
   }
 
   const handleGoToLab = () => {
@@ -149,156 +142,86 @@ const SearchBattle = observer(() => {
     navigate('/laboratory')
   }
 
-  const handleUpdateSerch = () => {
-    setIsLoading(true)
-    console.log(getSocket()?.id)
-    getSocket()?.emit('getOpponents', {
-      findOpponent: true,
-      monsterId: monsterStore.selectedMonster?.id,
-      cursor,
-      limit: 5,
-    })
-  }
+  useEffect(() => {
+    const updateOpponents = () => {
+      getSocket()?.emit('getOpponents', {
+        findOpponent: true,
+        monsterId: monsterStore.selectedMonster?.id,
+        cursor: '0',
+        limit: 5,
+      })
+    }
 
-  const handleDuelAccepted = (requestbattleOpponent: MonsterOpponent) => {
+    updateOpponents()
+
+    const intervalId = setInterval(updateOpponents, 10000)
+    return () => clearInterval(intervalId)
+  }, [monsterStore.selectedMonster?.id])
+
+  const handleDuelAccepted = (opponent: MonsterOpponent) => {
     getSocket()?.emit('duelAccepted', {
       duelAccepted: true,
-      fromMonsterId: requestbattleOpponent.monsterId,
+      fromMonsterId: opponent.monsterId,
       toMonsterId: monsterStore.selectedMonster?.id,
     })
-    setRequestbattleOpponent(null)
+    setDuelInvites((prev) => prev.filter((o) => o.monsterId !== opponent.monsterId))
     getSocket()?.emit('registerMonsterForBattle', {
       isFindOpponent: false,
       monsterId: monsterStore.selectedMonster?.id,
     })
   }
 
-  const handleDuelDecline = (requestbattleOpponent: MonsterOpponent) => {
+  const handleDuelDecline = (opponent: MonsterOpponent) => {
     getSocket()?.emit('duelAccepted', {
       duelAccepted: false,
-      fromMonsterId: requestbattleOpponent.monsterId,
+      fromMonsterId: opponent.monsterId,
       toMonsterId: monsterStore.selectedMonster?.id,
     })
-    setRequestbattleOpponent(null)
+    setDuelInvites((prev) => prev.filter((o) => o.monsterId !== opponent.monsterId))
   }
 
+  // const handleNext = () => {
+  //   setIsLoading(true)
+  //   setCursor(nextCursor)
+  //   getSocket()?.emit('getOpponents', {
+  //     monsterId: monsterStore.selectedMonster?.id,
+  //     cursor: nextCursor,
+  //     limit: 5,
+  //   })
+  // }
+
+  // const handlePrev = () => {
+  //   // Реализуй если нужен функционал назад, сейчас как пример:
+  //   // setIsLoading(true)
+  //   // setCursor(prevCursor)
+  //   // getSocket()?.emit('getOpponents', { ... })
+  // }
+
   return (
-    <>
-      {requestBattleOpponent && (
-        <DuelRequestModal
-          opponent={requestBattleOpponent}
-          onAccept={() => {
-            handleDuelAccepted(requestBattleOpponent)
-          }}
-          onDecline={() => {
-            handleDuelDecline(requestBattleOpponent)
-          }}
-        />
-      )}
-      <div className={styles.searchBattle}>
-        {monsterStore.selectedMonster && (
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-            {monsterStore.selectedMonster.avatar ? (
-              <img
-                src={monsterStore.selectedMonster.avatar}
-                alt="Ваш монстр"
-                width={60}
-                height={60}
-                style={{ borderRadius: '50%', marginRight: '10px' }}
-              />
-            ) : (
-              <div
-                style={{
-                  width: 60,
-                  height: 60,
-                  backgroundColor: '#ddd',
-                  borderRadius: '50%',
-                  marginRight: '10px',
-                }}
-              />
-            )}
-            <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-              {monsterStore.selectedMonster.name}
-            </span>
-          </div>
-        )}
-
-        <h2>Поиск противника</h2>
-
-        {waitOpponentMessage ? <div>{waitOpponentMessage}</div> : <div></div>}
-
+    <div className={styles.searchBattle}>
+      <HeaderBar title="Выбрать противника" />
+      <div className={styles.content}>
         {opponents.length === 0 ? (
           <div>Нет доступных противников</div>
         ) : (
-          <>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Аватар</th>
-                  <th>Имя</th>
-                  <th>Уровень</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {opponents.map((monster) => (
-                  <tr key={monster.monsterId}>
-                    <td>
-                      {monster.avatar ? (
-                        <img
-                          src={monster.avatar}
-                          alt="avatar"
-                          width={50}
-                          height={50}
-                          style={{ borderRadius: '50%' }}
-                        />
-                      ) : (
-                        <div
-                          style={{
-                            width: 50,
-                            height: 50,
-                            backgroundColor: '#eee',
-                            borderRadius: '50%',
-                          }}
-                        />
-                      )}
-                    </td>
-                    <td>{monster.name}</td>
-                    <td>{monster.level}</td>
-                    <td>
-                      <button onClick={() => handleChallenge(monster)}>Вызвать на дуэль</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            <div className={styles.pagination}>
-              <button onClick={() => {}} disabled={cursor === '0'}>
-                Назад
-              </button>
-              <span>Текущая страница</span>
-              <button
-                onClick={() => {
-                  setIsLoading(true)
-                  setCursor(nextCursor)
-                  getSocket()?.emit('getOpponents', {
-                    monsterId: monsterStore.selectedMonster?.id,
-                    cursor: nextCursor,
-                    limit: 5,
-                  })
-                }}
-                disabled={nextCursor === '0'}
-              >
-                Вперёд
-              </button>
-            </div>
-          </>
+          <SimpleBar className={styles.scrollArea}>
+            <OpponentList opponents={opponents} onChallenge={handleChallenge} />
+          </SimpleBar>
         )}
-        <SecondButton onClick={handleUpdateSerch}>Обновить</SecondButton>
+        <div className={styles.duelInvitesWrapper}>
+          <SimpleBar className={styles.scrollArea}>
+            <DuelInvites
+              invites={duelInvites}
+              onAccept={handleDuelAccepted}
+              onDecline={handleDuelDecline}
+            />
+          </SimpleBar>
+        </div>
+      </div>
+      <div className={styles.bottomMenu}>
         <MainButton onClick={handleGoToLab}>Лаборатория</MainButton>
       </div>
-    </>
+    </div>
   )
 })
 
