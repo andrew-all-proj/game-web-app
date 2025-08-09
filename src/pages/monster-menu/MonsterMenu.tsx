@@ -8,7 +8,7 @@ import RoundButton from '../../components/Button/RoundButton'
 import CharacteristicMonster from '../../components/CharacteristicMonster/CharacteristicMonster'
 import StatBar from '../../components/StatBar/StatBar'
 import monsterStore from '../../stores/MonsterStore'
-import { Monster, UserInventory } from '../../types/GraphResponse'
+import { Monster } from '../../types/GraphResponse'
 import client from '../../api/apolloClient'
 import { MONSTER } from '../../api/graphql/query'
 import Loading from '../loading/Loading'
@@ -62,6 +62,7 @@ const MonsterMenu = observer(() => {
   }, [monsterIdParams, navigate])
 
   useEffect(() => {
+    console.log(isEditing)
     if (!isLoading) {
       setAnimateIn(true)
     }
@@ -117,7 +118,7 @@ const MonsterMenu = observer(() => {
           activeTab={activeTab}                
           onTabChange={setActiveTab}
           setIsEditing={setIsEditing}
-          onSelectInventory={(inv) =>  {}}
+          onSelectInventory={() =>  {}}
         />
       </div>
     </div>
