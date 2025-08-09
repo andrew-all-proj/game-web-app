@@ -4,7 +4,7 @@ import styles from './RoundButton.module.css'
 interface RoundButtonProps {
   onClick: () => void
   size?: number
-  type?: 'back' | 'select' | 'exit' | 'next'
+  type?: 'back' | 'select' | 'exit' | 'next' | 'plus'
   color?: string
   className?: string
 }
@@ -13,7 +13,7 @@ export default function RoundButton({
   onClick,
   size = 46,
   type = 'back',
-  color = '#fb6b6b',
+  color = 'var( --red-primary-color)',
   className = '',
 }: RoundButtonProps) {
   const getIcon = () => {
@@ -62,6 +62,22 @@ export default function RoundButton({
             <path
               opacity="0.3"
               d="M18.3062 8.38037C20.3568 9.52483 20.3568 12.4752 18.3062 13.6196L4.96204 21.0671C2.96235 22.1831 0.500001 20.7375 0.500001 18.4475L0.500002 3.55254C0.500002 1.26251 2.96235 -0.18312 4.96203 0.932914L18.3062 8.38037Z"
+              fill="black"
+            />
+          </svg>
+        )
+      case 'plus':
+        return (
+          <svg
+            width="26"
+            height="27"
+            viewBox="0 0 26 27"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              opacity="0.3"
+              d="M14.5869 0.730469C16.2436 0.730612 17.5869 2.0737 17.5869 3.73047V9.14355H23C24.6568 9.14355 25.9999 10.4868 26 12.1436V15C26 16.6569 24.6569 18 23 18H17.5869V23.4131C17.5869 25.0699 16.2436 26.4129 14.5869 26.4131H11.7305C10.0736 26.4131 8.73047 25.0699 8.73047 23.4131V18H3.31738C1.66053 18 0.317383 16.6569 0.317383 15V12.1436C0.317526 10.4868 1.66062 9.14355 3.31738 9.14355H8.73047V3.73047C8.73047 2.07361 10.0736 0.730469 11.7305 0.730469H14.5869Z"
               fill="black"
             />
           </svg>

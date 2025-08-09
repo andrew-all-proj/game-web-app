@@ -10,6 +10,7 @@ import MonsterMenu from '../pages/monster-menu/MonsterMenu'
 import FoodMenu from '../pages/foog-menu/FoodMenu'
 import MutagensMenu from '../pages/mutagens-menu/MutagensMenu'
 import MonsterApplyMutagen from '../pages/monster-apply-mutagen/MonsterApplyMutagen'
+import SkillMenu from '../pages/skill-menu/SkillMenu'
 
 const routes: RouteObject[] = [
   {
@@ -51,6 +52,10 @@ const routes: RouteObject[] = [
   {
     path: '/mutagens-menu',
     element: <MutagensMenu />,
+  },
+  {
+    path: '/skills-menu',
+    element: <SkillMenu />,
   },
   {
     path: '/monster-apply-mutagen/:inventoryIdParams',

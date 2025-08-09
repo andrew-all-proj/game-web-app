@@ -5,11 +5,12 @@ import { Monster } from '../../types/GraphResponse'
 interface Props {
   monster: Monster
   onClick?: () => void
+  className?: string
 }
 
-const MonsterAvatarWithShadow = ({ monster, onClick }: Props) => {
+const MonsterAvatarWithShadow = ({ monster, onClick, className }: Props) => {
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${className || ''}`}>
       <div className={styles.monsterZone}>
         <img
           src={monster.avatar || noAvatarMonster}

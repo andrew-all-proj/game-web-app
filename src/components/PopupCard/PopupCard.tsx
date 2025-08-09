@@ -34,6 +34,8 @@ const PopupCard: React.FC<PopupCardProps> = ({
           {buttonText}
         </MainButton>
       </div>
+      
+      
     </div>
   )
 }

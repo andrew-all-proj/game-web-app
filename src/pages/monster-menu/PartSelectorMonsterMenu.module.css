@@ -1,0 +1,86 @@
+.selectPart {
+  display: flex;
+  flex-shrink: 0;
+  max-width: 500px;
+  flex-direction: column;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.tabIcon {
+  width: 100%;
+  height: 50px;
+  background-color: #ffa260;
+  border: 5px solid #362f2d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px 15px 0 0;
+}
+
+.activeTab {
+  background: #fbc94b;
+  border-bottom: 5px solid #fbc94b; /* визуально сливается с панелью */
+}
+
+.tabText {
+  font-size: 22px;
+  color: #362f2d;
+  margin-top: 4px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Grid */
+.gridWrapper {
+  align-items: center;
+  overflow-y: auto;
+  display: grid;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  box-sizing: border-box;
+
+  border-left: 5px solid #362f2d;
+  border-right: 5px solid #362f2d;
+  border-bottom: 5px solid #362f2d;
+
+  background: #fbc94b;
+  grid-template-columns: repeat(4, max-content);
+  gap: 10px;
+  justify-content: center;
+  align-content: start;
+  padding-bottom: 12px;
+}
+
+/* Item */
+.partItem {
+  width: 70px;
+  height: 70px;
+  margin-top: 12px;
+  background: #e8eaea;
+  border-radius: 15px;
+  border: 5px solid #362f2d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease;
+}
+
+.partItemEmpty { opacity: 0; pointer-events: none; }
+
+.partItemImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

@@ -1,9 +1,15 @@
 .monsterMenu {
-  height: var(--tg-vh);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  height: var(--tg-vh, 100vh);
+  max-height: var(--max-height);
+  width: 100%;
+  background-color: var(--color-bg);
+  color: var(--color-text);
   overflow: hidden;
+  position: relative;
 }
 
 .header {
@@ -50,13 +56,16 @@
 }
 
 .centerWrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 100%;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 1;
+  z-index: 100;
 }
 
 .partSelectorWrapper {
@@ -73,4 +82,29 @@
 .partSelectorWrapper.visible {
   transform: translateY(0);
   opacity: 1;
+}
+
+.avatarMobileContainer {
+  max-width: 330px;
+  height: 60vw;
+  max-height: 300px;
+  min-height: 150px;
+}
+
+@media (max-height: 700px) {
+  .centerWrapper {
+    top: 40%;
+  }
+  .avatarMobileContainer {
+    max-width: 290px;
+  }
+}
+
+@media (max-height: 650px) {
+  .centerWrapper {
+    top: 33%;
+  }
+  .avatarMobileContainer {
+    max-width: 250px;
+  }
 }

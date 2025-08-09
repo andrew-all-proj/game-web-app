@@ -12,13 +12,13 @@ import inventoriesStore from '../../stores/InventoriesStore'
 import InfoPopupMutagen from './InfoPopupMutagen'
 import { UserInventory } from '../../types/GraphResponse'
 import HeaderBar from '../../components/Header/HeaderBar'
-import PopupCard from './PopupCard'
 import client from '../../api/apolloClient'
 import { ApolloError } from '@apollo/client'
 import { USER_INVENTORY_DELETE } from '../../api/graphql/mutation'
 import SimpleBar from 'simplebar-react'
 import 'simplebar-react/dist/simplebar.min.css'
 import '../../assets/styles/simplebar-overrides.css'
+import PopupCard from '../../components/PopupCard/PopupCard'
 
 const MutagensMenu = observer(() => {
   const navigate = useNavigate()
@@ -116,8 +116,8 @@ const MutagensMenu = observer(() => {
         <SimpleBar className={styles.scrollArea}>
           <MutagenGrid
             userInventories={inventoriesStore.inventories}
-            onSelect={handlerSelectedMutagen}
-            onDoubleClick={handlerShowInfoPopupMutagen}
+            onSelect={handlerShowInfoPopupMutagen}
+            onDoubleClick={handlerSelectedMutagen}
           />
         </SimpleBar>
         <div className={styles.bottomMenu}>

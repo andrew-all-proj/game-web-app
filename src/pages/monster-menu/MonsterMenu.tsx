@@ -8,14 +8,15 @@ import RoundButton from '../../components/Button/RoundButton'
 import CharacteristicMonster from '../../components/CharacteristicMonster/CharacteristicMonster'
 import StatBar from '../../components/StatBar/StatBar'
 import monsterStore from '../../stores/MonsterStore'
-import { Monster } from '../../types/GraphResponse'
+import { Monster, UserInventory } from '../../types/GraphResponse'
 import client from '../../api/apolloClient'
 import { MONSTER } from '../../api/graphql/query'
 import Loading from '../loading/Loading'
 import MonsterAvatarWithShadow from '../../components/MonsterAvatarWithShadow/MonsterAvatarWithShadow'
 import foodIcon from '../../assets/icon/food-icon.svg'
-import PartSelector from '../../components/PartSelector/PartSelector'
 import clsx from 'clsx'
+import inventoriesStore from '../../stores/InventoriesStore'
+import PartSelectorMonsterMenu from './PartSelectorMonsterMenu'
 
 const MonsterMenu = observer(() => {
   const navigate = useNavigate()
@@ -23,12 +24,9 @@ const MonsterMenu = observer(() => {
   const [infoMessage, setInfoMessage] = useState('')
   const [selectedMonster, setSelectedMonster] = useState<Monster | null>()
   const [isLoading, setIsLoading] = useState(true)
-  const [skills, setSkills] = useState<[]>([])
-  const [mutations, setMutations] = useState<[]>([])
-  const [skillIndex, setSkillIndex] = useState(0)
-  const [mutationIndex, setMutationIndex] = useState(0)
-  const [activeTab, setActiveTab] = useState<string>('skills')
+  const [activeTab, setActiveTab] = useState<'skills' | 'mutagens'>('skills')
   const [animateIn, setAnimateIn] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
 
   useEffect(() => {
     const starting = async () => {
@@ -54,8 +52,6 @@ const MonsterMenu = observer(() => {
         } else {
           setSelectedMonster(monster)
         }
-        setSkills([])
-        setMutations([])
         setIsLoading(false)
       } catch {
         setInfoMessage('Ошибка при загрузке')
@@ -106,32 +102,22 @@ const MonsterMenu = observer(() => {
       {infoMessage}
 
       <div className={styles.centerWrapper}>
-        <MonsterAvatarWithShadow monster={selectedMonster} onClick={() => {}} />
+        <MonsterAvatarWithShadow
+          monster={selectedMonster}
+          onClick={() => {}}
+          className={styles.avatarMobileContainer}
+        />
       </div>
 
       <div className={clsx(styles.partSelectorWrapper, { [styles.visible]: animateIn })}>
-        <PartSelector
-          tabs={[
-            {
-              key: 'skills',
-              text: 'Навыки',
-              parts: skills,
-              selectedIndex: skillIndex,
-              setSelectedIndex: setSkillIndex,
-            },
-            {
-              key: 'mutations',
-              text: 'Мутации',
-              parts: mutations,
-              selectedIndex: mutationIndex,
-              setSelectedIndex: setMutationIndex,
-            },
-          ]}
+        <PartSelectorMonsterMenu
+          inventory={inventoriesStore.inventories}
           rows={2}
           columns={3}
-          activeTab={activeTab}
+          activeTab={activeTab}                
           onTabChange={setActiveTab}
-          setIsEditing={() => {}}
+          setIsEditing={setIsEditing}
+          onSelectInventory={(inv) =>  {}}
         />
       </div>
     </div>

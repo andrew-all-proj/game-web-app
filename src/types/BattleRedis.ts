@@ -1,25 +1,11 @@
+import { Skill } from './GraphResponse'
+
 export interface MonsterStats {
   healthPoints: number
   stamina: number
   strength: number
   defense: number
   evasion: number
-}
-
-export interface MonsterAttack {
-  id: number
-  name: string
-  modifier: number
-  energyCost: number
-  cooldown: number
-}
-
-export interface MonsterDefense {
-  id: number
-  name: string
-  modifier: number
-  energyCost: number
-  cooldown: number
 }
 
 export interface LastActionLog {
@@ -57,10 +43,10 @@ export interface BattleRedis {
   challengerStats: MonsterStats
   opponentStats: MonsterStats
 
-  challengerAttacks: MonsterAttack[]
-  challengerDefenses: MonsterDefense[]
-  opponentAttacks: MonsterAttack[]
-  opponentDefenses: MonsterDefense[]
+  challengerAttacks: Skill[]
+  challengerDefenses: Skill[]
+  opponentAttacks: Skill[]
+  opponentDefenses: Skill[]
 
   currentTurnMonsterId: string
   turnStartTime: number
