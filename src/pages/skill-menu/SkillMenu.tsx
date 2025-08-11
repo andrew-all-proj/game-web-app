@@ -92,13 +92,13 @@ const SkillMenu = observer(() => {
         rightContent={<RoundButton type="exit" onClick={() => navigate('/laboratory')} />}
       />
       {infoMessage}
-        {showSelectMonster && selectedInventory ? (
-          <SelectMonster
-            monsters={monsterStore.monsters}
-            selectedInventory={selectedInventory}
-            onClose={() => setShowSelectMonster(false)}
-          />
-        ) : (
+      {showSelectMonster && selectedInventory ? (
+        <SelectMonster
+          monsters={monsterStore.monsters}
+          selectedInventory={selectedInventory}
+          onClose={() => setShowSelectMonster(false)}
+        />
+      ) : (
         <SimpleBar className={styles.scrollArea}>
           <CardsSelectSkill
             inventoriesStore={inventoriesStore.inventories}
@@ -108,14 +108,14 @@ const SkillMenu = observer(() => {
             }}
           />
         </SimpleBar>
-        )}
-      <InfoPopupSkill 
+      )}
+      <InfoPopupSkill
         showInfoPopupSkill={showInfoPopupSkill}
         userInventory={selectedInventory}
         onClose={() => setShowInfoPopupSkill(false)}
         onClick={() => {
-              setShowInfoPopupSkill(false)
-             setShowSelectMonster(true)
+          setShowInfoPopupSkill(false)
+          setShowSelectMonster(true)
         }}
         onClickDelete={() => setOpenPopupCard(true)}
       />

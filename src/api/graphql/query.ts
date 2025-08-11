@@ -274,6 +274,7 @@ export const USER_INVENTORY = gql`
           name
           rarity
           strength
+          type
         }
         quantity
         mutagenId

@@ -28,7 +28,13 @@ const SelectMonster = ({ monsters, onClose }: SelectMonsterProps) => {
         </CardMenuMonster>
       ))}
       <div className={styles.bottomMenu}>
-        <MainButton onClick={() => {onClose()}} height={93} backgroundColor="var(--green-secondary-color)">
+        <MainButton
+          onClick={() => {
+            onClose()
+          }}
+          height={93}
+          backgroundColor="var(--green-secondary-color)"
+        >
           Назад
         </MainButton>
       </div>

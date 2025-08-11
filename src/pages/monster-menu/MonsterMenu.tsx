@@ -8,15 +8,17 @@ import RoundButton from '../../components/Button/RoundButton'
 import CharacteristicMonster from '../../components/CharacteristicMonster/CharacteristicMonster'
 import StatBar from '../../components/StatBar/StatBar'
 import monsterStore from '../../stores/MonsterStore'
-import { Monster } from '../../types/GraphResponse'
-import client from '../../api/apolloClient'
-import { MONSTER } from '../../api/graphql/query'
+import { Monster, MonsterApplyMutagenResponse, UserInventory } from '../../types/GraphResponse'
 import Loading from '../loading/Loading'
 import MonsterAvatarWithShadow from '../../components/MonsterAvatarWithShadow/MonsterAvatarWithShadow'
 import foodIcon from '../../assets/icon/food-icon.svg'
 import clsx from 'clsx'
 import inventoriesStore from '../../stores/InventoriesStore'
 import PartSelectorMonsterMenu from './PartSelectorMonsterMenu'
+import InfoPopupMutagen from '../../components/InfoPopupMutagen/InfoPopupMutagen'
+import { ApolloError } from '@apollo/client'
+import PopupCardAppliedMutagen from '../../components/PopupCardAppliedMutagen/PopupCardAppliedMutagen'
+import { GetMonsterNewCharacteristicLines } from '../../components/GetMonsterNewCharacteristicLines/GetMonsterNewCharacteristicLines'
 
 const MonsterMenu = observer(() => {
   const navigate = useNavigate()
@@ -26,29 +28,25 @@ const MonsterMenu = observer(() => {
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'skills' | 'mutagens'>('skills')
   const [animateIn, setAnimateIn] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
+  const [selectedInventory, setSelectedInventory] = useState<UserInventory | null>(null)
+  const [newCharMonster, setNewCharMonster] = useState<MonsterApplyMutagenResponse | null>(null)
+  const [openPopupCardMutagen, setOpenPopupCardMutagen] = useState(false)
 
   useEffect(() => {
     const starting = async () => {
       try {
         await authorizationAndInitTelegram(navigate)
-
-        const monster = monsterStore.monsters.find((monster) => monster.id === monsterIdParams)
+        if(!monsterIdParams) {
+          setInfoMessage('Ошибка')
+          return
+        }
+        let monster = monsterStore.monsters.find((monster) => monster.id === monsterIdParams)
         if (!monster) {
-          const { data }: { data: { Monster: Monster } } = await client.query({
-            query: MONSTER,
-            variables: { monsterId: monsterIdParams },
-            fetchPolicy: 'no-cache',
-          })
-
-          if (!data.Monster) {
-            setInfoMessage('Монстер не наден')
-            return
+          monster = await monsterStore.fetchMonster(monsterIdParams)
+          if(monster) {
+            setInfoMessage('Нету такого монстра')
           }
-          data.Monster.avatar = data.Monster.files?.find(
-            (file) => file.contentType === 'AVATAR_MONSTER',
-          )?.url
-          setSelectedMonster(data.Monster)
+          setSelectedMonster(monster)
         } else {
           setSelectedMonster(monster)
         }
@@ -62,7 +60,6 @@ const MonsterMenu = observer(() => {
   }, [monsterIdParams, navigate])
 
   useEffect(() => {
-    console.log(isEditing)
     if (!isLoading) {
       setAnimateIn(true)
     }
@@ -70,6 +67,37 @@ const MonsterMenu = observer(() => {
 
   if (isLoading || !selectedMonster) {
     return <Loading />
+  }
+
+  const handlerApplyMutagen = async (userInventory: UserInventory) => {
+    if(userInventory.userInventoryType !== 'MUTAGEN') {
+      return
+    }
+     try {
+      const monsterApplyMutagen = await monsterStore.apllyMutagenToMonster(selectedMonster.id, userInventory.id || '')
+      setNewCharMonster(monsterApplyMutagen)
+      setOpenPopupCardMutagen(true)
+      setSelectedInventory(null)
+      const monster = await monsterStore.fetchMonster(selectedMonster.id)
+      setSelectedMonster(monster)
+      await inventoriesStore.fetchInventories()
+    } catch (error: unknown) {
+      //TODO UPDATE ERROR
+      let message = ''
+      if (error instanceof ApolloError) {
+        message =
+          error.message || error.graphQLErrors?.[0]?.message || error.networkError?.message || ''
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        message = (error as { message: string }).message
+      } else {
+        message = String(error)
+      }
+      if (message.includes('Mutagen not found in user inventory')) {
+        setInfoMessage('Мутаген не найден')
+      } else {
+        setInfoMessage('Ошибка при мутации')
+      }
+    }
   }
 
   return (
@@ -87,7 +115,14 @@ const MonsterMenu = observer(() => {
         </div>
         <div className={styles.center}>
           <div className={styles.barWrapper}>
-            <StatBar current={selectedMonster.satiety ?? 0} max={100} width={100} height={32} />
+            <StatBar
+              current={selectedMonster.satiety ?? 0}
+              max={100}
+              width={100}
+              height={32}
+              color={'var(--orange-secondary-color)'}
+              backgroundColor={'var(--orange-scale-hungry)'}
+            />
             <img src={foodIcon} alt="food" className={styles.icon} />
           </div>
         </div>
@@ -109,18 +144,29 @@ const MonsterMenu = observer(() => {
           className={styles.avatarMobileContainer}
         />
       </div>
-
       <div className={clsx(styles.partSelectorWrapper, { [styles.visible]: animateIn })}>
         <PartSelectorMonsterMenu
           inventory={inventoriesStore.inventories}
-          rows={2}
-          columns={3}
-          activeTab={activeTab}                
+          activeTab={activeTab}
           onTabChange={setActiveTab}
-          setIsEditing={setIsEditing}
-          onSelectInventory={() =>  {}}
+          onSelectInventory={setSelectedInventory}
         />
       </div>
+        <InfoPopupMutagen
+          userInventory={selectedInventory}
+          onClose={() => setSelectedInventory(null)}
+          onClick={handlerApplyMutagen}
+        />
+        {openPopupCardMutagen && selectedMonster && (
+          <PopupCardAppliedMutagen
+            icon={selectedMonster.avatar || ''}
+            title={selectedMonster.name || ''}
+            subtitle={GetMonsterNewCharacteristicLines(newCharMonster)}
+            onButtonClick={() => setOpenPopupCardMutagen(false)}
+            onClose={() => { setOpenPopupCardMutagen(false) }}
+            levelMonster={selectedMonster.level}
+        />
+      )}
     </div>
   )
 })

@@ -29,7 +29,7 @@
 
 .activeTab {
   background: #fbc94b;
-  border-bottom: 5px solid #fbc94b; /* визуально сливается с панелью */
+  border-bottom: 5px solid #fbc94b;
 }
 
 .tabText {
@@ -40,10 +40,13 @@
   white-space: nowrap;
 }
 
-/* Grid */
-.gridWrapper {
-  align-items: center;
-  overflow-y: auto;
+.scrollArea {
+  max-height: calc((70px + 12px) * 2 + 10px + 38px);
+  width: 100%;
+  padding-right: 12px;
+}
+
+.gridWrapperMutagens {
   display: grid;
   width: 100%;
   max-width: 500px;
@@ -62,6 +65,28 @@
   padding-bottom: 12px;
 }
 
+.gridWrapperSkills {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  border-left: 5px solid #362f2d;
+  border-right: 5px solid #362f2d;
+  border-bottom: 5px solid #362f2d;
+  background: #fbc94b;
+  padding-bottom: 12px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  justify-content: center;
+  gap: 10px;
+}
+
 /* Item */
 .partItem {
   width: 70px;
@@ -77,7 +102,18 @@
   transition: all 0.2s ease;
 }
 
-.partItemEmpty { opacity: 0; pointer-events: none; }
+.partItemEmpty {
+  width: 70px;
+  height: 70px;
+  margin-top: 12px;
+  border-radius: 15px;
+  border: 5px solid #362f2d;
+  background: #f3f3f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
 
 .partItemImg {
   width: 100%;

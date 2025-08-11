@@ -1,6 +1,7 @@
 import * as gameDb from 'game-db'
 import { UserInventoryTypeEnum } from './enums/UserInventoryTypeEnum'
 import { SkillRarity } from './enums/SkillRarity'
+import { SkillType } from './enums/SkillType'
 
 export interface GraphQLListResponse<T> {
   totalCount: number
@@ -140,6 +141,7 @@ export interface Skill {
   cooldown: number
   isBase: boolean
   rarity: SkillRarity
+  type: SkillType
   effects: SkillBonusEffect
   iconFileId: string
   iconFile?: File
