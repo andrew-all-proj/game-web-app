@@ -21,7 +21,7 @@ import InfoPopupSkill from './InfoPopupSkill'
 
 const SkillMenu = observer(() => {
   const navigate = useNavigate()
-  const { monsterIdParams } = useParams()
+  const { monsterIdParams, replacedSkillIdParams } = useParams()
   const [infoMessage, setInfoMessage] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [selectedInventory, setSelectedInventory] = useState<UserInventory | null>(null)
@@ -53,6 +53,30 @@ const SkillMenu = observer(() => {
 
   if (isLoading && inventoriesStore.inventories.length === 0) {
     return <Loading />
+  }
+
+  const handlerAppllySkill = async () => {
+    setShowInfoPopupSkill(false)
+    if (monsterIdParams && selectedInventory) {
+      try {
+        await monsterStore.apllySkillToMonster(
+          monsterIdParams,
+          selectedInventory.id,
+          replacedSkillIdParams,
+        )
+        navigate(`/monster-menu/${monsterIdParams}`)
+      } catch {
+        setInfoMessage('Ошибка при применении скилла')
+      }
+    }
+    setShowSelectMonster(true)
+  }
+
+  const rederectToMonsterMenu = (monsterId: string) => {
+    setShowSelectMonster(false)
+    if (selectedInventory) {
+      navigate(`/monster-menu/${monsterId}/${selectedInventory.id}`)
+    }
   }
 
   const handlerDeleteMutagen = async (userInventory: UserInventory) => {
@@ -95,12 +119,16 @@ const SkillMenu = observer(() => {
       {showSelectMonster && selectedInventory ? (
         <SelectMonster
           monsters={monsterStore.monsters}
-          selectedInventory={selectedInventory}
+          onSelectMonster={(monster) => {
+            rederectToMonsterMenu(monster.id)
+          }}
           onClose={() => setShowSelectMonster(false)}
         />
       ) : (
         <SimpleBar className={styles.scrollArea}>
           <CardsSelectSkill
+            skillIdForReplace={replacedSkillIdParams}
+            monsters={monsterStore.monsters}
             inventoriesStore={inventoriesStore.inventories}
             onSelectSkill={(inventory) => {
               setSelectedInventory(inventory)
@@ -113,11 +141,9 @@ const SkillMenu = observer(() => {
         showInfoPopupSkill={showInfoPopupSkill}
         userInventory={selectedInventory}
         onClose={() => setShowInfoPopupSkill(false)}
-        onClick={() => {
-          setShowInfoPopupSkill(false)
-          setShowSelectMonster(true)
-        }}
+        onClick={handlerAppllySkill}
         onClickDelete={() => setOpenPopupCard(true)}
+        monsterId={monsterIdParams}
       />
       {openPopupCard && selectedInventory && (
         <PopupCard

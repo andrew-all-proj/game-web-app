@@ -1,19 +1,15 @@
 import styles from './SelectMonster.module.css'
 import MainButton from '../../components/Button/MainButton'
-import { Monster, UserInventory } from '../../types/GraphResponse'
+import { Monster } from '../../types/GraphResponse'
 import CardMenuMonster from '../../components/CardMenuMonster/CardMenuMonster'
 
 type SelectMonsterProps = {
   monsters: Monster[]
-  selectedInventory: UserInventory
+  onSelectMonster: (monster: Monster) => void
   onClose: () => void
 }
 
-const SelectMonster = ({ monsters, onClose }: SelectMonsterProps) => {
-  const handlerSelectMonster = (monster: Monster) => {
-    console.log('Selected monster:', monster.id)
-  }
-
+const SelectMonster = ({ monsters, onClose, onSelectMonster }: SelectMonsterProps) => {
   return (
     <div className={styles.content}>
       {monsters.map((monster) => (
@@ -21,7 +17,7 @@ const SelectMonster = ({ monsters, onClose }: SelectMonsterProps) => {
           key={monster.id}
           url={monster?.avatar || ''}
           level={monster.level || 0}
-          onButtonClick={() => handlerSelectMonster(monster)}
+          onButtonClick={() => onSelectMonster(monster)}
           textButton={'Выбрать'}
         >
           <span>{monster.name}</span>

@@ -2,8 +2,13 @@ import { makeAutoObservable, runInAction } from 'mobx'
 import client from '../api/apolloClient'
 import { MONSTER, MONSTERS } from '../api/graphql/query'
 import userStore from './UserStore'
-import { MONSTER_APPLY_MUTAGEN, MONSTER_UPDATE } from '../api/graphql/mutation'
-import { GraphQLListResponse, Monster, MonsterApplyMutagenResponse } from '../types/GraphResponse'
+import { MONSTER_APPLY_MUTAGEN, MONSTER_APPLY_SKILL, MONSTER_UPDATE } from '../api/graphql/mutation'
+import {
+  CommonResponse,
+  GraphQLListResponse,
+  Monster,
+  MonsterApplyMutagenResponse,
+} from '../types/GraphResponse'
 
 class MonsterStore {
   monsters: Monster[] = []
@@ -122,6 +127,19 @@ class MonsterStore {
         fetchPolicy: 'no-cache',
       })
     return data.MonsterApplyMutagen
+  }
+
+  apllySkillToMonster = async (
+    monsterId: string,
+    inventoryId: string,
+    replacedSkillId?: string,
+  ): Promise<CommonResponse> => {
+    const { data }: { data: { MonsterApplySkill: CommonResponse } } = await client.query({
+      query: MONSTER_APPLY_SKILL,
+      variables: { monsterId, userInventoryId: inventoryId, replacedSkillId },
+      fetchPolicy: 'no-cache',
+    })
+    return data.MonsterApplySkill
   }
 }
 

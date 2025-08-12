@@ -1,13 +1,17 @@
-import { UserInventory } from '../../types/GraphResponse'
+import { Monster, Skill, UserInventory } from '../../types/GraphResponse'
 import styles from './PartSelectorMonsterMenu.module.css'
 import SkillsGrid from './SkillsGrid'
 import MutagensGrid from './MutagensGrid'
+import { SkillType } from '../../types/enums/SkillType'
 
 interface PartSelectorProps {
-  inventory: UserInventory[]
+  inventories: UserInventory[]
+  monster: Monster
   activeTab: 'skills' | 'mutagens'
+  applyInventoryId?: string
   onTabChange: (tabKey: 'skills' | 'mutagens') => void
   onSelectInventory: (inv: UserInventory) => void
+  onSelectedMonsterSkill: (skill: Skill) => void
 }
 
 const TABS = [
@@ -16,11 +20,19 @@ const TABS = [
 ]
 
 export default function PartSelectorMonsterMenu({
-  inventory,
+  inventories,
   activeTab,
+  monster,
+  applyInventoryId,
   onTabChange,
   onSelectInventory,
+  onSelectedMonsterSkill,
 }: PartSelectorProps) {
+  let typeSkillForReplace: SkillType | null = null
+  if (applyInventoryId) {
+    typeSkillForReplace =
+      inventories.find((inv) => inv.id === applyInventoryId)?.skill?.type || null
+  }
   return (
     <div className={styles.selectPart}>
       <div className={styles.tabs}>
@@ -37,14 +49,13 @@ export default function PartSelectorMonsterMenu({
 
       {activeTab === 'skills' ? (
         <SkillsGrid
-          inventory={inventory}
-         
+          monsterAttacks={monster.monsterAttacks}
+          monsterDefenses={monster.monsterDefenses}
+          onSelectedMonsterSkill={onSelectedMonsterSkill}
+          typeSkillForReplace={typeSkillForReplace}
         />
       ) : (
-        <MutagensGrid
-          inventory={inventory}
-          onSelectInventory={onSelectInventory}
-        />
+        <MutagensGrid inventory={inventories} onSelectInventory={onSelectInventory} />
       )}
     </div>
   )

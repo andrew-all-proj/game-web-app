@@ -42,7 +42,7 @@ const routes: RouteObject[] = [
     element: <SearchBattle />,
   },
   {
-    path: '/monster-menu/:monsterIdParams',
+    path: '/monster-menu/:monsterIdParams/:inventoryIdParams?',
     element: <MonsterMenu />,
   },
   {
@@ -54,7 +54,7 @@ const routes: RouteObject[] = [
     element: <MutagensMenu />,
   },
   {
-    path: '/skills-menu',
+    path: '/skills-menu/:monsterIdParams?/:replacedSkillIdParams?',
     element: <SkillMenu />,
   },
   {

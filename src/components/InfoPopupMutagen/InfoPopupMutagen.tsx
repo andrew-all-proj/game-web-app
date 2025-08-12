@@ -47,7 +47,7 @@ function getEffectLines(mutagen: Mutagen) {
 }
 
 const InfoPopupMutagen = ({ userInventory, onClose, onClick }: InfoPopupMutagenProps) => {
-  if (!userInventory) return null
+  if (!userInventory || !userInventory.mutagen.id) return null
 
   return (
     <div className={styles.overlay} onClick={onClose}>

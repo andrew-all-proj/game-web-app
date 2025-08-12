@@ -10,6 +10,7 @@ interface InfoPopupMutagenProps {
   onClose: () => void
   onClick: () => void
   onClickDelete: (userInventory: UserInventory) => void
+  monsterId?: string
 }
 
 function getEffectLines(skill: Skill) {
@@ -57,9 +58,9 @@ const InfoPopupSkill = ({
   onClose,
   onClick,
   onClickDelete,
+  monsterId,
 }: InfoPopupMutagenProps) => {
   if (!userInventory || !showInfoPopupSkill) return null
-
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.popup} onClick={(e) => e.stopPropagation()}>
@@ -92,7 +93,7 @@ const InfoPopupSkill = ({
           }}
           backgroundColor={`var(--green-primary-color)`}
         >
-          Выбрать монстрика
+          {monsterId ? 'Применить' : `Выбрать монстрика`}
         </MainButton>
         <MainButton
           onClick={() => {

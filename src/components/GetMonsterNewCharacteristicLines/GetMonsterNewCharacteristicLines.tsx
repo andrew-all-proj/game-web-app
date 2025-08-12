@@ -1,6 +1,5 @@
-import { JSX } from "react"
-import { MonsterApplyMutagenResponse } from "../../types/GraphResponse"
-
+import { JSX } from 'react'
+import { MonsterApplyMutagenResponse } from '../../types/GraphResponse'
 
 export const GetMonsterNewCharacteristicLines = (
   newChar?: MonsterApplyMutagenResponse | null,

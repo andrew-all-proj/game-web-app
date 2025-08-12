@@ -90,7 +90,10 @@ const MonsterApplyMutagen = observer(() => {
   const applyMutagenToMonster = async (monster: Monster) => {
     setSelectedMonster(monster)
     try {
-      const monsterApplyMutagen = await monsterStore.apllyMutagenToMonster(monster.id, selectedInventory?.id || '')
+      const monsterApplyMutagen = await monsterStore.apllyMutagenToMonster(
+        monster.id,
+        selectedInventory?.id || '',
+      )
       setNewCharMonster(monsterApplyMutagen)
     } catch (error: unknown) {
       //TODO UPDATE ERROR

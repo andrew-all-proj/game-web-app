@@ -23,6 +23,10 @@ export interface FileItem {
   createdAt: string
 }
 
+export interface CommonResponse {
+  CommonResponse: boolean
+}
+
 export interface MonsterBattles {
   id: string
   challengerMonsterId: string
@@ -37,19 +41,15 @@ export interface MonsterBattles {
 export interface MonsterDefenses {
   id: number
   monsterId: string
-  name: string
-  modifier: number
-  energyCost: number
-  cooldown: number
+  skillId: string
+  skill: Skill
 }
 
 export interface MonsterAttacks {
   id: number
   monsterId: string
-  name: string
-  modifier: number
-  energyCost: number
-  cooldown: number
+  skillId: string
+  skill: Skill
 }
 
 export interface Monster {

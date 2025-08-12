@@ -107,3 +107,19 @@ export const USER_INVENTORY_DELETE = gql`
     }
   }
 `
+
+export const MONSTER_APPLY_SKILL = gql`
+  mutation MonsterApplySkill(
+    $monsterId: String!
+    $userInventoryId: String!
+    $replacedSkillId: String
+  ) {
+    MonsterApplySkill(
+      monsterId: $monsterId
+      userInventoryId: $userInventoryId
+      replacedSkillId: $replacedSkillId
+    ) {
+      success
+    }
+  }
+`

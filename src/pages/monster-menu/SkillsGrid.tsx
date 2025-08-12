@@ -1,85 +1,96 @@
-import { UserInventoryTypeEnum } from '../../types/enums/UserInventoryTypeEnum'
-import { UserInventory } from '../../types/GraphResponse'
 import styles from './PartSelectorMonsterMenu.module.css'
-import upgradeIcon from '../../assets/icon/upgrade-icon.svg' // корректный файл
-import unionIcon from '../../assets/icon/union-icon.svg'
+import upgradeIcon from '../../assets/icon/upgrade-icon.svg'
+import questionIcon from '../../assets/icon/question-icon.svg'
+
+import { MonsterAttacks, MonsterDefenses, Skill } from '../../types/GraphResponse'
 import { SkillType } from '../../types/enums/SkillType'
 
 interface Props {
-  inventory: UserInventory[]
-  //onSelectInventory: (inv: UserInventory) => void
+  monsterAttacks: MonsterAttacks[]
+  monsterDefenses: MonsterDefenses[]
+  typeSkillForReplace?: SkillType | null
+  onSelectedMonsterSkill: (skill: Skill) => void
 }
 
-export default function SkillsGrid({ inventory }: Props) {
+export default function SkillsGridFromMonster({
+  monsterAttacks,
+  monsterDefenses,
+  onSelectedMonsterSkill,
+  typeSkillForReplace,
+}: Props) {
   const columns = 3
 
-  const skills = inventory.filter(
-    (i) => i.userInventoryType === UserInventoryTypeEnum.SKILL && i.skill,
+  const attacks = (monsterAttacks ?? []).map((ma) => ma.skill).filter(Boolean) as Skill[]
+  const defenses = (monsterDefenses ?? []).map((md) => md.skill).filter(Boolean) as Skill[]
+
+  const fillRow = (rowItems: Skill[]) =>
+    rowItems.length >= columns
+      ? rowItems.slice(0, columns)
+      : [
+          ...rowItems,
+          ...Array.from({ length: columns - rowItems.length }, () => null as unknown as Skill),
+        ]
+
+  const attackRow = fillRow(attacks)
+  const defenseRow = fillRow(defenses)
+
+  const items = [
+    ...attackRow.map((s) => ({ skill: s, type: SkillType.ATTACK })),
+    ...defenseRow.map((s) => ({ skill: s, type: SkillType.DEFENSE })),
+  ]
+
+  const Grid = (
+    <div
+      className={`${styles.gridWrapperSkills} ${typeSkillForReplace ? styles.dimAll : ''}`}
+      style={{ gridTemplateColumns: `repeat(${columns}, max-content)` }}
+    >
+      {items.map((item, i) => {
+        const isPlaceholder = !item.skill
+        const isMatch = !!typeSkillForReplace && typeSkillForReplace === item.type
+        const isDisabled = !!typeSkillForReplace && !isMatch // ← не тот тип → отключаем
+
+        const className = [
+          styles.partItem,
+          isPlaceholder ? styles.partItemEmptySkill : '',
+          isMatch ? styles.partItemHighlight : '',
+          isDisabled ? styles.partItemDisabled : '',
+        ]
+          .join(' ')
+          .trim()
+
+        return (
+          <div
+            key={item.skill ? `skill-${item.skill.id}-${i}` : `empty-${i}`}
+            className={className}
+            onClick={() => {
+              if (!item.skill || isDisabled) return // ← блок клика
+              onSelectedMonsterSkill(item.skill)
+            }}
+          >
+            {item.skill ? (
+              <img
+                className={styles.partItemImg}
+                alt={item.skill.name || 'skill'}
+                src={item.skill.iconFile?.url || upgradeIcon}
+                width={56}
+                height={56}
+              />
+            ) : (
+              <img
+                className={styles.partItemImg}
+                alt="skill"
+                src={questionIcon}
+                width={56}
+                height={56}
+              />
+            )}
+          </div>
+        )
+      })}
+    </div>
   )
 
-  const attacks = skills.filter((i) => i.skill?.type === SkillType.ATTACK)
-  const defenses = skills.filter((i) => i.skill?.type === SkillType.DEFENSE)
-
-  const expand = (items: UserInventory[]) =>
-    items.flatMap((inv) =>
-      Array.from({ length: inv.quantity ?? 1 }, (_, k) => ({ inv, k })),
-    )
-
-  const fillRow = (items: { inv: UserInventory; k: number }[]) => {
-    const trimmed = items.slice(0, columns)
-    return trimmed.length >= columns
-      ? trimmed
-      : [...trimmed, ...Array.from({ length: columns - trimmed.length }, () => null)]
-  }
-
-  const attackRow = fillRow(expand(attacks))
-  const defenseRow = fillRow(expand(defenses))
-
-  const rowsData = [attackRow, defenseRow]
-
   return (
-    <div className={styles.gridWrapperSkills} style={{ display: 'grid', gap: 8 }}>
-      {rowsData.map((row, rowIndex) => (
-        <div
-          key={`row-${rowIndex}`}
-          className={styles.row}
-          style={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(${columns}, max-content)`,
-            gridAutoFlow: 'row',
-            gap: 8,
-          }}
-        >
-          {row.map((item, i) => (
-            <div
-              key={item ? `${item.inv.id}-${item.k}` : `empty-${rowIndex}-${i}`}
-              className={`${styles.partItem} ${item ? '' : styles.partItemEmpty}`}
-              onClick={() => {
-                if (!item) return
-                // onSelectInventory(item.inv) // закомментировано, так как не используется
-              }}
-            >
-              {item ? (
-                <img
-                  className={styles.partItemImg}
-                  alt={item.inv.skill?.name || 'skill'}
-                  src={item.inv.skill?.iconFile?.url || upgradeIcon}
-                  width={56}
-                  height={56}
-                />
-              ) : (
-                <img
-                  className={styles.partItemImg}
-                  alt="empty slot"
-                  src={unionIcon}
-                  width={56}
-                  height={56}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-      ))}
-    </div>
+    <div className={styles.gridViewport}>{Grid}</div>
   )
 }
