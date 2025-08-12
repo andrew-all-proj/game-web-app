@@ -12,11 +12,10 @@ import inventoriesStore from '../../stores/InventoriesStore'
 import { Monster, Mutagen, UserInventory } from '../../types/GraphResponse'
 import HeaderBar from '../../components/Header/HeaderBar'
 import CardMenuMonster from '../../components/CardMenuMonster/CardMenuMonster'
-import client from '../../api/apolloClient'
-import { MONSTER_APPLY_MUTAGEN } from '../../api/graphql/mutation'
 import { ApolloError } from '@apollo/client'
-import PopupCardApplyMutagen from './PopupCardApplyMutagen'
+import PopupCardAppliedMutagen from '../../components/PopupCardAppliedMutagen/PopupCardAppliedMutagen'
 import { MonsterApplyMutagenResponse } from '../../types/GraphResponse'
+import { GetMonsterNewCharacteristicLines } from '../../components/GetMonsterNewCharacteristicLines/GetMonsterNewCharacteristicLines'
 
 const getMonsterCharacteristicLines = (
   monster: Monster | null,
@@ -34,38 +33,6 @@ const getMonsterCharacteristicLines = (
   }
   if (mutagen.evasion) {
     lines.push(<div key="evasion">Уклонение {monster.evasion}</div>)
-  }
-
-  return lines.length > 0 ? <>{lines}</> : null
-}
-
-const getMonsterNewCharacteristicLines = (
-  newChar?: MonsterApplyMutagenResponse | null,
-): JSX.Element | null => {
-  if (!newChar) return null
-
-  const lines: JSX.Element[] = []
-
-  if (newChar.defense) {
-    lines.push(
-      <div key="defense">
-        Защита {newChar.oldDefense} → {newChar.defense}
-      </div>,
-    )
-  }
-  if (newChar.strength) {
-    lines.push(
-      <div key="strength">
-        Сила {newChar.oldStrength} → {newChar.strength}
-      </div>,
-    )
-  }
-  if (newChar.evasion) {
-    lines.push(
-      <div key="evasion">
-        Уклонение {newChar.oldEvasion} → {newChar.evasion}
-      </div>,
-    )
   }
 
   return lines.length > 0 ? <>{lines}</> : null
@@ -123,14 +90,11 @@ const MonsterApplyMutagen = observer(() => {
   const applyMutagenToMonster = async (monster: Monster) => {
     setSelectedMonster(monster)
     try {
-      const { data }: { data: { MonsterApplyMutagen: MonsterApplyMutagenResponse } } =
-        await client.query({
-          query: MONSTER_APPLY_MUTAGEN,
-          variables: { monsterId: monster.id, userInventoryId: selectedInventory?.id },
-          fetchPolicy: 'no-cache',
-        })
-
-      setNewCharMonster(data.MonsterApplyMutagen)
+      const monsterApplyMutagen = await monsterStore.apllyMutagenToMonster(
+        monster.id,
+        selectedInventory?.id || '',
+      )
+      setNewCharMonster(monsterApplyMutagen)
     } catch (error: unknown) {
       //TODO UPDATE ERROR
       let message = ''
@@ -183,10 +147,10 @@ const MonsterApplyMutagen = observer(() => {
         </div>
       </div>
       {openPopupCard && selectedMonster && (
-        <PopupCardApplyMutagen
+        <PopupCardAppliedMutagen
           icon={selectedMonster.avatar || ''}
           title={selectedMonster.name || ''}
-          subtitle={getMonsterNewCharacteristicLines(newCharMonster)}
+          subtitle={GetMonsterNewCharacteristicLines(newCharMonster)}
           onButtonClick={handleClosePopupCard}
           onClose={() => setOpenPopupCard(false)}
           levelMonster={selectedMonster.level}

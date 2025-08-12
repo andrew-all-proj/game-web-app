@@ -21,48 +21,74 @@ export const FILES = gql`
 export const MONSTERS = gql`
   query Monsters($limit: Float!, $offset: Float!, $userId: UuidFilter) {
     Monsters(limit: $limit, offset: $offset, userId: $userId) {
-      totalCount
       items {
-        createdAt
         defense
         evasion
         experiencePoints
+        files {
+          url
+          version
+          id
+          fileType
+          contentType
+        }
         healthPoints
         id
         isSelected
-        level
-        name
-        stamina
-        strength
-        updatedAt
-        userId
-        nextLevelExp
         lastFedAt
-        satiety
-        files {
-          contentType
-          fileType
-          id
-          url
-          version
-        }
+        level
         monsterAttacks {
-          cooldown
-          energyCost
           id
-          modifier
           monsterId
-          name
+          skill {
+            cooldown
+            defense
+            description
+            effects
+            energyCost
+            evasion
+            iconFile {
+              url
+            }
+            iconFileId
+            id
+            isBase
+            name
+            rarity
+            strength
+          }
+          skillId
         }
         monsterDefenses {
-          cooldown
-          energyCost
           id
-          modifier
           monsterId
-          name
+          skill {
+            cooldown
+            defense
+            description
+            effects
+            energyCost
+            evasion
+            iconFile {
+              url
+            }
+            iconFileId
+            id
+            isBase
+            name
+            rarity
+            strength
+          }
+          skillId
         }
+        name
+        nextLevelExp
+        satiety
+        stamina
+        strength
+        userId
       }
+      totalCount
     }
   }
 `
@@ -70,44 +96,71 @@ export const MONSTERS = gql`
 export const MONSTER = gql`
   query Monster($monsterId: String!) {
     Monster(id: $monsterId) {
-      createdAt
       defense
       evasion
       experiencePoints
+      files {
+        url
+        version
+        id
+        fileType
+        contentType
+      }
       healthPoints
       id
       isSelected
+      lastFedAt
       level
-      name
-      stamina
-      strength
-      updatedAt
-      userId
-      files {
-        contentType
-        fileType
-        id
-        url
-        version
-      }
       monsterAttacks {
-        cooldown
-        energyCost
         id
-        modifier
         monsterId
-        name
+        skill {
+          cooldown
+          defense
+          description
+          effects
+          energyCost
+          evasion
+          iconFile {
+            url
+          }
+          iconFileId
+          id
+          isBase
+          name
+          rarity
+          strength
+        }
+        skillId
       }
       monsterDefenses {
-        cooldown
-        energyCost
         id
-        modifier
         monsterId
-        name
+        skill {
+          cooldown
+          defense
+          description
+          effects
+          energyCost
+          evasion
+          iconFile {
+            url
+          }
+          iconFileId
+          id
+          isBase
+          name
+          rarity
+          strength
+        }
+        skillId
       }
-      lastFedAt
+      name
+      nextLevelExp
       satiety
+      stamina
+      strength
+      userId
     }
   }
 `
@@ -204,9 +257,28 @@ export const USER_INVENTORY = gql`
             url
           }
         }
+        skillId
+        skill {
+          cooldown
+          defense
+          description
+          effects
+          energyCost
+          evasion
+          iconFile {
+            url
+          }
+          iconFileId
+          id
+          isBase
+          name
+          rarity
+          strength
+          type
+        }
         quantity
         mutagenId
-        type
+        userInventoryType
         id
         foodId
       }

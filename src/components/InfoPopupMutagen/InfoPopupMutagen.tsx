@@ -1,5 +1,5 @@
-import MainButton from '../../components/Button/MainButton'
-import RoundButton from '../../components/Button/RoundButton'
+import MainButton from '../Button/MainButton'
+import RoundButton from '../Button/RoundButton'
 import { Mutagen, UserInventory } from '../../types/GraphResponse'
 import styles from './InfoPopupMutagen.module.css'
 import mutagenIcon from '../../assets/icon/icon_mutagen.svg'
@@ -47,7 +47,7 @@ function getEffectLines(mutagen: Mutagen) {
 }
 
 const InfoPopupMutagen = ({ userInventory, onClose, onClick }: InfoPopupMutagenProps) => {
-  if (!userInventory) return null
+  if (!userInventory || !userInventory.mutagen.id) return null
 
   return (
     <div className={styles.overlay} onClick={onClose}>

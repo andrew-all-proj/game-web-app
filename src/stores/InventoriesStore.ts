@@ -40,11 +40,17 @@ class InventoriesStore {
   }
 
   get food() {
-    return this.inventories.filter((item) => item.type === UserInventoryTypeEnum.FOOD)
+    return this.inventories.filter((item) => item.userInventoryType === UserInventoryTypeEnum.FOOD)
   }
 
   get mutagens() {
-    return this.inventories.filter((item) => item.type === UserInventoryTypeEnum.MUTAGEN)
+    return this.inventories.filter(
+      (item) => item.userInventoryType === UserInventoryTypeEnum.MUTAGEN,
+    )
+  }
+
+  get skills() {
+    return this.inventories.filter((item) => item.userInventoryType === UserInventoryTypeEnum.SKILL)
   }
 
   get quantityFood() {

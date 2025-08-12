@@ -1,0 +1,163 @@
+.selectPart {
+  display: flex;
+  flex-shrink: 0;
+  max-width: 500px;
+  flex-direction: column;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.tabIcon {
+  width: 100%;
+  height: 50px;
+  background-color: #ffa260;
+  border: 5px solid #362f2d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px 15px 0 0;
+}
+
+.activeTab {
+  background: var(--yellow-primary-color);
+  border-bottom: 5px solid var(--yellow-primary-color);
+}
+
+.tabText {
+  font-size: 22px;
+  color: #362f2d;
+  margin-top: 4px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.scrollArea {
+  max-height: calc((70px + 12px) * 2 + 10px + 38px);
+  width: 100%;
+  padding-right: 12px;
+}
+
+.gridWrapperMutagens {
+  display: grid;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  box-sizing: border-box;
+
+  border-left: 5px solid #362f2d;
+  border-right: 5px solid #362f2d;
+  border-bottom: 5px solid #362f2d;
+
+  background: var(--yellow-primary-color);
+  grid-template-columns: repeat(4, max-content);
+  gap: 10px;
+  justify-content: center;
+  align-content: start;
+  padding-bottom: 12px;
+}
+
+.gridWrapperSkills {
+  position: relative;
+  overflow: hidden;                
+  border-bottom-left-radius: 15px;  
+  border-bottom-right-radius: 15px;
+  position: relative;
+  display: grid;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  box-sizing: border-box;
+
+  border-left: 5px solid #362f2d;
+  border-right: 5px solid #362f2d;
+  border-bottom: 5px solid #362f2d;
+
+  background: var(--yellow-primary-color);
+  grid-template-columns: repeat(3, max-content);
+  gap: 15px;
+  justify-content: center;
+  align-content: start;
+  padding-bottom: 8px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  justify-content: center;
+  gap: 10px;
+}
+
+.partItem {
+  width: 70px;
+  height: 70px;
+  margin-top: 12px;
+  background: #e8eaea;
+  border-radius: 15px;
+  border: 5px solid #362f2d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease;
+  z-index: 0;   
+}
+
+.partItemEmpty {
+  width: 70px;
+  height: 70px;
+  margin-top: 12px;
+  border-radius: 15px;
+  border: 5px solid #362f2d;
+  background: #f3f3f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.partItemEmptySkill {
+  width: 70px;
+  height: 70px;
+  margin-top: 12px;
+  border-radius: 15px;
+  border: 5px solid #362f2d;
+  background: #f3f3f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dimAll::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.26);
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;     
+}
+
+.partItemHighlight {
+  z-index: 2;
+  box-shadow:
+    0 0 0 5px var(--yellow-primary-color), 
+    0 4px 0 0 rgba(0, 0, 0, 0.25);       
+}
+
+.partItemDisabled { 
+  pointer-events: none;
+  cursor: default;
+}
+
+.partItemImg {
+  object-fit: contain;
+}

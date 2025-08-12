@@ -1,0 +1,47 @@
+.CardsSelectSkill {
+  display: flex;
+  flex-direction: column;
+  background: var(--yellow-primary-color);
+  max-width: var(--max-weight);
+  gap: 15px;
+}
+
+.skillCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--blue-primary-color);
+  border: 5px solid #362f2d;
+  border-radius: 15px;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);
+  height: 80px;
+  width: 95%;
+  margin-left: 10px;
+  max-width: var(--max-weight);
+  box-sizing: border-box;
+  padding-right: 10px;
+}
+
+.wrapperImage {
+  background: var(--light-gray-primary-color);
+  border-radius: 15px;
+  border: 5px solid #362f2d;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: -5px;
+  z-index: 1;
+}
+
+.monsterImage {
+  width: 70px;
+  height: 70px;
+}
+
+.skillName {
+  color: var(--white-primary-color);
+  font-size: 18px;
+}

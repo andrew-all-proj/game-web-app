@@ -26,10 +26,9 @@
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   width: 100%;
   min-width: 0;
-  padding: 0 16px;
   gap: 10px;
   margin-bottom: 10px;
   height: 90px;
@@ -37,7 +36,17 @@
 }
 
 .icon {
+  width: 68px;
+  flex-shrink: 0;
+}
+
+.wrapperImage {
+  background: var(--light-gray-primary-color);
+  border-radius: 15px;
+  border: 5px solid #362f2d;
   width: 70px;
+  height: 70px;
+  display: flex;
   flex-shrink: 0;
 }
 
@@ -48,9 +57,10 @@
   font-size: 26px;
   color: #292929;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .closeBtn {

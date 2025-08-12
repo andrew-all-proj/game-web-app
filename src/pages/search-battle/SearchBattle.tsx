@@ -122,8 +122,6 @@ const SearchBattle = observer(() => {
   const handleChallenge = (monster: MonsterOpponent) => {
     if (!waitOpponent) return
 
-    setWaitOpponent(false)
-
     getSocket()?.emit('requestDuelChallenge', {
       fromMonsterId: monsterStore.selectedMonster?.id,
       toMonsterId: monster.monsterId,

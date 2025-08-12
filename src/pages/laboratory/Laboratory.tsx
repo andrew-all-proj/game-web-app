@@ -12,7 +12,7 @@ import NotFoundMonsters from './NotFoundMonsters'
 import SecondButton from '../../components/Button/SecondButton'
 import foodIcon from '../../assets/icon/food-icon.svg'
 import labIcon from '../../assets/icon/icon_lab.svg'
-import upgradeIcon from '../../assets/icon/icon_upgrade.svg'
+import upgradeIcon from '../../assets/icon/upgrade-icon.svg'
 import socialIcon from '../../assets/icon/icon_social.svg'
 import { Monster } from '../../types/GraphResponse'
 import StatBarButton from '../../components/Button/StatBarButton'
@@ -131,10 +131,12 @@ const Laboratory = observer(() => {
       </div>
       <div className={styles.centerContent}>
         {errorMsg}
-        <MonsterAvatarWithShadow
-          monster={selectedMonster}
-          onClick={() => handleGoToMonsterMenu(selectedMonster)}
-        />
+        <div className={styles.avatarMobileContainer}>
+          <MonsterAvatarWithShadow
+            monster={selectedMonster}
+            onClick={() => handleGoToMonsterMenu(selectedMonster)}
+          />
+        </div>
         <div className={styles.selectMonsters}>
           <RoundButton onClick={handlePrevMonster} color="#D2FF49" />
           <MainButton width={210} height={63} onClick={() => handleGoToArena(selectedMonster)}>
@@ -169,7 +171,16 @@ const Laboratory = observer(() => {
           />
         </div>
         <div className={styles.menuItem}>
-          <img src={upgradeIcon} alt="upgrade" className={styles.tabIconImage} />
+          <img
+            src={upgradeIcon}
+            alt="upgrade"
+            className={styles.tabIconImage}
+            onClick={() => {
+              if (userStore.user?.id) {
+                navigate(`/skills-menu`)
+              }
+            }}
+          />
         </div>
         <div className={styles.menuItem}>
           <img src={socialIcon} alt="social" className={styles.tabIconImage} />

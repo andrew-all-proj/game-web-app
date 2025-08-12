@@ -1,7 +1,7 @@
 import React from 'react'
-import styles from './PopupCardApplyMutagen.module.css'
-import MainButton from '../../components/Button/MainButton'
-import MonsterAvatar from '../../components/MonsterAvatar/MonsterAvatar'
+import styles from './PopupCardAppliedMutagen.module.css'
+import MainButton from '../Button/MainButton'
+import MonsterAvatar from '../MonsterAvatar/MonsterAvatar'
 
 interface PopupCardProps {
   icon: string
@@ -13,7 +13,7 @@ interface PopupCardProps {
   onClose?: () => void
 }
 
-const PopupCardNewChar: React.FC<PopupCardProps> = ({
+const PopupCardAppliedMutagen: React.FC<PopupCardProps> = ({
   icon,
   title,
   subtitle,
@@ -44,4 +44,4 @@ const PopupCardNewChar: React.FC<PopupCardProps> = ({
   )
 }
 
-export default PopupCardNewChar
+export default PopupCardAppliedMutagen

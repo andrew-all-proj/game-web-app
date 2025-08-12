@@ -32,6 +32,7 @@ export const MutagenGrid: React.FC<MutagenGridProps> = ({
       clearTimeout(clickTimeout.current)
       clickTimeout.current = null
       // double click
+      setSelectedIdx(idx)
       onDoubleClick?.(cell, idx)
       return
     }

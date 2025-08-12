@@ -2,8 +2,13 @@ import { makeAutoObservable, runInAction } from 'mobx'
 import client from '../api/apolloClient'
 import { MONSTER, MONSTERS } from '../api/graphql/query'
 import userStore from './UserStore'
-import { MONSTER_UPDATE } from '../api/graphql/mutation'
-import { GraphQLListResponse, Monster } from '../types/GraphResponse'
+import { MONSTER_APPLY_MUTAGEN, MONSTER_APPLY_SKILL, MONSTER_UPDATE } from '../api/graphql/mutation'
+import {
+  CommonResponse,
+  GraphQLListResponse,
+  Monster,
+  MonsterApplyMutagenResponse,
+} from '../types/GraphResponse'
 
 class MonsterStore {
   monsters: Monster[] = []
@@ -93,7 +98,7 @@ class MonsterStore {
     this.opponentMonster = monster
   }
 
-  async fetchOpponentMonster(monsterId: string) {
+  async fetchMonster(monsterId: string) {
     const { data }: { data: { Monster: Monster } } = await client.query({
       query: MONSTER,
       variables: {
@@ -103,8 +108,38 @@ class MonsterStore {
     })
 
     const avatarFile = data.Monster.files?.find((file) => file.contentType === 'AVATAR_MONSTER')
+    return { ...data.Monster, avatar: avatarFile?.url }
+  }
 
-    this.setOpponentMonster({ ...data.Monster, avatar: avatarFile?.url })
+  async fetchOpponentMonster(monsterId: string) {
+    const monster = await this.fetchMonster(monsterId)
+    this.setOpponentMonster(monster)
+  }
+
+  apllyMutagenToMonster = async (
+    monsterId: string,
+    inventoryId: string,
+  ): Promise<MonsterApplyMutagenResponse> => {
+    const { data }: { data: { MonsterApplyMutagen: MonsterApplyMutagenResponse } } =
+      await client.query({
+        query: MONSTER_APPLY_MUTAGEN,
+        variables: { monsterId, userInventoryId: inventoryId },
+        fetchPolicy: 'no-cache',
+      })
+    return data.MonsterApplyMutagen
+  }
+
+  apllySkillToMonster = async (
+    monsterId: string,
+    inventoryId: string,
+    replacedSkillId?: string,
+  ): Promise<CommonResponse> => {
+    const { data }: { data: { MonsterApplySkill: CommonResponse } } = await client.query({
+      query: MONSTER_APPLY_SKILL,
+      variables: { monsterId, userInventoryId: inventoryId, replacedSkillId },
+      fetchPolicy: 'no-cache',
+    })
+    return data.MonsterApplySkill
   }
 }
 

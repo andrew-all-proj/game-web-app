@@ -1,5 +1,7 @@
 import * as gameDb from 'game-db'
 import { UserInventoryTypeEnum } from './enums/UserInventoryTypeEnum'
+import { SkillRarity } from './enums/SkillRarity'
+import { SkillType } from './enums/SkillType'
 
 export interface GraphQLListResponse<T> {
   totalCount: number
@@ -21,6 +23,10 @@ export interface FileItem {
   createdAt: string
 }
 
+export interface CommonResponse {
+  CommonResponse: boolean
+}
+
 export interface MonsterBattles {
   id: string
   challengerMonsterId: string
@@ -35,19 +41,15 @@ export interface MonsterBattles {
 export interface MonsterDefenses {
   id: number
   monsterId: string
-  name: string
-  modifier: number
-  energyCost: number
-  cooldown: number
+  skillId: string
+  skill: Skill
 }
 
 export interface MonsterAttacks {
   id: number
   monsterId: string
-  name: string
-  modifier: number
-  energyCost: number
-  cooldown: number
+  skillId: string
+  skill: Skill
 }
 
 export interface Monster {
@@ -98,6 +100,53 @@ export interface Mutagen {
   createdAt?: Date
 }
 
+export interface SkillBonusEffect {
+  restoreSp?: {
+    value: number
+  }
+  immuneEffects?: boolean
+  loseSp?: {
+    value: number
+  }
+  reduceEvaEnemyNextTurn?: {
+    value: number
+  }
+  increaseAccuracy?: {
+    percent: number
+    duration: number
+  }
+  ignoreDefPercent?: {
+    percent: number
+  }
+  restoreSpOnHit?: {
+    value: number
+  }
+  decreaseAccuracyNextTurn?: {
+    percent: number
+    duration: number
+  }
+  stunChance?: {
+    percent: number
+  }
+}
+
+export interface Skill {
+  id: string
+  name?: string
+  description?: string
+  strength?: number
+  defense: number
+  evasion: number
+  energyCost: number
+  cooldown: number
+  isBase: boolean
+  rarity: SkillRarity
+  type: SkillType
+  effects: SkillBonusEffect
+  iconFileId: string
+  iconFile?: File
+}
+
 export interface UserInventory {
   id: string
   userId: string
@@ -106,8 +155,10 @@ export interface UserInventory {
   food: Food
   mutagenId: string
   mutagen: Mutagen
+  skillId: string
+  skill: Skill
   quantity: number
-  type: UserInventoryTypeEnum
+  userInventoryType: UserInventoryTypeEnum
   updatedAt?: Date
   createdAt?: Date
 }

@@ -49,7 +49,8 @@ const FoodMenu = observer(() => {
 
   const handlerFeedMonster = async (monsterId: string) => {
     const food = inventoriesStore.inventories.find(
-      (inventory) => inventory?.quantity > 0 && inventory.type === UserInventoryTypeEnum.FOOD,
+      (inventory) =>
+        inventory?.quantity > 0 && inventory.userInventoryType === UserInventoryTypeEnum.FOOD,
     )
     if (!food) {
       setInfoMessage('Нет еды для кормления')

@@ -13,6 +13,7 @@ import smallEnergyIcon from '../../assets/icon/small-stamina-icon.svg'
 import smallHeartIcon from '../../assets/icon/small-hp-icon.svg'
 import { ActionStatusEnum } from '../../types/enums/ActionStatusEnum'
 import { useSocketEvent } from '../../functions/useSocketEvent'
+import { Skill } from '../../types/GraphResponse'
 
 interface TestFightProps {
   battleId: string
@@ -45,12 +46,8 @@ export default function TestFight({
   const [turnTimer, setTurnTimer] = useState<number>(0)
   const [currentTurnMonsterId, setCurrentTurnMonsterId] = useState<string | null>(null)
   const [isBattleOver, setIsBattleOver] = useState(false)
-  const [myAttacks, setMyAttacks] = useState<
-    { id: number; name: string; modifier: number; energyCost: number; cooldown: number }[]
-  >([])
-  const [myDefenses, setMyDefenses] = useState<
-    { id: number; name: string; modifier: number; energyCost: number; cooldown: number }[]
-  >([])
+  const [myAttacks, setMyAttacks] = useState<Skill[]>([])
+  const [myDefenses, setMyDefenses] = useState<Skill[]>([])
   const [lastAction, setLastAction] = useState<LastActionLog | null>(null)
   const [yourStamina, setYourStamina] = useState(0)
   const [opponentStamina, setOpponentStamina] = useState(0)
@@ -346,7 +343,7 @@ export default function TestFight({
     actionType,
     energyCost,
   }: {
-    actionId: number
+    actionId: string | null
     actionType: ActionStatusEnum
     energyCost: number
   }) => {
@@ -467,8 +464,8 @@ export default function TestFight({
             <BattleButton
               key={idx}
               spCost={attack.energyCost}
-              name={attack.name}
-              modifier={attack.modifier}
+              name={attack.name || 'Attack'}
+              modifier={attack.strength || 0}
               onClick={() =>
                 handleAttack({
                   actionId: attack.id,
@@ -483,7 +480,7 @@ export default function TestFight({
               key={`d-${idx}`}
               spCost={defense.energyCost}
               name={`🛡 ${defense.name}`}
-              modifier={defense.modifier}
+              modifier={defense.defense || 0}
               onClick={() =>
                 handleAttack({
                   actionId: defense.id,
@@ -499,7 +496,7 @@ export default function TestFight({
             modifier={0}
             onClick={() =>
               handleAttack({
-                actionId: -1,
+                actionId: null,
                 actionType: ActionStatusEnum.PASS,
                 energyCost: 0,
               })
