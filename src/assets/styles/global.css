@@ -28,11 +28,12 @@
   --color-button-bg: #f9f9f9;
   --tg-vh: 100vh;
   --max-height: 1000px;
-  --max-weight: 500px;
+  --max-wight: 500px;
 
   --wh-button-bg: #f9f9f9;
 
   --blue-primary-color: #616cff;
+  --blue-secondary-color: #67F2FF;
   --green-primary-color: #5ff55a;
   --pink-secondary-color: #ff6ba8;
   --yellow-primary-color: #fbc94b;
@@ -42,6 +43,7 @@
   --white-primary-color: #f9f9f9;
   --light-gray-primary-color: #e8eaea;
   --orange-scale-hungry: #f96816;
+  --caribbean-green-scale-energy: #04FFBC;
 
   font-family: var(--font-base);
   font-weight: 400;

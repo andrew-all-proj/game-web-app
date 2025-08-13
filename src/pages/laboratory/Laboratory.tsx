@@ -11,7 +11,7 @@ import MainButton from '../../components/Button/MainButton'
 import NotFoundMonsters from './NotFoundMonsters'
 import SecondButton from '../../components/Button/SecondButton'
 import foodIcon from '../../assets/icon/food-icon.svg'
-import labIcon from '../../assets/icon/icon_lab.svg'
+import labIcon from '../../assets/icon/lab-icon.svg'
 import upgradeIcon from '../../assets/icon/upgrade-icon.svg'
 import socialIcon from '../../assets/icon/icon_social.svg'
 import { Monster } from '../../types/GraphResponse'
@@ -116,7 +116,7 @@ const Laboratory = observer(() => {
           backgroundColor="#94c9b3"
           width={120}
           height={48}
-          onClick={() => console.log('Clicked!')}
+          onClick={() => navigate('/energy-menu')}
           className={styles.headerBtnStatBar}
         />
         <StatBarMain

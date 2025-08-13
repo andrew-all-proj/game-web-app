@@ -147,6 +147,14 @@ export interface Skill {
   iconFile?: File
 }
 
+export interface Energy {
+  id: string
+  name?: string
+  quantity?: number
+  priceMinor?: number
+  isActive: boolean
+}
+
 export interface UserInventory {
   id: string
   userId: string
@@ -157,6 +165,8 @@ export interface UserInventory {
   mutagen: Mutagen
   skillId: string
   skill: Skill
+  energyId: string
+  energy: Energy
   quantity: number
   userInventoryType: UserInventoryTypeEnum
   updatedAt?: Date

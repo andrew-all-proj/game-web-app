@@ -53,6 +53,12 @@ class InventoriesStore {
     return this.inventories.filter((item) => item.userInventoryType === UserInventoryTypeEnum.SKILL)
   }
 
+  get energies() {
+    return this.inventories.filter(
+      (item) => item.userInventoryType === UserInventoryTypeEnum.ENERGY,
+    )
+  }
+
   get quantityFood() {
     return inventoriesStore.food.reduce((acc, item) => acc + (item.quantity ?? 0), 0)
   }

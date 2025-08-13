@@ -123,3 +123,10 @@ export const MONSTER_APPLY_SKILL = gql`
     }
   }
 `
+export const USER_APPLY_ENERGY = gql`
+  mutation UserApplyEnergy($userId: String!, $userInventoryId: String!) {
+    UserApplyEnergy(userId: $userId, userInventoryId: $userInventoryId) {
+      success
+    }
+  }
+`
