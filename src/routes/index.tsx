@@ -11,6 +11,7 @@ import FoodMenu from '../pages/foog-menu/FoodMenu'
 import MutagensMenu from '../pages/mutagens-menu/MutagensMenu'
 import MonsterApplyMutagen from '../pages/monster-apply-mutagen/MonsterApplyMutagen'
 import SkillMenu from '../pages/skill-menu/SkillMenu'
+import EnergyMenu from '../pages/energy-menu/EnergyMenu'
 
 const routes: RouteObject[] = [
   {
@@ -60,6 +61,10 @@ const routes: RouteObject[] = [
   {
     path: '/monster-apply-mutagen/:inventoryIdParams',
     element: <MonsterApplyMutagen />,
+  },
+    {
+    path: '/energy-menu',
+    element: <EnergyMenu />,
   },
   {
     path: '/error',

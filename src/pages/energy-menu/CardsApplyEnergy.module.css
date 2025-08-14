@@ -1,4 +1,16 @@
-.cardFeedMonster {
+.cardsApplyEnergy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: var(--max-wight);
+  box-sizing: border-box;
+  gap: 10px;
+}
+
+.cardApplyEnergy {
+  overflow: visible;         
+  position: relative; 
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -11,11 +23,30 @@
   width: 95%;
   max-width: var(--max-wight);
   box-sizing: border-box;
-  overflow: hidden;
+}
+
+.qtyBadge {
+  position: absolute;
+  top: -20px;                
+  right: -16px;                  
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  background: var(--yellow-primary-color);
+  border: 5px solid #362f2d;
+  color: #362f2d;
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
 }
 
 .wrapperImage {
-  background: #ff968d;
+  position: relative;
+  background: var(--blue-secondary-color);
   border-radius: 15px;
   border: 5px solid #362f2d;
   width: 70px;
@@ -34,7 +65,7 @@
   object-fit: contain;
 }
 
-.satietyInfo {
+.energyInfo {
   color: #362f2d;
   font-size: 16px;
   font-weight: 700;
@@ -55,11 +86,11 @@
   margin-right: -5px;
 }
 
-.feedButton {
+.energyButton {
   width: 114px;
   height: 80px;
   border-radius: 18px;
-  background: #ff5ca4;
+  background: var(--green-secondary-color);
   border: 5px solid #362f2d;
   font-size: 16px;
   font-family: var(--font-base);
@@ -69,25 +100,12 @@
   transition: background 0.15s;
 }
 
-.feedButton:disabled,
-.feedButtonDisabled {
+.energyButton:disabled,
+.energyButtonDisabled {
   background: #686868 !important;
   cursor: not-allowed;
   opacity: 0.9;
 }
-
-.satietyLow {
-  background: #ff7878;
-} /* 0–25 */
-.satietyMid {
-  background: #ffbb58;
-} /* 25–50 */
-.satietyHigh {
-  background: #7bdfff;
-} /* 50–75 */
-.satietyFull {
-  background: #57e065;
-} /* 75–100 */
 
 @media (max-height: 590px) {
   .cardFeedMonster {

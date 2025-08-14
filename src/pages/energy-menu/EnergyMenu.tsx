@@ -1,35 +1,33 @@
 import { observer } from 'mobx-react-lite'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useState, useCallback } from 'react'
-import styles from './FoodMenu.module.css'
+import styles from './EnergyMenu.module.css'
 import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
 import Loading from '../loading/Loading'
-import client from '../../api/apolloClient'
-import foodIcon from '../../assets/icon/food-icon.svg'
+import mutagenIcon from '../../assets/icon/icon_mutagen.svg'
 import MainButton from '../../components/Button/MainButton'
-import CardFeedMonster from './CardFeedMonster'
-import monsterStore from '../../stores/MonsterStore'
-import { MONSTER_FEED } from '../../api/graphql/mutation'
 import { ApolloError } from '@apollo/client'
 import inventoriesStore from '../../stores/InventoriesStore'
-import { UserInventoryTypeEnum } from '../../types/enums/UserInventoryTypeEnum'
 import HeaderBar from '../../components/Header/HeaderBar'
+import RoundButton from '../../components/Button/RoundButton'
+import userStore from '../../stores/UserStore'
+import StatBarEnergy from '../../components/StatBar/StatBarEnergy/StatBarStatBarEnergy'
+import CardsApplyEnergy from './CardsApplyEnergy'
+import { UserInventory } from '../../types/GraphResponse'
 
-const FoodMenu = observer(() => {
+const EnergyMenu = observer(() => {
   const navigate = useNavigate()
   const { monsterIdParams } = useParams()
   const [infoMessage, setInfoMessage] = useState('')
   const [isLoading, setIsLoading] = useState(true)
 
-  const fetchInventoriesAndMonsters = useCallback(
+  const fetchInventories = useCallback(
     async (withLoading: boolean) => {
       try {
         if (withLoading) setIsLoading(true)
         await authorizationAndInitTelegram(navigate)
-
         await inventoriesStore.fetchInventories()
-        await monsterStore.fetchMonsters()
-
+        await userStore.fetchUser()
         setIsLoading(false)
       } catch {
         setInfoMessage('Ошибка при загрузке')
@@ -40,29 +38,17 @@ const FoodMenu = observer(() => {
   )
 
   useEffect(() => {
-    fetchInventoriesAndMonsters(true)
-  }, [monsterIdParams, fetchInventoriesAndMonsters])
+    fetchInventories(true)
+  }, [monsterIdParams, fetchInventories])
 
   if (isLoading && inventoriesStore.inventories.length === 0) {
     return <Loading />
   }
 
-  const handlerFeedMonster = async (monsterId: string) => {
-    const food = inventoriesStore.inventories.find(
-      (inventory) =>
-        inventory?.quantity > 0 && inventory.userInventoryType === UserInventoryTypeEnum.FOOD,
-    )
-    if (!food) {
-      setInfoMessage('Нет еды для кормления')
-      return
-    }
+  const handlerApplyEnergy = async (inventory: UserInventory) => {
     try {
-      await client.query({
-        query: MONSTER_FEED,
-        variables: { monsterId, quantity: 1, userInventoryId: food.id },
-        fetchPolicy: 'no-cache',
-      })
-      await fetchInventoriesAndMonsters(false)
+      await userStore.apllyEnergyToUser(inventory.id)
+      await fetchInventories(false)
     } catch (error: unknown) {
       let message = ''
       if (error instanceof ApolloError) {
@@ -83,20 +69,21 @@ const FoodMenu = observer(() => {
 
   return (
     <div className={styles.foodMenu}>
-      <HeaderBar icon={foodIcon} title={`Еда в наличии: ${inventoriesStore.quantityFood}`} />
+      <HeaderBar
+        icon={mutagenIcon}
+        title={'Энергия'}
+        rightContent={<RoundButton type="exit" onClick={() => navigate('/laboratory')} />}
+      />
       <div className={styles.content}>
         {infoMessage}
-        {monsterStore.monsters.map((monster) => (
-          <CardFeedMonster
-            key={monster.id}
-            url={monster?.avatar || ''}
-            satiety={monster.satiety}
-            onButtonClick={() => handlerFeedMonster(monster.id)}
-          />
-        ))}
+        <StatBarEnergy current={userStore.user?.energy || 0} max={1000} title={'Емкость энергоблока'}/>
+        <CardsApplyEnergy
+          inventories={inventoriesStore.energies}
+          onButtonClick={handlerApplyEnergy}
+        />
         <div className={styles.bottomMenu}>
-          <MainButton onClick={() => navigate('/laboratory')} height={93} backgroundColor="var(--blue-primary-color)">
-            Главное Меню
+          <MainButton onClick={() => navigate('/laboratory')} height={93} backgroundColor="var(--red-primary-color)">
+            Приобрести
           </MainButton>
         </div>
       </div>
@@ -104,4 +91,4 @@ const FoodMenu = observer(() => {
   )
 })
 
-export default FoodMenu
+export default EnergyMenu

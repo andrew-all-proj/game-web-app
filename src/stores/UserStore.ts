@@ -1,8 +1,9 @@
 import { makeAutoObservable } from 'mobx'
 import client from '../api/apolloClient'
-import { USER_LOGIN } from '../api/graphql/mutation'
+import { USER_APPLY_ENERGY, USER_LOGIN } from '../api/graphql/mutation'
 import { USER } from '../api/graphql/query'
 import socketStore from './SocketStore'
+import { CommonResponse } from '../types/GraphResponse'
 
 export interface User {
   id: string
@@ -86,6 +87,15 @@ class UserStore {
     }
 
     return user
+  }
+
+  apllyEnergyToUser = async (userInventoryId: string): Promise<CommonResponse> => {
+    const { data }: { data: { UserApplyEnergy: CommonResponse } } = await client.query({
+      query: USER_APPLY_ENERGY,
+      variables: { userId: this.user?.id, userInventoryId },
+      fetchPolicy: 'no-cache',
+    })
+    return data.UserApplyEnergy
   }
 
   setUser(user: User) {

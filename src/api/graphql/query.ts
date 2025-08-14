@@ -276,6 +276,13 @@ export const USER_INVENTORY = gql`
           strength
           type
         }
+        energy {
+          id
+          isActive
+          name
+          priceMinor
+          quantity
+        }
         quantity
         mutagenId
         userInventoryType
