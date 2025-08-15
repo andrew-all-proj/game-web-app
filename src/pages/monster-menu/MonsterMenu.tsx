@@ -71,18 +71,14 @@ const MonsterMenu = observer(() => {
   }, [isLoading])
 
   const ApplySkill = async (skill: Skill | null) => {
-    if(inventoryIdParams && monsterIdParams) {
+    if (inventoryIdParams && monsterIdParams) {
       try {
-        await monsterStore.apllySkillToMonster(
-          monsterIdParams,
-          inventoryIdParams,
-          skill?.id,
-        )
+        await monsterStore.apllySkillToMonster(monsterIdParams, inventoryIdParams, skill?.id)
         navigate(`/skills-menu/${monsterIdParams}`)
       } catch {
         setInfoMessage('Ошибка при применении скилла')
       }
-    }else if (monsterIdParams) {
+    } else if (monsterIdParams) {
       navigate(`/skills-menu/${monsterIdParams}/${skill?.id || ''}`)
     }
   }

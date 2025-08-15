@@ -13,8 +13,8 @@
 }
 
 .content {
-    overflow: visible;         
-  position: relative; 
+  overflow: visible;
+  position: relative;
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;

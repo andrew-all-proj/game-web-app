@@ -67,8 +67,8 @@
 
 .gridWrapperSkills {
   position: relative;
-  overflow: hidden;                
-  border-bottom-left-radius: 15px;  
+  overflow: hidden;
+  border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
   position: relative;
   display: grid;
@@ -108,7 +108,7 @@
   justify-content: center;
   box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);
   transition: all 0.2s ease;
-  z-index: 0;   
+  z-index: 0;
 }
 
 .partItemEmpty {
@@ -143,17 +143,17 @@
   background: rgba(0, 0, 0, 0.26);
   pointer-events: none;
   z-index: 1;
-  border-radius: inherit;     
+  border-radius: inherit;
 }
 
 .partItemHighlight {
   z-index: 2;
   box-shadow:
-    0 0 0 5px var(--yellow-primary-color), 
-    0 4px 0 0 rgba(0, 0, 0, 0.25);       
+    0 0 0 5px var(--yellow-primary-color),
+    0 4px 0 0 rgba(0, 0, 0, 0.25);
 }
 
-.partItemDisabled { 
+.partItemDisabled {
   pointer-events: none;
   cursor: default;
 }

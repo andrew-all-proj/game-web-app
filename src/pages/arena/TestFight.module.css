@@ -1,16 +1,10 @@
-.main {
+.battleCenter {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.wrapperButton {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 15px;
-  margin-top: 5px;
+  background-color: var(--orange-secondary-color);
+  overflow: hidden;
 }
 
 .attackButton {
@@ -33,15 +27,6 @@
 
 .attackButton:active {
   transform: scale(0.97);
-}
-
-.statBars {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  justify-content: center;
-  gap: 10px 80px;
-  width: fit-content;
-  margin: 0 auto;
 }
 
 .phaserContainerWrapper {

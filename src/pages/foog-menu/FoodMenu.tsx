@@ -95,7 +95,11 @@ const FoodMenu = observer(() => {
           />
         ))}
         <div className={styles.bottomMenu}>
-          <MainButton onClick={() => navigate('/laboratory')} height={93} backgroundColor="var(--blue-primary-color)">
+          <MainButton
+            onClick={() => navigate('/laboratory')}
+            height={93}
+            backgroundColor="var(--blue-primary-color)"
+          >
             Главное Меню
           </MainButton>
         </div>

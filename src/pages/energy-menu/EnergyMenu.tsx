@@ -76,13 +76,21 @@ const EnergyMenu = observer(() => {
       />
       <div className={styles.content}>
         {infoMessage}
-        <StatBarEnergy current={userStore.user?.energy || 0} max={1000} title={'Емкость энергоблока'}/>
+        <StatBarEnergy
+          current={userStore.user?.energy || 0}
+          max={1000}
+          title={'Емкость энергоблока'}
+        />
         <CardsApplyEnergy
           inventories={inventoriesStore.energies}
           onButtonClick={handlerApplyEnergy}
         />
         <div className={styles.bottomMenu}>
-          <MainButton onClick={() => navigate('/laboratory')} height={93} backgroundColor="var(--red-primary-color)">
+          <MainButton
+            onClick={() => navigate('/laboratory')}
+            height={93}
+            backgroundColor="var(--red-primary-color)"
+          >
             Приобрести
           </MainButton>
         </div>

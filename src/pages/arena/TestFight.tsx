@@ -7,13 +7,12 @@ import userStore from '../../stores/UserStore'
 import { BattleRedis, GetBattleReward, LastActionLog } from '../../types/BattleRedis'
 import { useNavigate } from 'react-router-dom'
 import { SpriteAtlas } from '../../types/sprites'
-import BattleButton from '../../components/Button/BattleButton'
-import StatBar from '../../components/StatBar/StatBar'
-import smallEnergyIcon from '../../assets/icon/small-stamina-icon.svg'
-import smallHeartIcon from '../../assets/icon/small-hp-icon.svg'
 import { ActionStatusEnum } from '../../types/enums/ActionStatusEnum'
 import { useSocketEvent } from '../../functions/useSocketEvent'
 import { Skill } from '../../types/GraphResponse'
+import HeaderBattle from './HeaderBattle'
+import BottomBattlteMenu from './BottomBattlteMenu'
+const DEFAULT_TURN_LIMIT = 30_000
 
 interface TestFightProps {
   battleId: string
@@ -42,8 +41,10 @@ export default function TestFight({
   const opponentHealthBarRef = useRef<HTMLDivElement>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isOpponentReady, setIsOpponentReady] = useState(false)
-  const [isMyTurn, setIsMyTurn] = useState(false)
-  const [turnTimer, setTurnTimer] = useState<number>(0)
+  const [isCurrentTurn, setIsCurrentTurn] = useState(false)
+  const [turnEndsAtMs, setTurnEndsAtMs] = useState<number | null>(null)
+  const [turnTimeLimitMs, setTurnTimeLimitMs] = useState<number>(DEFAULT_TURN_LIMIT)
+  const serverOffsetRef = useRef<number>(0) // serverNow - clientNow
   const [currentTurnMonsterId, setCurrentTurnMonsterId] = useState<string | null>(null)
   const [isBattleOver, setIsBattleOver] = useState(false)
   const [myAttacks, setMyAttacks] = useState<Skill[]>([])
@@ -52,6 +53,7 @@ export default function TestFight({
   const [yourStamina, setYourStamina] = useState(0)
   const [opponentStamina, setOpponentStamina] = useState(0)
   const navigate = useNavigate()
+  const autoSkipRef = useRef<number | null>(null)
 
   // Init/connect socket and start battle
   useEffect(() => {
@@ -151,13 +153,53 @@ export default function TestFight({
     }
 
     setIsOpponentReady(isChallenger ? data.opponentReady === '1' : data.challengerReady === '1')
-    setIsMyTurn(currentMonsterId === data.currentTurnMonsterId)
+    setIsCurrentTurn(currentMonsterId === data.currentTurnMonsterId)
     setCurrentTurnMonsterId(data.currentTurnMonsterId)
 
-    const now = Date.now()
-    const remaining = data.turnTimeLimit - (now - data.turnStartTime)
-    setTurnTimer(Math.max(0, Math.floor(remaining / 1000)))
+    setIsOpponentReady(isChallenger ? data.opponentReady === '1' : data.challengerReady === '1')
+    setIsCurrentTurn(currentMonsterId === data.currentTurnMonsterId)
+    setCurrentTurnMonsterId(data.currentTurnMonsterId)
+
+    const serverNowMs = data.serverNowMs
+    if (serverNowMs && Math.abs(serverNowMs - Date.now()) < 10 * 60 * 1000) {
+      serverOffsetRef.current = serverNowMs - Date.now()
+    }
+
+    setTurnEndsAtMs(data.turnEndsAtMs)
+    setTurnTimeLimitMs(data.turnTimeLimit ?? DEFAULT_TURN_LIMIT)
   })
+
+  useEffect(() => {
+    if (!isCurrentTurn || !turnEndsAtMs) {
+      autoSkipRef.current = null 
+      return
+    }
+
+    let raf = 0
+    const tick = () => {
+      const now = Date.now() + serverOffsetRef.current
+      if (
+        now >= turnEndsAtMs &&
+        monsterStore.selectedMonster?.id === currentTurnMonsterId &&
+        autoSkipRef.current !== turnEndsAtMs
+      ) {
+        autoSkipRef.current = turnEndsAtMs
+        const socket = getSocket()
+        if (socket?.connected) {
+          socket.emit('attack', {
+            battleId,
+            actionId: null,
+            actionType: ActionStatusEnum.PASS, 
+            monsterId: monsterStore.selectedMonster.id,
+          })
+        }
+      }
+      raf = requestAnimationFrame(tick)
+    }
+
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [isCurrentTurn, turnEndsAtMs, currentTurnMonsterId, battleId])
 
   // Phaser Game
   useEffect(() => {
@@ -337,16 +379,11 @@ export default function TestFight({
     }
   }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent])
 
-  // Атака/действие
-  const handleAttack = ({
-    actionId,
-    actionType,
-    energyCost,
-  }: {
-    actionId: string | null
-    actionType: ActionStatusEnum
+  const handleAttack = (
+    actionId: string,
+    actionType: ActionStatusEnum,
     energyCost: number
-  }) => {
+  ) => {
     if (isLoading || !battleId || !monsterStore.selectedMonster?.id) return
     if (monsterStore.selectedMonster.id !== currentTurnMonsterId) return
     if (energyCost > yourStamina) {
@@ -387,51 +424,27 @@ export default function TestFight({
   }
 
   return (
-    <div className={styles.main}>
-      {!isMyTurn ? (
-        <div style={{ color: 'white', marginBottom: '10px' }}>
-          ⏳ Ждите хода соперника... {turnTimer} сек.
-        </div>
-      ) : (
-        <div style={{ color: 'lightgreen', marginBottom: '10px', fontWeight: 'bold' }}>
-          ✅ Ваш ход! {turnTimer} сек.
-        </div>
-      )}
+    <>
+    <div className={styles.battleCenter}>
+      <HeaderBattle
+        chalengerHealth={yourHealthRef.current ?? 0}
+        maxChalengerHealth={monsterStore.selectedMonster?.healthPoints ?? 0}
+        opponentHealth={opponentHealthRef.current ?? 0}
+        maxOpponentHealth={monsterStore.opponentMonster?.healthPoints ?? 0}
+        chalengerStamina={yourStamina ?? 0}
+        maxChalengerStamina={monsterStore.selectedMonster?.stamina ?? 0}
+        opponentStamina={opponentStamina ?? 0}
+        maxOpponentStamina={monsterStore.opponentMonster?.stamina ?? 0}
+        isCurrentTurn={isCurrentTurn}
+        turnEndsAtMs={turnEndsAtMs ?? undefined}
+        turnTimeLimitMs={turnTimeLimitMs}
+        serverNowMs={Date.now() + serverOffsetRef.current}
+      />
       {!isOpponentReady && (
         <div style={{ color: 'white', marginBottom: '10px' }}>
           🕐 Ожидание готовности соперника...
         </div>
       )}
-      <div className={styles.statBars}>
-        <StatBar
-          current={yourHealthRef.current ?? 0}
-          max={monsterStore.selectedMonster?.healthPoints ?? 0}
-          iconSrc={smallHeartIcon}
-          backgroundColor={'white'}
-          color={'red'}
-        />
-        <StatBar
-          current={opponentHealthRef.current ?? 0}
-          max={monsterStore.selectedMonster?.healthPoints ?? 0}
-          iconSrc={smallHeartIcon}
-          backgroundColor={'white'}
-          color={'red'}
-        />
-        <StatBar
-          current={yourStamina ?? 0}
-          max={monsterStore.selectedMonster?.stamina ?? 0}
-          iconSrc={smallEnergyIcon}
-          backgroundColor={'white'}
-          color={'yellow'}
-        />
-        <StatBar
-          current={opponentStamina ?? 0}
-          max={monsterStore.opponentMonster?.stamina ?? 0}
-          iconSrc={smallEnergyIcon}
-          backgroundColor={'white'}
-          color={'yellow'}
-        />
-      </div>
       <div className={styles.phaserContainerWrapper}>
         {lastAction && (
           <>
@@ -458,52 +471,10 @@ export default function TestFight({
         )}
         <div ref={containerRef} />
       </div>
-      {!isBattleOver && (
-        <div className={styles.wrapperButton}>
-          {myAttacks.map((attack, idx) => (
-            <BattleButton
-              key={idx}
-              spCost={attack.energyCost}
-              name={attack.name || 'Attack'}
-              modifier={attack.strength || 0}
-              onClick={() =>
-                handleAttack({
-                  actionId: attack.id,
-                  actionType: ActionStatusEnum.ATTACK,
-                  energyCost: attack.energyCost,
-                })
-              }
-            />
-          ))}
-          {myDefenses.map((defense, idx) => (
-            <BattleButton
-              key={`d-${idx}`}
-              spCost={defense.energyCost}
-              name={`🛡 ${defense.name}`}
-              modifier={defense.defense || 0}
-              onClick={() =>
-                handleAttack({
-                  actionId: defense.id,
-                  actionType: ActionStatusEnum.DEFENSE,
-                  energyCost: defense.energyCost,
-                })
-              }
-            />
-          ))}
-          <BattleButton
-            spCost={0}
-            name="Пропуск"
-            modifier={0}
-            onClick={() =>
-              handleAttack({
-                actionId: null,
-                actionType: ActionStatusEnum.PASS,
-                energyCost: 0,
-              })
-            }
-          />
-        </div>
-      )}
     </div>
-  )
+    {!isBattleOver && (
+        <BottomBattlteMenu  myAttacks={myAttacks} myDefenses={myDefenses} handleAttack={handleAttack}/>
+      )}
+    </>  
+  ) 
 }

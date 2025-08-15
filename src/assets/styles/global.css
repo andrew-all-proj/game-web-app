@@ -33,7 +33,7 @@
   --wh-button-bg: #f9f9f9;
 
   --blue-primary-color: #616cff;
-  --blue-secondary-color: #67F2FF;
+  --blue-secondary-color: #67f2ff;
   --green-primary-color: #5ff55a;
   --pink-secondary-color: #ff6ba8;
   --yellow-primary-color: #fbc94b;
@@ -43,7 +43,7 @@
   --white-primary-color: #f9f9f9;
   --light-gray-primary-color: #e8eaea;
   --orange-scale-hungry: #f96816;
-  --caribbean-green-scale-energy: #04FFBC;
+  --caribbean-green-scale-energy: #04ffbc;
 
   font-family: var(--font-base);
   font-weight: 400;

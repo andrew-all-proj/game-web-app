@@ -1,20 +1,32 @@
 import React from 'react'
-import style from './BattleButton.module.css'
+import styles from './BattleButton.module.css'
 
 interface BattleButtonProps {
   spCost: number
   name: string
   modifier: number
+  img: string
   onClick?: () => void
+  color?: string            
+  selected?: boolean        
 }
 
-const BattleButton: React.FC<BattleButtonProps> = ({ spCost, name, modifier, onClick }) => {
+const BattleButton: React.FC<BattleButtonProps> = ({
+  spCost, name, modifier, img, onClick, color, selected,
+}) => {
+  const styleVars: React.CSSProperties = color ? { ['--btn-color' as any]: color } : {}
+
   return (
-    <div className={style['attack-button']} onClick={onClick}>
-      <div className={style['attack-sp']}>SP {spCost}</div>
-      <div className={style['attack-content']}>
-        <div>{name}</div>
-        <div>x{modifier}</div>
+    <div
+      className={`${styles.attackButton} ${selected ? styles.attackButtonSelected : ''}`}
+      style={styleVars}
+      onClick={onClick}
+      role="button"
+      aria-pressed={!!selected}
+    >
+      <div className={styles.attackSp}>SP {spCost}</div>
+      <div className={styles.attackContent}>
+        <img alt={name} src={img}/>
       </div>
     </div>
   )

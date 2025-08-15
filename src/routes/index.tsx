@@ -62,7 +62,7 @@ const routes: RouteObject[] = [
     path: '/monster-apply-mutagen/:inventoryIdParams',
     element: <MonsterApplyMutagen />,
   },
-    {
+  {
     path: '/energy-menu',
     element: <EnergyMenu />,
   },
