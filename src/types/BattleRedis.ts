@@ -30,6 +30,7 @@ export interface GetBattleReward {
 }
 
 export interface BattleRedis {
+  rejected: boolean
   battleId: string
   opponentMonsterId: string
   challengerMonsterId: string

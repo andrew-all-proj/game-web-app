@@ -100,6 +100,9 @@ export default function TestFight({
   }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent, battleId, isLoading, isOpponentReady])
 
   useSocketEvent<BattleRedis>('responseBattle', (data) => {
+    if(data.rejected) {
+      navigate('/search-battle')
+    }
     const currentMonsterId = monsterStore.selectedMonster?.id
     if (!currentMonsterId) return
 

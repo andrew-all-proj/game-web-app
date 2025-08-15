@@ -64,13 +64,13 @@ const Arena = observer(() => {
         if (battle.status === 'REJECTED') {
           //setInfoMessage('Бой отменён')
           setStartFight(false)
-          return setIsLoading(false)
+          navigate('/search-battle')
         }
 
         if (battle.status === 'FINISHED') {
           //setInfoMessage('Бой завершён')
           setStartFight(false)
-          return setIsLoading(false)
+          navigate('/search-battle')
         }
 
         if (!monsterStore.selectedMonster) {
