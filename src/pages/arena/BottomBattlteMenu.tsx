@@ -24,7 +24,6 @@ const BottomBattlteMenu = ({
               key={idx}
               spCost={attack.energyCost}
               name={attack.name || 'Attack'}
-              modifier={attack.strength || 0}
               color={'var(--pink-secondary-color)'}
               onClick={() =>
                 handleAttack(
@@ -41,7 +40,6 @@ const BottomBattlteMenu = ({
               key={`d-${idx}`}
               spCost={defense.energyCost}
               name={`🛡 ${defense.name}`}
-              modifier={defense.defense || 0}
               img={defense.iconFile?.url || iconDefence}
               color={'var(--orange-secondary-color)'}
               onClick={() =>

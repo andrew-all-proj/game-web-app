@@ -4,7 +4,7 @@ import styles from './BattleButton.module.css'
 interface BattleButtonProps {
   spCost: number
   name: string
-  modifier: number
+ // modifier: number
   img: string
   onClick?: () => void
   color?: string            
@@ -12,7 +12,7 @@ interface BattleButtonProps {
 }
 
 const BattleButton: React.FC<BattleButtonProps> = ({
-  spCost, name, modifier, img, onClick, color, selected,
+  spCost, name, img, onClick, color, selected,
 }) => {
   const styleVars: React.CSSProperties = color ? { ['--btn-color' as any]: color } : {}
 
