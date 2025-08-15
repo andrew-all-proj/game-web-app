@@ -473,7 +473,7 @@ export default function TestFight({
       </div>
     </div>
     {!isBattleOver && (
-        <BottomBattlteMenu  myAttacks={myAttacks} myDefenses={myDefenses} handleAttack={handleAttack}/>
+        <BottomBattlteMenu  myAttacks={myAttacks} myDefenses={myDefenses} handleAttack={handleAttack} availableSp={yourStamina}/>
       )}
     </>  
   ) 
