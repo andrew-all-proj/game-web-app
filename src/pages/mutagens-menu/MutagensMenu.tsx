@@ -19,10 +19,10 @@ import SimpleBar from 'simplebar-react'
 import 'simplebar-react/dist/simplebar.min.css'
 import '../../assets/styles/simplebar-overrides.css'
 import PopupCard from '../../components/PopupCard/PopupCard'
+import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 
 const MutagensMenu = observer(() => {
   const navigate = useNavigate()
-  const [infoMessage, setInfoMessage] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [selectedInventory, setSelectedInventory] = useState<UserInventory | null>(null)
   const [openPopupCard, setOpenPopupCard] = useState(false)
@@ -38,7 +38,7 @@ const MutagensMenu = observer(() => {
 
         setIsLoading(false)
       } catch {
-        setInfoMessage('Ошибка при загрузке')
+        showTopAlert({text: 'Ошибка при загрузке', variant: 'error', open: true})
         setIsLoading(false)
       }
     },
@@ -67,7 +67,7 @@ const MutagensMenu = observer(() => {
 
   const showPopupCard = () => {
     if (!inventoryToDelete) {
-      setInfoMessage('Выберите мутаген для утилизации!')
+      showTopAlert({text: 'Выберите мутаген для утилизации!', variant: 'info', open: true})
       return
     }
     setInventoryToDelete(inventoryToDelete)
@@ -94,9 +94,9 @@ const MutagensMenu = observer(() => {
         message = String(error)
       }
       if (message.includes('Mutagen not found in user inventory')) {
-        setInfoMessage('Мутаген не найден')
+        showTopAlert({text: 'Мутаген не найден', variant: 'warning', open: true} )
       } else {
-        setInfoMessage('Ошибка при мутации')
+        showTopAlert({text: 'Ошибка при мутации', variant: 'error', open: true})
       }
     }
     setOpenPopupCard(false)
@@ -112,7 +112,6 @@ const MutagensMenu = observer(() => {
         rightContent={<RoundButton type="exit" onClick={() => navigate('/laboratory')} />}
       />
       <div className={styles.content}>
-        {infoMessage}
         <SimpleBar className={styles.scrollArea}>
           <MutagenGrid
             userInventories={inventoriesStore.inventories}

@@ -18,11 +18,11 @@ import CardsSelectSkill from './CardsSelectSkill'
 import PopupCard from '../../components/PopupCard/PopupCard'
 import SelectMonster from './SelectMonster'
 import InfoPopupSkill from './InfoPopupSkill'
+import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 
 const SkillMenu = observer(() => {
   const navigate = useNavigate()
   const { monsterIdParams, replacedSkillIdParams } = useParams()
-  const [infoMessage, setInfoMessage] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [selectedInventory, setSelectedInventory] = useState<UserInventory | null>(null)
   const [openPopupCard, setOpenPopupCard] = useState(false)
@@ -40,7 +40,7 @@ const SkillMenu = observer(() => {
 
         setIsLoading(false)
       } catch {
-        setInfoMessage('Ошибка при загрузке')
+        showTopAlert({text: 'Ошибка при загрузке', open: true, variant: 'error'})
         setIsLoading(false)
       }
     },
@@ -66,7 +66,7 @@ const SkillMenu = observer(() => {
         )
         navigate(`/monster-menu/${monsterIdParams}`)
       } catch {
-        setInfoMessage('Ошибка при применении скилла')
+        showTopAlert({text: 'Ошибка при применении скилла', open: true, variant: 'error'})
       }
     }
     setShowSelectMonster(true)
@@ -99,9 +99,9 @@ const SkillMenu = observer(() => {
         message = String(error)
       }
       if (message.includes('Skill not found in user inventory')) {
-        setInfoMessage('Скилл не найден')
+        showTopAlert({text: 'Скилл не найден', variant: 'error', open: true})
       } else {
-        setInfoMessage('Ошибка при удаление скилла')
+        showTopAlert({text: 'Ошибка при удаление скилла', open: true, variant: 'error'})
       }
     }
     setOpenPopupCard(false)
@@ -115,7 +115,6 @@ const SkillMenu = observer(() => {
         title={`Апгрейды`}
         rightContent={<RoundButton type="exit" onClick={() => navigate('/laboratory')} />}
       />
-      {infoMessage}
       {showSelectMonster && selectedInventory ? (
         <SelectMonster
           monsters={monsterStore.monsters}

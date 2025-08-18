@@ -16,6 +16,7 @@ import { ApolloError } from '@apollo/client'
 import PopupCardAppliedMutagen from '../../components/PopupCardAppliedMutagen/PopupCardAppliedMutagen'
 import { MonsterApplyMutagenResponse } from '../../types/GraphResponse'
 import { GetMonsterNewCharacteristicLines } from '../../components/GetMonsterNewCharacteristicLines/GetMonsterNewCharacteristicLines'
+import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 
 const getMonsterCharacteristicLines = (
   monster: Monster | null,
@@ -41,7 +42,6 @@ const getMonsterCharacteristicLines = (
 const MonsterApplyMutagen = observer(() => {
   const navigate = useNavigate()
   const { inventoryIdParams } = useParams()
-  const [infoMessage, setInfoMessage] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [selectedMonster, setSelectedMonster] = useState<Monster | null>(null)
   const [openPopupCard, setOpenPopupCard] = useState(false)
@@ -59,7 +59,7 @@ const MonsterApplyMutagen = observer(() => {
         )
 
         if (!inventory) {
-          setInfoMessage('Не найден мутаген')
+          showTopAlert({text: 'Не найден мутаген', variant: 'warning', open: true})
           setIsLoading(false)
           return
         }
@@ -67,7 +67,7 @@ const MonsterApplyMutagen = observer(() => {
         setSelectedInventory(inventory)
         setIsLoading(false)
       } catch {
-        setInfoMessage('Ошибка при загрузке')
+        showTopAlert({text: 'Ошибка при загрузке', open: true, variant: 'error'})
         setIsLoading(false)
       }
     },
@@ -107,9 +107,9 @@ const MonsterApplyMutagen = observer(() => {
         message = String(error)
       }
       if (message.includes('Mutagen not found in user inventory')) {
-        setInfoMessage('Мутаген не найден')
+        showTopAlert({text: 'Мутаген не найден', variant: 'warning'})
       } else {
-        setInfoMessage('Ошибка при мутации')
+        showTopAlert({text: 'Ошибка при мутации', variant: 'error'})
       }
     }
     setOpenPopupCard(true)
@@ -123,7 +123,6 @@ const MonsterApplyMutagen = observer(() => {
         rightContent={<RoundButton type="exit" onClick={() => navigate('/laboratory')} />}
       />
       <div className={styles.content}>
-        {infoMessage}
         {monsterStore.monsters.map((monster) => (
           <CardMenuMonster
             key={monster.id}

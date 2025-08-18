@@ -24,6 +24,7 @@ import Loading from '../loading/Loading'
 import PartSelectorMonster from '../../components/PartSelector/PartSelectorMonster'
 import RoundButton from '../../components/Button/RoundButton'
 import CharacteristicMonster from '../../components/CharacteristicMonster/CharacteristicMonster'
+import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 
 declare global {
   interface Window {
@@ -67,7 +68,6 @@ const CreateMonster = observer(() => {
   const [spriteAtlasJson, setSpriteAtlasJson] = useState<SpriteAtlas | null>(null)
   const [partPreviews, setPartPreviews] = useState<PartPreviews>({ head: [], body: [], arms: [] })
   const [spriteUrl, setSpriteUrl] = useState<string | null>(null)
-  const [errorMsg, setErrorMsg] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [headIndex, setHeadIndex] = useState(0)
@@ -170,13 +170,13 @@ const CreateMonster = observer(() => {
 
   const handleSaveImage = async () => {
     if (isSaving) return
-    if (!name.trim()) return setErrorMsg('Введите имя монстра')
-    if (name.length > 15) return setErrorMsg('Имя монстра не должно превышать 15 символов')
-    if (!selectedPartsMonster.current.body) return setErrorMsg('Выберите тело')
-    if (!selectedPartsMonster.current.head) return setErrorMsg('Выберите голову')
-    if (!selectedPartsMonster.current.leftArm) return setErrorMsg('Выберите руки')
+    if (!name.trim()) return showTopAlert({text: 'Введите имя монстра', variant: 'info'})
+    if (name.length > 10) return showTopAlert({text: 'Имя монстра не должно превышать 15 символов', variant: 'info'})
+    if (!selectedPartsMonster.current.body) return showTopAlert({text: 'Выберите тело', variant: 'info'})
+    if (!selectedPartsMonster.current.head) return showTopAlert({text: 'Выберите голову', variant: 'info'})
+    if (!selectedPartsMonster.current.leftArm) return showTopAlert({text: 'Выберите руки', variant: 'info'})
     if (!spriteAtlasJson || !spriteUrl) {
-      setErrorMsg('Спрайты не загружены')
+      showTopAlert({text: 'Спрайты не загружены', variant: 'error'})
       return
     }
 
@@ -221,11 +221,11 @@ const CreateMonster = observer(() => {
 
         if (resultCreateMonster.errors) {
           if (resultCreateMonster.errors[0].message === 'Not enough energy to create a monster') {
-            setErrorMsg('Недостаточно энергии для создания монстра')
+            showTopAlert({text: 'Недостаточно энергии для создания монстра', variant: 'warning'})
           } else if (resultCreateMonster.errors[0].message === 'User already has 4 monsters') {
-            setErrorMsg('У вас уже есть 4 монстра')
+            showTopAlert({text: 'У вас уже есть 4 монстра', variant: 'warning'})
           } else {
-            setErrorMsg('Ошибка при создании монстра')
+            showTopAlert({text: 'Ошибка при создании монстра', variant: 'error'})
           }
           setIsSaving(false)
           return
@@ -240,7 +240,7 @@ const CreateMonster = observer(() => {
     } catch (err) {
       console.log('Error saving monster:', err)
       setIsSaving(false)
-      setErrorMsg('Ошибка при сохранении монстра')
+      showTopAlert({text: 'Ошибка при сохранении монстра', variant: 'error'})
     }
   }
 
@@ -282,7 +282,6 @@ const CreateMonster = observer(() => {
           </div>
         </div>
       </div>
-      <div>{errorMsg && <div style={{ color: 'red' }}>{errorMsg}</div>}</div>
       <div className={styles.inputWrapper}>
         <MainInput
           value={name}

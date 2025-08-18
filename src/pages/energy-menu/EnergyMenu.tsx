@@ -14,11 +14,11 @@ import userStore from '../../stores/UserStore'
 import StatBarEnergy from '../../components/StatBar/StatBarEnergy/StatBarStatBarEnergy'
 import CardsApplyEnergy from './CardsApplyEnergy'
 import { UserInventory } from '../../types/GraphResponse'
+import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 
 const EnergyMenu = observer(() => {
   const navigate = useNavigate()
   const { monsterIdParams } = useParams()
-  const [infoMessage, setInfoMessage] = useState('')
   const [isLoading, setIsLoading] = useState(true)
 
   const fetchInventories = useCallback(
@@ -30,7 +30,7 @@ const EnergyMenu = observer(() => {
         await userStore.fetchUser()
         setIsLoading(false)
       } catch {
-        setInfoMessage('Ошибка при загрузке')
+        showTopAlert({text: 'Ошибка при загрузке', variant: 'error'})
         setIsLoading(false)
       }
     },
@@ -60,9 +60,9 @@ const EnergyMenu = observer(() => {
         message = String(error)
       }
       if (message.includes('The monster is already full')) {
-        setInfoMessage('Монстр уже сыт')
+        showTopAlert({text: 'Монстр уже сыт', variant: 'info'})
       } else {
-        setInfoMessage('Ошибка при кормлении')
+        showTopAlert({text: 'Ошибка при кормлении', variant: 'error'})
       }
     }
   }
@@ -75,7 +75,6 @@ const EnergyMenu = observer(() => {
         rightContent={<RoundButton type="exit" onClick={() => navigate('/laboratory')} />}
       />
       <div className={styles.content}>
-        {infoMessage}
         <StatBarEnergy
           current={userStore.user?.energy || 0}
           max={1000}

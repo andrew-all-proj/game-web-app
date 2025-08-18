@@ -19,11 +19,11 @@ import StatBarButton from '../../components/Button/StatBarButton'
 import StatBarMain from '../../components/StatBar/StatBarMain'
 import RoundButton from '../../components/Button/RoundButton'
 import MonsterAvatarWithShadow from '../../components/MonsterAvatarWithShadow/MonsterAvatarWithShadow'
+import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 
 const Laboratory = observer(() => {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(true)
-  const [errorMsg, setErrorMsg] = useState('')
   const [monsterIndex, setMonsterIndex] = useState(0)
 
   const monsters = monsterStore.monsters
@@ -44,17 +44,29 @@ const Laboratory = observer(() => {
 
   const handleGoToArena = (monster: Monster) => {
     if ((userStore.user?.energy ?? 0) < 125) {
-      setErrorMsg(`Недостаточно энергии для боя, нужно 125. У вас: ${userStore.user?.energy ?? 0}`)
+      showTopAlert({
+        open: true,
+        text: `Недостаточно энергии для боя, нужно 125. У вас: ${userStore.user?.energy ?? 0}`,
+        variant: 'warning'
+      })
       userStore.fetchUser(userStore.user?.id) //TODO THINKING
       return
     }
     monsterStore.setSelectedMonster(monster.id)
     if (!monsterStore.selectedMonster) {
-      setErrorMsg('Выберите питомца')
+      showTopAlert({
+        open: true,
+        text: `Выберите питомца`,
+        variant: 'warning'
+      })
       return
     }
     if (monsterStore.selectedMonster.satiety < 25) {
-      setErrorMsg('Монстр голоден. Покорми!!!!')
+        showTopAlert({
+        open: true,
+        text: `Монстр голоден. Покорми!!!!`,
+        variant: 'warning'
+      })
       return
     }
     navigate('/search-battle')
@@ -130,7 +142,6 @@ const Laboratory = observer(() => {
         />
       </div>
       <div className={styles.centerContent}>
-        {errorMsg}
         <div className={styles.avatarMobileContainer}>
           <MonsterAvatarWithShadow
             monster={selectedMonster}

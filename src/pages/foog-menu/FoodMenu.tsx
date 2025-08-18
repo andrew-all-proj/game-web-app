@@ -14,11 +14,11 @@ import { ApolloError } from '@apollo/client'
 import inventoriesStore from '../../stores/InventoriesStore'
 import { UserInventoryTypeEnum } from '../../types/enums/UserInventoryTypeEnum'
 import HeaderBar from '../../components/Header/HeaderBar'
+import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 
 const FoodMenu = observer(() => {
   const navigate = useNavigate()
   const { monsterIdParams } = useParams()
-  const [infoMessage, setInfoMessage] = useState('')
   const [isLoading, setIsLoading] = useState(true)
 
   const fetchInventoriesAndMonsters = useCallback(
@@ -32,7 +32,7 @@ const FoodMenu = observer(() => {
 
         setIsLoading(false)
       } catch {
-        setInfoMessage('Ошибка при загрузке')
+        showTopAlert({open: true, text: 'Ошибка при загрузке', variant: 'error'})
         setIsLoading(false)
       }
     },
@@ -53,7 +53,7 @@ const FoodMenu = observer(() => {
         inventory?.quantity > 0 && inventory.userInventoryType === UserInventoryTypeEnum.FOOD,
     )
     if (!food) {
-      setInfoMessage('Нет еды для кормления')
+      showTopAlert({text: 'Нет еды для кормления', open: true, variant: 'warning'})
       return
     }
     try {
@@ -74,9 +74,9 @@ const FoodMenu = observer(() => {
         message = String(error)
       }
       if (message.includes('The monster is already full')) {
-        setInfoMessage('Монстр уже сыт')
+        showTopAlert({text: 'Монстр уже сыт', open: true, variant: 'info'})
       } else {
-        setInfoMessage('Ошибка при кормлении')
+        showTopAlert({text: 'Ошибка при кормлении', open: true, variant: 'error'})
       }
     }
   }
@@ -85,7 +85,6 @@ const FoodMenu = observer(() => {
     <div className={styles.foodMenu}>
       <HeaderBar icon={foodIcon} title={`Еда в наличии: ${inventoriesStore.quantityFood}`} />
       <div className={styles.content}>
-        {infoMessage}
         {monsterStore.monsters.map((monster) => (
           <CardFeedMonster
             key={monster.id}

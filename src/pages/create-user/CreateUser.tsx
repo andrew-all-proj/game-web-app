@@ -19,6 +19,7 @@ import Loading from '../loading/Loading'
 import errorStore from '../../stores/ErrorStore'
 import RoundButton from '../../components/Button/RoundButton'
 import clsx from 'clsx'
+import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 
 interface PartTypeAvatar {
   part: string
@@ -38,7 +39,6 @@ const CreateUser = observer(() => {
   const [emotionIndex, setEmotionIndex] = useState(0)
 
   const [name, setName] = useState('')
-  const [message, setMessage] = useState('')
 
   const [activeTab, setActiveTab] = useState<string>('head')
 
@@ -74,7 +74,6 @@ const CreateUser = observer(() => {
         const spriteFile = getMaxVersion(spriteFiles)
 
         if (!spriteFile) {
-          setMessage('SVG файл спрайта не найден.')
           errorStore.setError({
             error: true,
             message: 'Не удалось загрузить спрайты с сервера',
@@ -124,7 +123,6 @@ const CreateUser = observer(() => {
         setEmotionParts(emotions)
         setIsLoading(false)
       } catch (err) {
-        setMessage('Не удалось загрузить спрайт.')
         errorStore.setError({
           error: true,
           message: `Не удалось загрузить спрайты с сервера ${err}`,
@@ -209,11 +207,11 @@ const CreateUser = observer(() => {
     const trimmedName = name.trim()
 
     if (!trimmedName) {
-      setMessage('Пожалуйста, введите имя.')
+      showTopAlert({text: 'Пожалуйста, введите имя.', variant: 'info'})
       return
     }
-    if (trimmedName.length > 15) {
-      setMessage('Имя не должно превышать 15 символов.')
+    if (trimmedName.length > 10) {
+      showTopAlert({text: 'Имя не должно превышать 15 символов.', variant: 'info'})
       return
     }
 
@@ -235,7 +233,7 @@ const CreateUser = observer(() => {
         !bodyParts[bodyIndex]?.part ||
         !emotionParts[emotionIndex]?.part
       ) {
-        setMessage('Пожалуйста, выберите голову, одежду и лицо.')
+        showTopAlert({text: 'Пожалуйста, выберите голову, одежду и лицо.', variant: 'info'})
         return
       }
 
@@ -247,7 +245,7 @@ const CreateUser = observer(() => {
       )
 
       if (!blob) {
-        setMessage('Ошибка при создании изображения.')
+        showTopAlert({text: 'Ошибка при создании изображения.', variant: 'error'})
         return
       }
 
@@ -265,9 +263,8 @@ const CreateUser = observer(() => {
         })
 
         avatarFileId = resultUploadFile.id || null
-      } catch (error) {
-        console.error('Ошибка загрузки изображения:', error)
-        setMessage('Ошибка загрузки изображения.')
+      } catch {
+        showTopAlert({text: 'Ошибка загрузки изображения.', variant: 'error'})
         return
       }
     }
@@ -287,11 +284,10 @@ const CreateUser = observer(() => {
         userStore.setUser(data.UserUpdate)
         navigate('/laboratory')
       } else {
-        setMessage('Аватар загружен, но пользователь не обновлён.')
+        showTopAlert({text: 'Аватар загружен, но пользователь не обновлён.', variant: 'error'})
       }
     } catch (error) {
-      console.error('Ошибка при обновлении пользователя:', error)
-      setMessage('Ошибка сохранения. Попробуйте снова.')
+      showTopAlert({text: 'Ошибка сохранения. Попробуйте снова.', variant: 'error'})
     }
   }
 
@@ -316,7 +312,6 @@ const CreateUser = observer(() => {
           <canvas ref={canvasRef} width={142} height={142} className={styles.avatarCanvas} />
         </div>
 
-        <div className={styles.infoMessage}>{message}</div>
         <MainInput
           placeholder="_введите Имя"
           value={name}
