@@ -43,19 +43,19 @@ const MonsterMenu = observer(() => {
       try {
         await authorizationAndInitTelegram(navigate)
         if (!monsterIdParams) {
-          showTopAlert({text: "Выберите монстра", variant: 'warning', open: true})
+          showTopAlert({ text: 'Выберите монстра', variant: 'warning', open: true })
           navigate('/laboratory')
           return
         }
         const monster = await monsterStore.fetchMonster(monsterIdParams)
         if (!monster) {
-          showTopAlert({text: "Нету такого монстра", variant: 'warning', open: true})
+          showTopAlert({ text: 'Нету такого монстра', variant: 'warning', open: true })
           navigate('/laboratory')
         }
         setSelectedMonster(monster)
         setIsLoading(false)
       } catch {
-        showTopAlert({text: "Ошибка при загрузке", variant: 'error', open: true})
+        showTopAlert({ text: 'Ошибка при загрузке', variant: 'error', open: true })
       }
 
       if (inventoryIdParams) {
@@ -78,7 +78,7 @@ const MonsterMenu = observer(() => {
         await monsterStore.apllySkillToMonster(monsterIdParams, inventoryIdParams, skill?.id)
         navigate(`/skills-menu/${monsterIdParams}`)
       } catch {
-        showTopAlert({text: 'Ошибка при применении скилла', variant: 'error', open: true})
+        showTopAlert({ text: 'Ошибка при применении скилла', variant: 'error', open: true })
       }
     } else if (monsterIdParams) {
       navigate(`/skills-menu/${monsterIdParams}/${skill?.id || ''}`)
@@ -120,9 +120,9 @@ const MonsterMenu = observer(() => {
           message = String(error)
         }
         if (message.includes('Mutagen not found in user inventory')) {
-          showTopAlert({text: 'Мутаген не найден', variant: 'warning', open: true})
+          showTopAlert({ text: 'Мутаген не найден', variant: 'warning', open: true })
         } else {
-          showTopAlert({text: 'Ошибка при мутации', variant: 'error', open: true})
+          showTopAlert({ text: 'Ошибка при мутации', variant: 'error', open: true })
         }
       }
     }

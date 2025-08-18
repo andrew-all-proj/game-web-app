@@ -20,14 +20,16 @@
   border: 5px solid #362f2d;
   box-shadow: 0 6px 0 #362f2d55;
 
-  transition: transform .2s ease, opacity .2s ease;
-  pointer-events: none; 
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+  pointer-events: none;
 }
 
 .open {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
-  pointer-events: auto; 
+  pointer-events: auto;
 }
 
 .toastInfo {

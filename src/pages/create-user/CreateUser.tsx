@@ -207,11 +207,11 @@ const CreateUser = observer(() => {
     const trimmedName = name.trim()
 
     if (!trimmedName) {
-      showTopAlert({text: 'Пожалуйста, введите имя.', variant: 'info'})
+      showTopAlert({ text: 'Пожалуйста, введите имя.', variant: 'info' })
       return
     }
     if (trimmedName.length > 10) {
-      showTopAlert({text: 'Имя не должно превышать 15 символов.', variant: 'info'})
+      showTopAlert({ text: 'Имя не должно превышать 15 символов.', variant: 'info' })
       return
     }
 
@@ -233,7 +233,7 @@ const CreateUser = observer(() => {
         !bodyParts[bodyIndex]?.part ||
         !emotionParts[emotionIndex]?.part
       ) {
-        showTopAlert({text: 'Пожалуйста, выберите голову, одежду и лицо.', variant: 'info'})
+        showTopAlert({ text: 'Пожалуйста, выберите голову, одежду и лицо.', variant: 'info' })
         return
       }
 
@@ -245,7 +245,7 @@ const CreateUser = observer(() => {
       )
 
       if (!blob) {
-        showTopAlert({text: 'Ошибка при создании изображения.', variant: 'error'})
+        showTopAlert({ text: 'Ошибка при создании изображения.', variant: 'error' })
         return
       }
 
@@ -264,7 +264,7 @@ const CreateUser = observer(() => {
 
         avatarFileId = resultUploadFile.id || null
       } catch {
-        showTopAlert({text: 'Ошибка загрузки изображения.', variant: 'error'})
+        showTopAlert({ text: 'Ошибка загрузки изображения.', variant: 'error' })
         return
       }
     }
@@ -284,10 +284,10 @@ const CreateUser = observer(() => {
         userStore.setUser(data.UserUpdate)
         navigate('/laboratory')
       } else {
-        showTopAlert({text: 'Аватар загружен, но пользователь не обновлён.', variant: 'error'})
+        showTopAlert({ text: 'Аватар загружен, но пользователь не обновлён.', variant: 'error' })
       }
     } catch (error) {
-      showTopAlert({text: 'Ошибка сохранения. Попробуйте снова.', variant: 'error'})
+      showTopAlert({ text: 'Ошибка сохранения. Попробуйте снова.', variant: 'error' })
     }
   }
 

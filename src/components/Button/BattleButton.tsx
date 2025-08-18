@@ -12,7 +12,13 @@ interface BattleButtonProps {
 }
 
 const BattleButtonBase: React.FC<BattleButtonProps> = ({
-  spCost, name, img, onClick, color, selected, availableSp,
+  spCost,
+  name,
+  img,
+  onClick,
+  color,
+  selected,
+  availableSp,
 }) => {
   const styleVars: React.CSSProperties = color ? { ['--btn-color' as any]: color } : {}
 
@@ -21,9 +27,11 @@ const BattleButtonBase: React.FC<BattleButtonProps> = ({
 
   const badgeClass = [
     styles.attackSp,
-    (isInsufficient || isClickDisabled) ? styles.attackSpGray : '',
+    isInsufficient || isClickDisabled ? styles.attackSpGray : '',
     isClickDisabled ? styles.attackSpNoText : '', // текст скрываем только когда нет onClick
-  ].join(' ').trim()
+  ]
+    .join(' ')
+    .trim()
 
   return (
     <div
@@ -39,7 +47,7 @@ const BattleButtonBase: React.FC<BattleButtonProps> = ({
         {!isClickDisabled ? <>{spCost}</> : null}
       </div>
       <div className={styles.attackContent}>
-        <img alt={name} src={img}/>
+        <img alt={name} src={img} />
       </div>
     </div>
   )
@@ -48,25 +56,22 @@ const BattleButtonBase: React.FC<BattleButtonProps> = ({
 /** Мемо: ре-рендерим только при изменении визуальных пропсов
  *  или изменении флагов (нехватка SP / отключён клик).
  */
-const BattleButton = React.memo(
-  BattleButtonBase,
-  (prev, next) => {
-    const prevIns = prev.availableSp !== undefined && prev.availableSp < prev.spCost
-    const nextIns = next.availableSp !== undefined && next.availableSp < next.spCost
-    const prevDisable = !prev.onClick
-    const nextDisable = !next.onClick
+const BattleButton = React.memo(BattleButtonBase, (prev, next) => {
+  const prevIns = prev.availableSp !== undefined && prev.availableSp < prev.spCost
+  const nextIns = next.availableSp !== undefined && next.availableSp < next.spCost
+  const prevDisable = !prev.onClick
+  const nextDisable = !next.onClick
 
-    return (
-      prev.spCost === next.spCost &&
-      prev.name === next.name &&
-      prev.img === next.img &&
-      prev.color === next.color &&
-      prev.selected === next.selected &&
-      prev.onClick === next.onClick &&
-      prevIns === nextIns &&
-      prevDisable === nextDisable
-    )
-  }
-)
+  return (
+    prev.spCost === next.spCost &&
+    prev.name === next.name &&
+    prev.img === next.img &&
+    prev.color === next.color &&
+    prev.selected === next.selected &&
+    prev.onClick === next.onClick &&
+    prevIns === nextIns &&
+    prevDisable === nextDisable
+  )
+})
 
 export default BattleButton

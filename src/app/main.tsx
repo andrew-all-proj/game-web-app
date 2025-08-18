@@ -12,7 +12,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ApolloProvider>
       <BrowserRouter>
-        <TopAlertHost /> 
+        <TopAlertHost />
         <AppRouter />
       </BrowserRouter>
     </ApolloProvider>

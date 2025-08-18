@@ -47,7 +47,7 @@ const Laboratory = observer(() => {
       showTopAlert({
         open: true,
         text: `Недостаточно энергии для боя, нужно 125. У вас: ${userStore.user?.energy ?? 0}`,
-        variant: 'warning'
+        variant: 'warning',
       })
       userStore.fetchUser(userStore.user?.id) //TODO THINKING
       return
@@ -57,15 +57,15 @@ const Laboratory = observer(() => {
       showTopAlert({
         open: true,
         text: `Выберите питомца`,
-        variant: 'warning'
+        variant: 'warning',
       })
       return
     }
     if (monsterStore.selectedMonster.satiety < 25) {
-        showTopAlert({
+      showTopAlert({
         open: true,
         text: `Монстр голоден. Покорми!!!!`,
-        variant: 'warning'
+        variant: 'warning',
       })
       return
     }

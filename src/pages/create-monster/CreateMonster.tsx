@@ -170,13 +170,17 @@ const CreateMonster = observer(() => {
 
   const handleSaveImage = async () => {
     if (isSaving) return
-    if (!name.trim()) return showTopAlert({text: 'Введите имя монстра', variant: 'info'})
-    if (name.length > 10) return showTopAlert({text: 'Имя монстра не должно превышать 15 символов', variant: 'info'})
-    if (!selectedPartsMonster.current.body) return showTopAlert({text: 'Выберите тело', variant: 'info'})
-    if (!selectedPartsMonster.current.head) return showTopAlert({text: 'Выберите голову', variant: 'info'})
-    if (!selectedPartsMonster.current.leftArm) return showTopAlert({text: 'Выберите руки', variant: 'info'})
+    if (!name.trim()) return showTopAlert({ text: 'Введите имя монстра', variant: 'info' })
+    if (name.length > 10)
+      return showTopAlert({ text: 'Имя монстра не должно превышать 15 символов', variant: 'info' })
+    if (!selectedPartsMonster.current.body)
+      return showTopAlert({ text: 'Выберите тело', variant: 'info' })
+    if (!selectedPartsMonster.current.head)
+      return showTopAlert({ text: 'Выберите голову', variant: 'info' })
+    if (!selectedPartsMonster.current.leftArm)
+      return showTopAlert({ text: 'Выберите руки', variant: 'info' })
     if (!spriteAtlasJson || !spriteUrl) {
-      showTopAlert({text: 'Спрайты не загружены', variant: 'error'})
+      showTopAlert({ text: 'Спрайты не загружены', variant: 'error' })
       return
     }
 
@@ -221,11 +225,11 @@ const CreateMonster = observer(() => {
 
         if (resultCreateMonster.errors) {
           if (resultCreateMonster.errors[0].message === 'Not enough energy to create a monster') {
-            showTopAlert({text: 'Недостаточно энергии для создания монстра', variant: 'warning'})
+            showTopAlert({ text: 'Недостаточно энергии для создания монстра', variant: 'warning' })
           } else if (resultCreateMonster.errors[0].message === 'User already has 4 monsters') {
-            showTopAlert({text: 'У вас уже есть 4 монстра', variant: 'warning'})
+            showTopAlert({ text: 'У вас уже есть 4 монстра', variant: 'warning' })
           } else {
-            showTopAlert({text: 'Ошибка при создании монстра', variant: 'error'})
+            showTopAlert({ text: 'Ошибка при создании монстра', variant: 'error' })
           }
           setIsSaving(false)
           return
@@ -240,7 +244,7 @@ const CreateMonster = observer(() => {
     } catch (err) {
       console.log('Error saving monster:', err)
       setIsSaving(false)
-      showTopAlert({text: 'Ошибка при сохранении монстра', variant: 'error'})
+      showTopAlert({ text: 'Ошибка при сохранении монстра', variant: 'error' })
     }
   }
 

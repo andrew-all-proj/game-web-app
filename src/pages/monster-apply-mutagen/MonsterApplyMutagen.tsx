@@ -59,7 +59,7 @@ const MonsterApplyMutagen = observer(() => {
         )
 
         if (!inventory) {
-          showTopAlert({text: 'Не найден мутаген', variant: 'warning', open: true})
+          showTopAlert({ text: 'Не найден мутаген', variant: 'warning', open: true })
           setIsLoading(false)
           return
         }
@@ -67,7 +67,7 @@ const MonsterApplyMutagen = observer(() => {
         setSelectedInventory(inventory)
         setIsLoading(false)
       } catch {
-        showTopAlert({text: 'Ошибка при загрузке', open: true, variant: 'error'})
+        showTopAlert({ text: 'Ошибка при загрузке', open: true, variant: 'error' })
         setIsLoading(false)
       }
     },
@@ -107,9 +107,9 @@ const MonsterApplyMutagen = observer(() => {
         message = String(error)
       }
       if (message.includes('Mutagen not found in user inventory')) {
-        showTopAlert({text: 'Мутаген не найден', variant: 'warning'})
+        showTopAlert({ text: 'Мутаген не найден', variant: 'warning' })
       } else {
-        showTopAlert({text: 'Ошибка при мутации', variant: 'error'})
+        showTopAlert({ text: 'Ошибка при мутации', variant: 'error' })
       }
     }
     setOpenPopupCard(true)

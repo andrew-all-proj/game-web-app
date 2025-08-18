@@ -38,7 +38,7 @@ const MutagensMenu = observer(() => {
 
         setIsLoading(false)
       } catch {
-        showTopAlert({text: 'Ошибка при загрузке', variant: 'error', open: true})
+        showTopAlert({ text: 'Ошибка при загрузке', variant: 'error', open: true })
         setIsLoading(false)
       }
     },
@@ -67,7 +67,7 @@ const MutagensMenu = observer(() => {
 
   const showPopupCard = () => {
     if (!inventoryToDelete) {
-      showTopAlert({text: 'Выберите мутаген для утилизации!', variant: 'info', open: true})
+      showTopAlert({ text: 'Выберите мутаген для утилизации!', variant: 'info', open: true })
       return
     }
     setInventoryToDelete(inventoryToDelete)
@@ -94,9 +94,9 @@ const MutagensMenu = observer(() => {
         message = String(error)
       }
       if (message.includes('Mutagen not found in user inventory')) {
-        showTopAlert({text: 'Мутаген не найден', variant: 'warning', open: true} )
+        showTopAlert({ text: 'Мутаген не найден', variant: 'warning', open: true })
       } else {
-        showTopAlert({text: 'Ошибка при мутации', variant: 'error', open: true})
+        showTopAlert({ text: 'Ошибка при мутации', variant: 'error', open: true })
       }
     }
     setOpenPopupCard(false)

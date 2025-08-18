@@ -7,8 +7,8 @@ interface TopAlertProps {
   open: boolean
   text: string
   onClose: () => void
-  variant?: Variant        
-  autoHideMs?: number       
+  variant?: Variant
+  autoHideMs?: number
 }
 
 export default function TopAlert({

@@ -40,7 +40,7 @@ const SkillMenu = observer(() => {
 
         setIsLoading(false)
       } catch {
-        showTopAlert({text: 'Ошибка при загрузке', open: true, variant: 'error'})
+        showTopAlert({ text: 'Ошибка при загрузке', open: true, variant: 'error' })
         setIsLoading(false)
       }
     },
@@ -66,7 +66,7 @@ const SkillMenu = observer(() => {
         )
         navigate(`/monster-menu/${monsterIdParams}`)
       } catch {
-        showTopAlert({text: 'Ошибка при применении скилла', open: true, variant: 'error'})
+        showTopAlert({ text: 'Ошибка при применении скилла', open: true, variant: 'error' })
       }
     }
     setShowSelectMonster(true)
@@ -99,9 +99,9 @@ const SkillMenu = observer(() => {
         message = String(error)
       }
       if (message.includes('Skill not found in user inventory')) {
-        showTopAlert({text: 'Скилл не найден', variant: 'error', open: true})
+        showTopAlert({ text: 'Скилл не найден', variant: 'error', open: true })
       } else {
-        showTopAlert({text: 'Ошибка при удаление скилла', open: true, variant: 'error'})
+        showTopAlert({ text: 'Ошибка при удаление скилла', open: true, variant: 'error' })
       }
     }
     setOpenPopupCard(false)

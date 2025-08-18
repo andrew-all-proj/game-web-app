@@ -32,7 +32,7 @@ const FoodMenu = observer(() => {
 
         setIsLoading(false)
       } catch {
-        showTopAlert({open: true, text: 'Ошибка при загрузке', variant: 'error'})
+        showTopAlert({ open: true, text: 'Ошибка при загрузке', variant: 'error' })
         setIsLoading(false)
       }
     },
@@ -53,7 +53,7 @@ const FoodMenu = observer(() => {
         inventory?.quantity > 0 && inventory.userInventoryType === UserInventoryTypeEnum.FOOD,
     )
     if (!food) {
-      showTopAlert({text: 'Нет еды для кормления', open: true, variant: 'warning'})
+      showTopAlert({ text: 'Нет еды для кормления', open: true, variant: 'warning' })
       return
     }
     try {
@@ -74,9 +74,9 @@ const FoodMenu = observer(() => {
         message = String(error)
       }
       if (message.includes('The monster is already full')) {
-        showTopAlert({text: 'Монстр уже сыт', open: true, variant: 'info'})
+        showTopAlert({ text: 'Монстр уже сыт', open: true, variant: 'info' })
       } else {
-        showTopAlert({text: 'Ошибка при кормлении', open: true, variant: 'error'})
+        showTopAlert({ text: 'Ошибка при кормлении', open: true, variant: 'error' })
       }
     }
   }

@@ -100,7 +100,7 @@ export default function TestFight({
   }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent, battleId, isLoading, isOpponentReady])
 
   useSocketEvent<BattleRedis>('responseBattle', (data) => {
-    if(data.rejected) {
+    if (data.rejected) {
       navigate('/search-battle')
     }
     const currentMonsterId = monsterStore.selectedMonster?.id
@@ -174,7 +174,7 @@ export default function TestFight({
 
   useEffect(() => {
     if (!isCurrentTurn || !turnEndsAtMs) {
-      autoSkipRef.current = null 
+      autoSkipRef.current = null
       return
     }
 
@@ -192,7 +192,7 @@ export default function TestFight({
           socket.emit('attack', {
             battleId,
             actionId: null,
-            actionType: ActionStatusEnum.PASS, 
+            actionType: ActionStatusEnum.PASS,
             monsterId: monsterStore.selectedMonster.id,
           })
         }
@@ -382,102 +382,105 @@ export default function TestFight({
     }
   }, [atlas, spriteUrl, atlasOpponent, spriteUrlOpponent])
 
-  const handleAttack = (
-    actionId: string,
-    actionType: ActionStatusEnum,
-    energyCost: number
-  ) => {
+  const handleConfirm = (attackId: string | null, defenseId: string | null) => {
     if (isLoading || !battleId || !monsterStore.selectedMonster?.id) return
     if (monsterStore.selectedMonster.id !== currentTurnMonsterId) return
-    if (energyCost > yourStamina) {
-      alert(
-        `Недостаточно SP для выполнения действия: у вас ${yourStamina} SP, требуется ${energyCost} SP`,
-      )
+
+    const costOf = (id: string | null, list: Skill[]) =>
+      id ? (list.find((s) => s.id === id)?.energyCost ?? 0) : 0
+
+    const totalCost = costOf(attackId, myAttacks) + costOf(defenseId, myDefenses)
+
+    if (totalCost > yourStamina) {
+      alert(`Недостаточно SP: у вас ${yourStamina} SP, требуется ${totalCost} SP`)
       return
     }
+
     const socket = getSocket()
     if (!socket || !socket.connected) return
 
+    // Оба id в одном эмите; если оба null — сервер трактует как PASS
     socket.emit('attack', {
       battleId,
-      actionId,
-      actionType,
       monsterId: monsterStore.selectedMonster.id,
+      attackId, // string | null
+      defenseId, // string | null
     })
 
-    if (gameRef.current) {
+    // Анимация удара показывается только если выбрана атака
+    if (gameRef.current && attackId) {
       const scene = gameRef.current.scene.scenes[0]
       const yourMonsterSprite = scene.children.getByName('yourMonster') as Phaser.GameObjects.Sprite
       const hitOverlay = scene.children.getByName('hitOverlay') as Phaser.GameObjects.Ellipse
 
       if (yourMonsterSprite) {
         yourMonsterSprite.play('monster_hit')
-        scene.time.delayedCall(1000, () => {
-          yourMonsterSprite.play('monster_stay')
-        })
+        scene.time.delayedCall(1000, () => yourMonsterSprite.play('monster_stay'))
       }
-
       if (hitOverlay) {
         hitOverlay.setVisible(true)
-        scene.time.delayedCall(500, () => {
-          hitOverlay.setVisible(false)
-        })
+        scene.time.delayedCall(500, () => hitOverlay.setVisible(false))
       }
     }
   }
 
   return (
     <>
-    <div className={styles.battleCenter}>
-      <HeaderBattle
-        chalengerHealth={yourHealthRef.current ?? 0}
-        maxChalengerHealth={monsterStore.selectedMonster?.healthPoints ?? 0}
-        opponentHealth={opponentHealthRef.current ?? 0}
-        maxOpponentHealth={monsterStore.opponentMonster?.healthPoints ?? 0}
-        chalengerStamina={yourStamina ?? 0}
-        maxChalengerStamina={monsterStore.selectedMonster?.stamina ?? 0}
-        opponentStamina={opponentStamina ?? 0}
-        maxOpponentStamina={monsterStore.opponentMonster?.stamina ?? 0}
-        isCurrentTurn={isCurrentTurn}
-        turnEndsAtMs={turnEndsAtMs ?? undefined}
-        turnTimeLimitMs={turnTimeLimitMs}
-        serverNowMs={Date.now() + serverOffsetRef.current}
-      />
-      {!isOpponentReady && (
-        <div style={{ color: 'white', marginBottom: '10px' }}>
-          🕐 Ожидание готовности соперника...
-        </div>
-      )}
-      <div className={styles.phaserContainerWrapper}>
-        {lastAction && (
-          <>
-            {lastAction.monsterId === monsterStore.selectedMonster?.id ? (
-              <>
-                <div className={`${styles.lastActionOverlay} ${styles.opponentOverlay}`}>
-                  -{lastAction.damage}HP
-                </div>
-                <div className={`${styles.lastActionOverlay} ${styles.yourOverlay}`}>
-                  +{lastAction.stamina}SP
-                </div>
-              </>
-            ) : (
-              <>
-                <div className={`${styles.lastActionOverlay} ${styles.yourOverlay}`}>
-                  -{lastAction.damage}HP
-                </div>
-                <div className={`${styles.lastActionOverlay} ${styles.opponentOverlay}`}>
-                  +{lastAction.stamina}SP
-                </div>
-              </>
-            )}
-          </>
+      <div className={styles.battleCenter}>
+        <HeaderBattle
+          chalengerHealth={yourHealthRef.current ?? 0}
+          maxChalengerHealth={monsterStore.selectedMonster?.healthPoints ?? 0}
+          opponentHealth={opponentHealthRef.current ?? 0}
+          maxOpponentHealth={monsterStore.opponentMonster?.healthPoints ?? 0}
+          chalengerStamina={yourStamina ?? 0}
+          maxChalengerStamina={monsterStore.selectedMonster?.stamina ?? 0}
+          opponentStamina={opponentStamina ?? 0}
+          maxOpponentStamina={monsterStore.opponentMonster?.stamina ?? 0}
+          isCurrentTurn={isCurrentTurn}
+          turnEndsAtMs={turnEndsAtMs ?? undefined}
+          turnTimeLimitMs={turnTimeLimitMs}
+          serverNowMs={Date.now() + serverOffsetRef.current}
+        />
+        {!isOpponentReady && (
+          <div style={{ color: 'white', marginBottom: '10px' }}>
+            🕐 Ожидание готовности соперника...
+          </div>
         )}
-        <div ref={containerRef} />
+        <div className={styles.phaserContainerWrapper}>
+          {lastAction && (
+            <>
+              {lastAction.monsterId === monsterStore.selectedMonster?.id ? (
+                <>
+                  <div className={`${styles.lastActionOverlay} ${styles.opponentOverlay}`}>
+                    -{lastAction.damage}HP
+                  </div>
+                  <div className={`${styles.lastActionOverlay} ${styles.yourOverlay}`}>
+                    +{lastAction.stamina}SP
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={`${styles.lastActionOverlay} ${styles.yourOverlay}`}>
+                    -{lastAction.damage}HP
+                  </div>
+                  <div className={`${styles.lastActionOverlay} ${styles.opponentOverlay}`}>
+                    +{lastAction.stamina}SP
+                  </div>
+                </>
+              )}
+            </>
+          )}
+          <div ref={containerRef} />
+        </div>
       </div>
-    </div>
-    {!isBattleOver && (
-        <BottomBattlteMenu  myAttacks={myAttacks} myDefenses={myDefenses} handleAttack={handleAttack} availableSp={yourStamina}/>
+      {!isBattleOver && (
+        <BottomBattlteMenu
+          myAttacks={myAttacks}
+          myDefenses={myDefenses}
+          availableSp={yourStamina}
+          onConfirm={(attackId, defenseId) => handleConfirm(attackId, defenseId)}
+        />
       )}
-    </>  
-  ) 
+    </>
+  )
 }

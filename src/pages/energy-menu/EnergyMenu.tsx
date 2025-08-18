@@ -30,7 +30,7 @@ const EnergyMenu = observer(() => {
         await userStore.fetchUser()
         setIsLoading(false)
       } catch {
-        showTopAlert({text: 'Ошибка при загрузке', variant: 'error'})
+        showTopAlert({ text: 'Ошибка при загрузке', variant: 'error' })
         setIsLoading(false)
       }
     },
@@ -60,9 +60,9 @@ const EnergyMenu = observer(() => {
         message = String(error)
       }
       if (message.includes('The monster is already full')) {
-        showTopAlert({text: 'Монстр уже сыт', variant: 'info'})
+        showTopAlert({ text: 'Монстр уже сыт', variant: 'info' })
       } else {
-        showTopAlert({text: 'Ошибка при кормлении', variant: 'error'})
+        showTopAlert({ text: 'Ошибка при кормлении', variant: 'error' })
       }
     }
   }
