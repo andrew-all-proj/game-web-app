@@ -4,18 +4,17 @@
   grid-template-columns: repeat(3, auto);
   justify-content: center;
   align-items: center;
-  row-gap: 1px;
-  column-gap: 35px;
+  column-gap: 30px;
   border-radius: 15px;
   border: 5px solid #362f2d;
   margin-top: auto;
   width: 100%;
-  max-height: 375px;
+  max-height: 390px;
   min-height: 240px;
   max-width: var(--max-wight, 500px);
   background-color: var(--blue-primary-color);
   box-sizing: border-box;
-  padding: 25px 5px 5px; 
+  padding: 20px 5px 5px;
 }
 
 .decorElement {
@@ -26,7 +25,7 @@
   border-right: 5px solid #362f2d;
   border-left: 5px solid #362f2d;
   border-radius: 15px 15px 0 0;
-  top: -28px; 
+  top: -28px;
   right: -5px;
   width: 90px;
   height: 30px;
@@ -34,7 +33,7 @@
 
 .confirmBtn {
   position: absolute;
-  top: -60px; 
+  top: -60px;
   right: 12px;
   width: 56px;
   height: 56px;

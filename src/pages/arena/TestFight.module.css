@@ -1,42 +1,39 @@
+:root {
+  /* примерные значения; можно переопределять из JS, см. ниже */
+  --header-h: 110px; /* высота HeaderBattle */
+  --menu-h: 240px; /* высота меню снизу */
+  --gap-h: 12px; /* отступы/зазоры между блоками */
+}
+
+/* центр с канвасом */
 .battleCenter {
-  display: flex;
+  flex: 1;
   flex-direction: column;
+  display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--orange-secondary-color);
+  width: 100%;
+  max-width: var(--max-wight, 500px);
+  margin: 0 auto;
+  background: var(--orange-secondary-color);
   overflow: hidden;
 }
 
-.attackButton {
-  color: #e8e8ee;
-  width: 130px;
-  height: 40px;
-  font-size: 14px;
-  font-weight: bold;
-  background: #6c6ace;
-  border: 2px solid #000;
-  border-radius: 8px;
-  transition:
-    transform 0.1s ease,
-    background-color 0.2s;
-}
-
-.attackButton:hover {
-  background-color: #7c7bd698;
-}
-
-.attackButton:active {
-  transform: scale(0.97);
-}
-
+/* обёртка под канвас — её ШИРИНА зависит от доступной ВЫСОТЫ */
 .phaserContainerWrapper {
   position: relative;
-  width: 400px;
-  height: 300px;
-  margin: 0 auto;
+  width: min(100%, calc((100vh - var(--header-h) - var(--menu-h) - var(--gap-h)) * 4 / 3));
+  max-width: 500px;
+  aspect-ratio: 4 / 3; /* автоматически даёт нужную высоту */
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* сам canvas растягиваем в обёртку */
+.phaserContainerWrapper canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .lastActionOverlay {
@@ -49,13 +46,18 @@
 }
 
 .yourOverlay {
-  top: 10px;
-  left: 100px;
+  top: 22%;
+  left: 25%;
+  transform: translate(-50%, 0);
+}
+.opponentOverlay {
+  top: 22%;
+  left: 75%;
   transform: translate(-50%, 0);
 }
 
-.opponentOverlay {
-  top: 10px;
-  left: 300px;
-  transform: translate(-50%, 0);
+.bottomBattlteMenu {
+  width: 100%;
+  max-width: var(--max-wight, 500px);
+  margin: 0 auto;
 }

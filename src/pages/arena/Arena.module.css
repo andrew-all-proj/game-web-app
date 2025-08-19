@@ -1,12 +1,9 @@
 .arena {
   display: flex;
-  flex: 1;
   flex-direction: column;
   align-items: center;
-  height: var(--tg-vh, 100vh);
-  max-height: var(--max-height);
+  min-height: var(--tg-vh, 100vh);
   width: 100%;
   color: var(--color-text);
-  overflow: hidden;
   background-color: var(--orange-secondary-color);
 }

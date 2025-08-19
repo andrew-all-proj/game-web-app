@@ -53,9 +53,6 @@ const BattleButtonBase: React.FC<BattleButtonProps> = ({
   )
 }
 
-/** Мемо: ре-рендерим только при изменении визуальных пропсов
- *  или изменении флагов (нехватка SP / отключён клик).
- */
 const BattleButton = React.memo(BattleButtonBase, (prev, next) => {
   const prevIns = prev.availableSp !== undefined && prev.availableSp < prev.spCost
   const nextIns = next.availableSp !== undefined && next.availableSp < next.spCost

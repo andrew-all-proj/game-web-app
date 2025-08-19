@@ -19,7 +19,12 @@ const fillRow = <T,>(items: T[]) =>
     ? items.slice(0, COLUMNS)
     : [...items, ...Array.from({ length: COLUMNS - items.length }, () => null as unknown as T)]
 
-const BottomBattlteMenu = ({ myAttacks, myDefenses, availableSp, onConfirm }: BottomBattlteMenuProps) => {
+const BottomBattlteMenu = ({
+  myAttacks,
+  myDefenses,
+  availableSp,
+  onConfirm,
+}: BottomBattlteMenuProps) => {
   const attackRow = useMemo(() => fillRow(myAttacks ?? []), [myAttacks])
   const defenseRow = useMemo(() => fillRow(myDefenses ?? []), [myDefenses])
 
@@ -36,12 +41,12 @@ const BottomBattlteMenu = ({ myAttacks, myDefenses, availableSp, onConfirm }: Bo
   )
 
   const totalCost = (selectedAttack?.energyCost ?? 0) + (selectedDefense?.energyCost ?? 0)
-  const canConfirm = (selectedAttackId !== null || selectedDefenseId !== null) && totalCost <= availableSp
+  const canConfirm =
+    (selectedAttackId !== null || selectedDefenseId !== null) && totalCost <= availableSp
 
   const handleConfirm = useCallback(() => {
     if (!canConfirm) return
     onConfirm(selectedAttackId, selectedDefenseId)
-    // сбрасываем выбор после отправки
     setSelectedAttackId(null)
     setSelectedDefenseId(null)
   }, [canConfirm, onConfirm, selectedAttackId, selectedDefenseId])

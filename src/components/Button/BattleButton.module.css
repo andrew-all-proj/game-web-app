@@ -15,8 +15,8 @@
 .attackButtonSelected::after {
   content: "";
   position: absolute;
-  inset: 6px;
-  border: 5px solid var(--yellow-primary-color);
+  inset: 0px;
+  border: 5px solid var(--blue-secondary-color);
   border-radius: 10px;
   pointer-events: none;
 }
