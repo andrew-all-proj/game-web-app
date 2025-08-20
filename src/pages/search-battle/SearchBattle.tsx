@@ -16,6 +16,7 @@ import OpponentList from './OpponentList'
 import { MonsterOpponent } from '../../types/BattleRedis'
 import DuelInvites from './DuelInvites'
 import SimpleBar from 'simplebar-react'
+import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 
 interface DuelChallengeResponsePayload {
   result: boolean
@@ -94,6 +95,7 @@ const SearchBattle = observer(() => {
 
   useSocketEvent<DuelChallengeResponsePayload>('duelChallengeResponce', (data) => {
     if (!data.result) {
+      showTopAlert({open: true, text: "Недостаточно энергии или голоден монстр", variant: 'warning'})
       setWaitOpponent(true)
     } else {
       getSocket()?.emit('registerMonsterForBattle', {
