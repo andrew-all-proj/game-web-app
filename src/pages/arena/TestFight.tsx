@@ -14,8 +14,8 @@ import HeaderBattle from './HeaderBattle'
 import BottomBattlteMenu from './BottomBattlteMenu'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 
-const DEFAULT_TURN_LIMIT = 30_000
-const CHECK_BATTLE_LIMIT = 60_000
+const DEFAULT_TURN_LIMIT = 15_000
+const CHECK_BATTLE_LIMIT = 18_000
 
 interface TestFightProps {
   battleId: string
@@ -43,7 +43,6 @@ export default function TestFight({
   const yourHealthBarRef = useRef<HTMLDivElement>(null)
   const opponentHealthBarRef = useRef<HTMLDivElement>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [isOpponentReady, setIsOpponentReady] = useState(false)
   const [isCurrentTurn, setIsCurrentTurn] = useState(false)
   const [turnEndsAtMs, setTurnEndsAtMs] = useState<number | null>(null)
   const [turnTimeLimitMs, setTurnTimeLimitMs] = useState<number>(DEFAULT_TURN_LIMIT)
@@ -84,45 +83,15 @@ export default function TestFight({
   }, [battleId, isLoading, navigate])
 
   useEffect(() => {
-    if (!atlas || !spriteUrl || !spriteUrlOpponent || !atlasOpponent) return
-    if (!battleId || !monsterStore.selectedMonster?.id) return
-
-    if (isOpponentReady) return
-
-    const socket = getSocket()
-    if (!socket) return
-
-    //Check opponet every 60 sec
-    const id = setInterval(() => {
-      if (!socket.connected) return
-      if (isOpponentReady) return
-      socket.emit('startBattle', {
-        battleId,
-        monsterId: monsterStore.selectedMonster!.id,
-      })
-    }, CHECK_BATTLE_LIMIT)
-
-    socket.emit('startBattle', {
-      battleId,
-      monsterId: monsterStore.selectedMonster!.id,
-    })
-
-    return () => clearInterval(id)
-  }, [battleId, atlas, atlasOpponent, spriteUrl, spriteUrlOpponent, isOpponentReady])
-
-  useEffect(() => {
     if (!battleId || !monsterStore.selectedMonster?.id) return
     const socket = getSocket()
     if (!socket) return
-
     const check = () => {
       const silentMs = Date.now() - lastServerEventRef.current
       if (silentMs >= CHECK_BATTLE_LIMIT && socket.connected) {
-        socket.emit('getBattle', {
+        socket.emit('statusBattle', {
           battleId,
-          monsterId: monsterStore.selectedMonster!.id,
         })
-        // чтобы не стрелять каждые 10с, если сервер молчит, обновим отметку
         lastServerEventRef.current = Date.now()
       }
     }
@@ -194,7 +163,6 @@ export default function TestFight({
       })
     }
 
-    setIsOpponentReady(isChallenger ? data.opponentReady === true : data.challengerReady === true)
     setIsCurrentTurn(currentMonsterId === data.currentTurnMonsterId)
     setCurrentTurnMonsterId(data.currentTurnMonsterId)
 
@@ -489,11 +457,6 @@ export default function TestFight({
       />
 
       <div className={styles.battleCenter}>
-        {!isOpponentReady && (
-          <div style={{ color: 'white', marginBottom: 10 }}>
-            🕐 Ожидание готовности соперника...
-          </div>
-        )}
         {lastAction && (
           <>
             {lastAction.monsterId === monsterStore.selectedMonster?.id ? (
