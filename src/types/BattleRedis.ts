@@ -27,6 +27,11 @@ export interface GetBattleReward {
     name: string
     quantity: number
   }
+  skill?: {
+    id: string
+    name: string
+    quantity: number
+  }
 }
 
 export interface BattleRedis {
