@@ -1,5 +1,5 @@
 // hooks/useBattleResponse.ts
-import { type RefObject, type Dispatch, type SetStateAction, useRef } from 'react'
+import { type RefObject, type Dispatch, type SetStateAction } from 'react'
 import { useSocketEvent } from '../../../functions/useSocketEvent'
 import { BattleRedis, GetBattleReward, LastActionLog } from '../../../types/BattleRedis'
 import { Skill } from '../../../types/GraphResponse'
