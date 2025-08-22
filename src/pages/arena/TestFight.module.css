@@ -19,7 +19,6 @@
   overflow: hidden;
 }
 
-/* обёртка под канвас — её ШИРИНА зависит от доступной ВЫСОТЫ */
 .phaserContainerWrapper {
   position: relative;
   width: min(100%, calc((100vh - var(--header-h) - var(--menu-h) - var(--gap-h)) * 4 / 3));
