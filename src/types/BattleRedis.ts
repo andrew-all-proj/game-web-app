@@ -27,9 +27,15 @@ export interface GetBattleReward {
     name: string
     quantity: number
   }
+  skill?: {
+    id: string
+    name: string
+    quantity: number
+  }
 }
 
 export interface BattleRedis {
+  rejected: boolean
   battleId: string
   opponentMonsterId: string
   challengerMonsterId: string
@@ -51,12 +57,16 @@ export interface BattleRedis {
   currentTurnMonsterId: string
   turnStartTime: number
   turnTimeLimit: number
+  turnNumber: number
+  turnEndsAtMs: number
+  graceMs: number
+  serverNowMs: number
   lastActionLog?: LastActionLog
 
   challengerSocketId: string
   opponentSocketId: string
-  challengerReady: '1' | '0'
-  opponentReady: '1' | '0'
+  challengerReady: boolean
+  opponentReady: boolean
   winnerMonsterId?: string
   chatId?: string | null
 

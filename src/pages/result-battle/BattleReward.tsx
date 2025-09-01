@@ -1,6 +1,7 @@
 import styles from './BattleReward.module.css'
 import foodIcon from '../../assets/icon/food-icon.svg'
 import mutagenIcon from '../../assets/icon/icon_mutagen.svg'
+import skillIcon from '../../assets/icon/icon_attack.svg'
 import expIcon from '../../assets/icon/icon_exp.svg'
 
 import { GetBattleReward } from '../../types/BattleRedis'
@@ -32,6 +33,13 @@ export default function BattleRewardBox({ battleReward }: BattleRewardProps) {
         <div className={styles.rewardBlock}>
           <img src={mutagenIcon} alt="mutagen" className={styles.rewardIcon} draggable={false} />
           <span className={styles.mutagenValue}>x{battleReward.mutagen.quantity}</span>
+        </div>
+      )}
+      {/* Skill*/}
+      {battleReward.skill && (
+        <div className={styles.rewardBlock}>
+          <img src={skillIcon} alt="skill" className={styles.rewardIcon} draggable={false} />
+          <span className={styles.mutagenValue}>x{battleReward.skill.quantity}</span>
         </div>
       )}
     </div>

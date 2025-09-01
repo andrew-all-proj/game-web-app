@@ -9,8 +9,8 @@
 }
 
 .cardApplyEnergy {
-  overflow: visible;         
-  position: relative; 
+  overflow: visible;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -27,8 +27,8 @@
 
 .qtyBadge {
   position: absolute;
-  top: -20px;                
-  right: -16px;                  
+  top: -20px;
+  right: -16px;
   width: 32px;
   height: 32px;
   border-radius: 9999px;

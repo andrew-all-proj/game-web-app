@@ -10,7 +10,6 @@ import TestFight from './TestFight'
 import { MONSTER_BATTLE } from '../../api/graphql/query'
 import client from '../../api/apolloClient'
 import { FileItem, Monster, MonsterBattles } from '../../types/GraphResponse'
-import SecondButton from '../../components/Button/SecondButton'
 import monsterStore from '../../stores/MonsterStore'
 import { SpriteAtlas } from '../../types/sprites'
 import errorStore from '../../stores/ErrorStore'
@@ -37,7 +36,7 @@ const getSprite = async (
 const Arena = observer(() => {
   const navigate = useNavigate()
   const { battleId } = useParams()
-  const [infoMessage, setInfoMessage] = useState('')
+  //const [infoMessage, setInfoMessage] = useState('')
   const [startFight, setStartFight] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
   const [atlas, setAtlas] = useState<SpriteAtlas | null>(null)
@@ -48,10 +47,6 @@ const Arena = observer(() => {
     win: boolean
     reward: GetBattleReward | null
   } | null>(null)
-
-  const handleGoToLab = () => {
-    navigate('/laboratory')
-  }
 
   useEffect(() => {
     const startingFight = async () => {
@@ -67,15 +62,15 @@ const Arena = observer(() => {
         const battle = data.MonsterBattle
 
         if (battle.status === 'REJECTED') {
-          setInfoMessage('Бой отменён')
+          //setInfoMessage('Бой отменён')
           setStartFight(false)
-          return setIsLoading(false)
+          navigate('/search-battle')
         }
 
         if (battle.status === 'FINISHED') {
-          setInfoMessage('Бой завершён')
+          //setInfoMessage('Бой завершён')
           setStartFight(false)
-          return setIsLoading(false)
+          navigate('/search-battle')
         }
 
         if (!monsterStore.selectedMonster) {
@@ -121,7 +116,7 @@ const Arena = observer(() => {
         }
       } catch (error) {
         console.error('Ошибка при старте боя:', error)
-        setInfoMessage('Ошибка при загрузке данных боя')
+        //setInfoMessage('Ошибка при загрузке данных боя')
       } finally {
         setIsLoading(false)
       }
@@ -139,23 +134,18 @@ const Arena = observer(() => {
   }
 
   return (
-    <div className={styles.arena}>
-      <main className={styles.main}>
-        <div className={styles.logoPlaceholder}>{infoMessage ? `${infoMessage}` : ''}</div>
-
-        {startFight && atlas && atlasOpponent && battleId ? (
-          <TestFight
-            battleId={battleId}
-            atlas={atlas}
-            atlasOpponent={atlasOpponent}
-            spriteUrl={spriteUrl}
-            spriteUrlOpponent={spriteUrlOpponent}
-            setBattleResult={setBattleResult}
-          />
-        ) : null}
-        <SecondButton onClick={handleGoToLab}>Лаборатория</SecondButton>
-      </main>
-    </div>
+    <main className={styles.arena}>
+      {startFight && atlas && atlasOpponent && battleId ? (
+        <TestFight
+          battleId={battleId}
+          atlas={atlas}
+          atlasOpponent={atlasOpponent}
+          spriteUrl={spriteUrl}
+          spriteUrlOpponent={spriteUrlOpponent}
+          setBattleResult={setBattleResult}
+        />
+      ) : null}
+    </main>
   )
 })
 

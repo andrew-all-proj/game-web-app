@@ -90,7 +90,5 @@ export default function SkillsGridFromMonster({
     </div>
   )
 
-  return (
-    <div className={styles.gridViewport}>{Grid}</div>
-  )
+  return <div className={styles.gridViewport}>{Grid}</div>
 }

@@ -19,7 +19,7 @@ export default function StatBar({
   color = '#ff4094',
   backgroundColor = '#ff80b5',
   textColor = '#2d2421',
-  width = 60,
+  width = 80,
   height = 14,
   iconSize = 12,
 }: StatBarProps) {
