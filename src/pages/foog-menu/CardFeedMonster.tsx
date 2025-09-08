@@ -3,6 +3,7 @@ import styles from './CardFeedMonster.module.css'
 interface CardFeedMonsterProps {
   url: string
   satiety: number
+  disabled?: boolean  
   onButtonClick: () => void
 }
 
@@ -13,25 +14,35 @@ function getSatietyClass(satiety: number) {
   return styles.satietyFull
 }
 
-export default function CardFeedMonster({ url, satiety, onButtonClick }: CardFeedMonsterProps) {
+export default function CardFeedMonster({
+  url,
+  satiety,
+  disabled = false,
+  onButtonClick,
+}: CardFeedMonsterProps) {
   const isMax = satiety >= 100
+  const isDisabled = isMax || disabled
 
   return (
     <div className={styles.cardFeedMonster}>
-      <div className={`${styles.wrapperImage} ${getSatietyClass(satiety)}`}>
+      <div className={`${styles.wrapperImage} ${getSatietyClass(satiety)} ${isDisabled ? styles.dim : ''}`}>
         <img className={styles.monsterImage} alt="monster" src={url} />
       </div>
+
       <div className={styles.satietyInfo}>
         <span>Сытость:</span>
         <span>{satiety}/100</span>
       </div>
+
       <div className={styles.buttonWrapper}>
         <button
-          className={`${styles.feedButton} ${isMax ? styles.feedButtonDisabled : ''}`}
+          type="button"
+          className={`${styles.feedButton} ${isDisabled ? styles.feedButtonDisabled : ''}`}
           onClick={onButtonClick}
-          disabled={isMax}
+          disabled={isDisabled}
+          aria-disabled={isDisabled}
         >
-          Кормить
+          {isMax ? 'Сыт' : 'Кормить'}
         </button>
       </div>
     </div>

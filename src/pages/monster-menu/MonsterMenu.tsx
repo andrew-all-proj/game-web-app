@@ -133,6 +133,7 @@ const MonsterMenu = observer(() => {
       <div className={styles.header}>
         <div className={styles.left}>
           <CharacteristicMonster
+            name={selectedMonster?.name || ''}
             level={selectedMonster?.level ?? 0}
             hp={selectedMonster?.healthPoints ?? 0}
             stamina={selectedMonster?.stamina ?? 0}
@@ -146,7 +147,7 @@ const MonsterMenu = observer(() => {
             <StatBar
               current={selectedMonster.satiety ?? 0}
               max={100}
-              width={100}
+              width={130}
               height={32}
               color={'var(--orange-secondary-color)'}
               backgroundColor={'var(--orange-scale-hungry)'}

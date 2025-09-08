@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   background: var(--yellow-primary-color);
-  max-width: var(--max-wight);
+  max-width: var(--max-wigdht);
   gap: 15px;
 }
 
@@ -17,7 +17,7 @@
   height: 80px;
   width: 95%;
   margin-left: 10px;
-  max-width: var(--max-wight);
+  max-width: var(--max-wigdht);
   box-sizing: border-box;
   padding-right: 10px;
 }

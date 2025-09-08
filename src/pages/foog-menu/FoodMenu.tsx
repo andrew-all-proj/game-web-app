@@ -1,3 +1,4 @@
+// FoodMenu.tsx
 import { observer } from 'mobx-react-lite'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useState, useCallback } from 'react'
@@ -20,6 +21,7 @@ const FoodMenu = observer(() => {
   const navigate = useNavigate()
   const { monsterIdParams } = useParams()
   const [isLoading, setIsLoading] = useState(true)
+  const [feedingIds, setFeedingIds] = useState<Set<string>>(new Set())
 
   const fetchInventoriesAndMonsters = useCallback(
     async (withLoading: boolean) => {
@@ -48,6 +50,8 @@ const FoodMenu = observer(() => {
   }
 
   const handlerFeedMonster = async (monsterId: string) => {
+    if (feedingIds.has(monsterId)) return
+
     const food = inventoriesStore.inventories.find(
       (inventory) =>
         inventory?.quantity > 0 && inventory.userInventoryType === UserInventoryTypeEnum.FOOD,
@@ -56,6 +60,9 @@ const FoodMenu = observer(() => {
       showTopAlert({ text: 'Нет еды для кормления', open: true, variant: 'warning' })
       return
     }
+
+    setFeedingIds((prev) => new Set(prev).add(monsterId))
+
     try {
       await client.query({
         query: MONSTER_FEED,
@@ -78,6 +85,12 @@ const FoodMenu = observer(() => {
       } else {
         showTopAlert({ text: 'Ошибка при кормлении', open: true, variant: 'error' })
       }
+    } finally {
+      setFeedingIds((prev) => {
+        const next = new Set(prev)
+        next.delete(monsterId)
+        return next
+      })
     }
   }
 
@@ -85,14 +98,18 @@ const FoodMenu = observer(() => {
     <div className={styles.foodMenu}>
       <HeaderBar icon={foodIcon} title={`Еда в наличии: ${inventoriesStore.quantityFood}`} />
       <div className={styles.content}>
-        {monsterStore.monsters.map((monster) => (
-          <CardFeedMonster
-            key={monster.id}
-            url={monster?.avatar || ''}
-            satiety={monster.satiety}
-            onButtonClick={() => handlerFeedMonster(monster.id)}
-          />
-        ))}
+        {monsterStore.monsters.map((monster) => {
+          const isFeeding = feedingIds.has(monster.id)
+          return (
+            <CardFeedMonster
+              key={monster.id}
+              url={monster?.avatar || ''}
+              satiety={monster.satiety}
+              disabled={isFeeding}
+              onButtonClick={() => !isFeeding && handlerFeedMonster(monster.id)}
+            />
+          )
+        })}
         <div className={styles.bottomMenu}>
           <MainButton
             onClick={() => navigate('/laboratory')}

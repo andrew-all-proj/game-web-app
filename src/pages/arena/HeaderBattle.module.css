@@ -8,7 +8,7 @@
   box-shadow: 0 4px 0 0 #362f2d55;
   height: 93px;
   width: 100%;
-  max-width: var(--max-wight, 500px);
+  max-width: var(--max-width, 500px);
   min-width: 300px;
   margin-bottom: 28px;
   box-sizing: border-box;
