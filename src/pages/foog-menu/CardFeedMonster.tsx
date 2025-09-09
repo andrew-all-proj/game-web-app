@@ -3,7 +3,7 @@ import styles from './CardFeedMonster.module.css'
 interface CardFeedMonsterProps {
   url: string
   satiety: number
-  disabled?: boolean  
+  disabled?: boolean
   onButtonClick: () => void
 }
 
@@ -25,7 +25,9 @@ export default function CardFeedMonster({
 
   return (
     <div className={styles.cardFeedMonster}>
-      <div className={`${styles.wrapperImage} ${getSatietyClass(satiety)} ${isDisabled ? styles.dim : ''}`}>
+      <div
+        className={`${styles.wrapperImage} ${getSatietyClass(satiety)} ${isDisabled ? styles.dim : ''}`}
+      >
         <img className={styles.monsterImage} alt="monster" src={url} />
       </div>
 

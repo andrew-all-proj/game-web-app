@@ -33,8 +33,7 @@ export default function CharacteristicMonster({
 }: Props) {
   const [mode, setMode] = useState<Mode>('closed')
 
-  const toggle = () =>
-    setMode(prev => order[(order.indexOf(prev) + 1) % order.length])
+  const toggle = () => setMode((prev) => order[(order.indexOf(prev) + 1) % order.length])
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -96,15 +95,28 @@ export default function CharacteristicMonster({
           {name && <div className={styles.name}>{name}</div>}
           <div className={styles.row}>
             <span>Lvl.</span>
-            <span>
-              {level}/30
-            </span>
+            <span>{level}/30</span>
           </div>
-          <div className={styles.row}><span>Жизнь</span><span>{hp}</span></div>
-          <div className={styles.row}><span>Выносл.</span><span>{stamina}</span></div>
-          <div className={styles.row}><span>Сила</span><span>{strength}</span></div>
-          <div className={styles.row}><span>Защита</span><span>{defense}</span></div>
-          <div className={styles.row}><span>Уворот</span><span>{evasion}</span></div>
+          <div className={styles.row}>
+            <span>Жизнь</span>
+            <span>{hp}</span>
+          </div>
+          <div className={styles.row}>
+            <span>Выносл.</span>
+            <span>{stamina}</span>
+          </div>
+          <div className={styles.row}>
+            <span>Сила</span>
+            <span>{strength}</span>
+          </div>
+          <div className={styles.row}>
+            <span>Защита</span>
+            <span>{defense}</span>
+          </div>
+          <div className={styles.row}>
+            <span>Уворот</span>
+            <span>{evasion}</span>
+          </div>
         </div>
       )}
     </div>

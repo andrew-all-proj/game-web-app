@@ -4,21 +4,43 @@
   border-radius: 16px;
   color: #362f2d;
   font-family: var(--font-base);
-  box-shadow: 0 4px 0 rgba(0,0,0,.25);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
   cursor: pointer;
   user-select: none;
-  transition: width .2s ease, height .2s ease, padding .2s ease;
+  transition:
+    width 0.2s ease,
+    height 0.2s ease,
+    padding 0.2s ease;
   display: grid;
 }
 
 /* ----- sizes for modes ----- */
-.wrapper[data-mode="closed"]   { width: 100px; height: 64px;  padding: 8px;}
-.wrapper[data-mode="compact"]  { width: 100px; height: 175px; padding: 8px;}
-.wrapper[data-mode="expanded"] { width: 100px; height: 175px; padding: 8px;}
+.wrapper[data-mode="closed"] {
+  width: 100px;
+  height: 64px;
+  padding: 8px;
+}
+.wrapper[data-mode="compact"] {
+  width: 100px;
+  height: 175px;
+  padding: 8px;
+}
+.wrapper[data-mode="expanded"] {
+  width: 100px;
+  height: 175px;
+  padding: 8px;
+}
 
 /* ----- CLOSED ----- */
-.closedInner { display: grid; gap: 6px; justify-items: start; }
-.name { font-weight: 700; font-size: 18px; }
+.closedInner {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+}
+.name {
+  font-weight: 700;
+  font-size: 18px;
+}
 .levelBadge {
   color: #fff;
   font-weight: 800;
@@ -28,13 +50,30 @@
 }
 
 /* ----- COMPACT ----- */
-.compactInner { display: grid; gap: 2px; }
-.levelBig { color:#fff; font-size:18px; font-weight:800 }
-.charLine { display:flex; align-items:center; gap:4px; }
-.icon { width:14px; height:14px; }
+.compactInner {
+  display: grid;
+  gap: 2px;
+}
+.levelBig {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+}
+.charLine {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.icon {
+  width: 14px;
+  height: 14px;
+}
 
 /* ----- EXPANDED ----- */
-.expandedInner { display:grid; gap:6px; }
+.expandedInner {
+  display: grid;
+  gap: 6px;
+}
 .row {
   display: grid;
   font-weight: 400;

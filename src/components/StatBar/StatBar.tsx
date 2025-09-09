@@ -30,10 +30,7 @@ export default function StatBar({
   const paddingLeft = hasIcon ? iconSize + 24 : 0
 
   return (
-    <div
-      className={styles.barBackground}
-      style={{ backgroundColor, width, height, paddingLeft }}
-    >
+    <div className={styles.barBackground} style={{ backgroundColor, width, height, paddingLeft }}>
       <div className={styles.barFill} style={{ width: `${percent}%`, backgroundColor: color }} />
 
       {hasIcon ? (

@@ -1,4 +1,4 @@
-import { RouteObject } from 'react-router-dom'
+import { Navigate, RouteObject } from 'react-router-dom'
 import CreateUser from '../pages/create-user/CreateUser'
 import Arena from '../pages/arena/Arena'
 import StartApp from '../pages/start-app/StartApp'
@@ -41,6 +41,10 @@ const routes: RouteObject[] = [
   {
     path: '/search-battle',
     element: <SearchBattle />,
+  },
+  {
+    path: '/monster-menu',
+    element: <Navigate to="/laboratory" replace />,
   },
   {
     path: '/monster-menu/:monsterIdParams/:inventoryIdParams?',

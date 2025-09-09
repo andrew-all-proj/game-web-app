@@ -2,7 +2,7 @@
   position: relative;
   height: 42px;
   width: 93%;
-  max-width: var(--max-wigdht);
+  max-width: var(--max-width);
   border: 4px solid #2d2421;
   border-radius: 15px;
   overflow: hidden;
