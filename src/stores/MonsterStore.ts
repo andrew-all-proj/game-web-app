@@ -48,6 +48,10 @@ class MonsterStore {
       })
   }
 
+  getMonsterById(monsterId: string): Monster | null {
+    return this.monsters.find((m) => m.id === monsterId) || null
+  }
+
   clearMonsters() {
     this.monsters = []
     this.selectedMonster = null

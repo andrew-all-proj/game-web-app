@@ -117,8 +117,8 @@ export default function TestFight({
     },
 
     onAnim: () => {
-       animateOpponentHit()
-    }
+      animateOpponentHit()
+    },
   })
 
   // Phaser сцена через хук
@@ -160,7 +160,7 @@ export default function TestFight({
     // локальная анимация:
     if (attackId) {
       animateYourHit()
-    } 
+    }
   }
 
   // CSS-переменные под высоты шапки/меню

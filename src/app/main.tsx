@@ -5,12 +5,14 @@ import routes from '../routes'
 import ApolloProvider from '../api/ApolloProvider'
 import '../assets/styles/global.css'
 import TopAlertHost from '../components/TopAlert/TopAlertHost'
+import TelegramViewportSync from '../components/TelegramViewportSync/TelegramViewportSync'
 
 const AppRouter = () => useRoutes(routes)
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ApolloProvider>
+      <TelegramViewportSync />
       <BrowserRouter>
         <TopAlertHost />
         <AppRouter />

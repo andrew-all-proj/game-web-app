@@ -1,30 +1,83 @@
 .wrapper {
-  background-color: #ff82a9;
+  background: var(--pink-secondary-color);
   border: 5px solid #362f2d;
-  border-radius: 12px;
-  padding: 10px;
-  width: 92px;
-  height: 148px;
-  font-family: var(--font-base);
+  border-radius: 16px;
   color: #362f2d;
+  font-family: var(--font-base);
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    width 0.2s ease,
+    height 0.2s ease,
+    padding 0.2s ease;
+  display: grid;
 }
 
-.level {
-  color: #ffffff;
+/* ----- sizes for modes ----- */
+.wrapper[data-mode="closed"] {
+  width: 100px;
+  height: 64px;
+  padding: 8px;
+}
+.wrapper[data-mode="compact"] {
+  width: 100px;
+  height: 175px;
+  padding: 8px;
+}
+.wrapper[data-mode="expanded"] {
+  width: 100px;
+  height: 175px;
+  padding: 8px;
+}
+
+/* ----- CLOSED ----- */
+.closedInner {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+}
+.name {
+  font-weight: 700;
   font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 8px;
+}
+.levelBadge {
+  color: #fff;
+  font-weight: 800;
+  font-size: 18px;
+  border-radius: 12px;
+  display: inline-block;
 }
 
+/* ----- COMPACT ----- */
+.compactInner {
+  display: grid;
+  gap: 2px;
+}
+.levelBig {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+}
 .charLine {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
+  gap: 4px;
 }
-
 .icon {
   width: 14px;
   height: 14px;
+}
+
+/* ----- EXPANDED ----- */
+.expandedInner {
+  display: grid;
+  gap: 6px;
+}
+.row {
+  display: grid;
+  font-weight: 400;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  line-height: 1.2;
 }

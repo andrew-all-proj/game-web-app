@@ -26,14 +26,19 @@ export default function StatBar({
   const percent = max ? Math.max(0, Math.min((current / max) * 100, 100)) : 100
   const text = max ? `${current}/${max}` : `${current}`
 
+  const hasIcon = !!iconSrc
+  const paddingLeft = hasIcon ? iconSize + 24 : 0
+
   return (
-    <div className={styles.barBackground} style={{ backgroundColor, width, height }}>
+    <div className={styles.barBackground} style={{ backgroundColor, width, height, paddingLeft }}>
       <div className={styles.barFill} style={{ width: `${percent}%`, backgroundColor: color }} />
-      {iconSrc ? (
+
+      {hasIcon ? (
         <div className={styles.barIcon}>
-          <img src={iconSrc} alt="stat icon" style={{ width: iconSize, height: iconSize }} />
+          <img src={iconSrc!} alt="stat icon" style={{ width: iconSize, height: iconSize }} />
         </div>
       ) : null}
+
       <div className={styles.barText} style={{ color: textColor }}>
         {text}
       </div>

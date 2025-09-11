@@ -25,11 +25,21 @@ import { ApolloError } from '@apollo/client'
 import PopupCardAppliedMutagen from '../../components/PopupCardAppliedMutagen/PopupCardAppliedMutagen'
 import { GetMonsterNewCharacteristicLines } from '../../components/GetMonsterNewCharacteristicLines/GetMonsterNewCharacteristicLines'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
+import userStore from '../../stores/UserStore'
 
 const MonsterMenu = observer(() => {
   const navigate = useNavigate()
   const { monsterIdParams, inventoryIdParams } = useParams()
-  const [selectedMonster, setSelectedMonster] = useState<Monster | null>()
+
+  if (!monsterIdParams) {
+    showTopAlert({ text: 'Выберите монстра', variant: 'warning', open: true })
+    navigate('/laboratory')
+    return
+  }
+
+  const [selectedMonster, setSelectedMonster] = useState<Monster | null>(
+    monsterStore.getMonsterById(monsterIdParams),
+  )
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'skills' | 'mutagens'>('skills')
   const [animateIn, setAnimateIn] = useState(false)
@@ -42,11 +52,6 @@ const MonsterMenu = observer(() => {
     const starting = async () => {
       try {
         await authorizationAndInitTelegram(navigate)
-        if (!monsterIdParams) {
-          showTopAlert({ text: 'Выберите монстра', variant: 'warning', open: true })
-          navigate('/laboratory')
-          return
-        }
         const monster = await monsterStore.fetchMonster(monsterIdParams)
         if (!monster) {
           showTopAlert({ text: 'Нету такого монстра', variant: 'warning', open: true })
@@ -91,7 +96,7 @@ const MonsterMenu = observer(() => {
     }
   }, [selectedInventory])
 
-  if (isLoading || !selectedMonster) {
+  if ((isLoading && !userStore.isAuthenticated) || !selectedMonster) {
     return <Loading />
   }
 
@@ -133,6 +138,7 @@ const MonsterMenu = observer(() => {
       <div className={styles.header}>
         <div className={styles.left}>
           <CharacteristicMonster
+            name={selectedMonster?.name || ''}
             level={selectedMonster?.level ?? 0}
             hp={selectedMonster?.healthPoints ?? 0}
             stamina={selectedMonster?.stamina ?? 0}
@@ -141,12 +147,17 @@ const MonsterMenu = observer(() => {
             evasion={selectedMonster?.evasion ?? 0}
           />
         </div>
-        <div className={styles.center}>
+        <div
+          className={styles.center}
+          onClick={() => {
+            navigate(`/food-menu/${userStore.user?.id || ''}`)
+          }}
+        >
           <div className={styles.barWrapper}>
             <StatBar
               current={selectedMonster.satiety ?? 0}
               max={100}
-              width={100}
+              width={130}
               height={32}
               color={'var(--orange-secondary-color)'}
               backgroundColor={'var(--orange-scale-hungry)'}
