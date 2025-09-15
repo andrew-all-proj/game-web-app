@@ -1,103 +1,78 @@
+:root {
+  --panel-height: 260px;
+}
+
 .createMonster {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center ;
+  grid-template-rows: auto 1fr auto var(--panel-height);
+  margin: auto;
   height: var(--tg-vh, 100vh);
   width: 100%;
-  max-width: 100vw;
-  box-sizing: border-box;
-  overflow-y: hidden;
+  max-width: var(--max-width);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  overflow: hidden;
+  position: relative;
 }
 
 .header {
+  grid-row: 1;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
   align-items: center;
-
+  justify-content: flex-end;
   width: 100%;
-  max-width: 500px;
-  padding: 0 10px;
+  max-width: var(--max-width, 500px);
+  padding: 10px;
   box-sizing: border-box;
   position: relative;
   z-index: 100;
-  transition: all 0.3s ease;
 }
 
 .exitButton {
-  position: absolute;
   top: 10px;
   right: 10px;
-  z-index: 100;
+  z-index: 300;
 }
 
 .characteristicMonster {
-  margin-top: 10px;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 400;
 }
 
 .centerWrapper {
-  flex-grow: 1;
+  grid-row: 2;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  position: relative;
-  z-index: 200;
-  margin-top: -60px;
-  transition: margin-top 0.3s ease;
-}
-
-.imageOverlap {
-  position: absolute;
-  top: 50%;
-  right: -20px;
-  top: 10px;
-  transform: translateY(-50%);
-  height: 60px;
-  width: auto;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.wrapperMonster {
-  width: 193px;
-  height: 236px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-  position: relative;
-}
-
-.dotWrapper {
-  margin-top: -80px;
-  display: flex;
-  justify-content: center;
-  z-index: 1;
-  position: relative;
-}
-
-.outerDot {
-  width: 300px;
-  height: 81px;
-  background-color: rgba(0, 0, 0, 0.25);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.innerDot {
-  width: 180px;
-  height: 35px;
-  background-color: rgba(0, 0, 0, 0.3); /* Почти чёрный */
-  border-radius: 50%;
+  min-height: 0;
 }
 
 .inputWrapper {
-  padding: 10px;
-  margin: auto;
+  display: flex;
+  justify-content: center;
+  grid-row: 3;
+  padding-bottom: 10px;
+}
+
+.partSelectorWrapper {
+  grid-row: 4;
+  position: relative;
+  height: 100%;
+  width: 100% ;
+  opacity: 0;
+  transition:
+    transform 0.4s ease-out,
+    opacity 0.4s ease-out;
+  z-index: 400;
+}
+
+.partSelectorWrapper.visible {
+  transform: translateY(0);
+  opacity: 1;
 }

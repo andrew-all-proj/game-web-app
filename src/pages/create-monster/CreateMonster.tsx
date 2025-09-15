@@ -15,16 +15,16 @@ import { FrameData, SpriteAtlas } from '../../types/sprites'
 import errorStore from '../../stores/ErrorStore'
 import PreviewMonster from './PreviewMonster'
 import { createPartPreviews } from './create-part-previews'
-import { assembleMonsterCanvas } from '../../functions/assemble-monster-canvas'
 import userStore from '../../stores/UserStore'
 import { MONSTER_CREATE } from '../../api/graphql/mutation'
-import { uploadFile } from '../../api/upload-file'
 import monsterStore from '../../stores/MonsterStore'
 import Loading from '../loading/Loading'
 import PartSelectorMonster from '../../components/PartSelector/PartSelectorMonster'
 import RoundButton from '../../components/Button/RoundButton'
 import CharacteristicMonster from '../../components/CharacteristicMonster/CharacteristicMonster'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
+import IncubatorOverlay from '../../components/IncubatorOverlay/IncubatorOverlay'
+import clsx from 'clsx'
 
 declare global {
   interface Window {
@@ -73,16 +73,15 @@ const CreateMonster = observer(() => {
   const [headIndex, setHeadIndex] = useState(0)
   const [bodyIndex, setBodyIndex] = useState(0)
   const [armsIndex, setArmsIndex] = useState(0)
-
-  const [activeTab, setActiveTab] = useState<PartTab>('body')
-  //const [isEditing, setIsEditing] = useState(false)  //TODO for future use
-
-  const selectedPartsMonster = useRef<SelectedParts>({
+  const [selectedParts, setSelectedParts] = useState<SelectedParts>({
     head: undefined,
     body: undefined,
     leftArm: undefined,
     rightArm: undefined,
   })
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const [activeTab, setActiveTab] = useState<PartTab>('body')
+  const [animateIn, setAnimateIn] = useState(false)
 
   useEffect(() => {
     const fetchMainSprite = async () => {
@@ -138,47 +137,42 @@ const CreateMonster = observer(() => {
   const handlePartSelect = (part: SelectablePart) => {
     if (!part) return
 
-    if (activeTab === 'arms' && 'arm' in part) {
-      selectedPartsMonster.current.leftArm = {
-        key: part.arm.left.key,
-        attachPoint: part.arm.left.frameData?.points?.attachToBody || { x: 0, y: 0 },
-        frameSize: part.arm.left.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
-      }
-      selectedPartsMonster.current.rightArm = {
-        key: part.arm.right.key,
-        attachPoint: part.arm.right.frameData?.points?.attachToBody || { x: 0, y: 0 },
-        frameSize: part.arm.right.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
-      }
-    } else if (part && 'frameData' in part) {
-      const attachPoint = part.frameData?.points?.attachToBody || { x: 0, y: 0 }
+    setSelectedParts((prev) => {
+      const next = { ...prev }
 
-      const partInfo: SelectedPartInfo = {
-        key: part.key,
-        attachPoint,
-        frameSize: part.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
+      if (activeTab === 'arms' && 'arm' in part) {
+        next.leftArm = {
+          key: part.arm.left.key,
+          attachPoint: part.arm.left.frameData?.points?.attachToBody || { x: 0, y: 0 },
+          frameSize: part.arm.left.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
+        }
+        next.rightArm = {
+          key: part.arm.right.key,
+          attachPoint: part.arm.right.frameData?.points?.attachToBody || { x: 0, y: 0 },
+          frameSize: part.arm.right.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
+        }
+      } else if (part && 'frameData' in part) {
+        const attachPoint = part.frameData?.points?.attachToBody || { x: 0, y: 0 }
+        const partInfo: SelectedPartInfo = {
+          key: part.key,
+          attachPoint,
+          frameSize: part.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
+        }
+        if (activeTab === 'head') next.head = partInfo
+        else if (activeTab === 'body') next.body = partInfo
       }
-
-      if (activeTab === 'head') {
-        selectedPartsMonster.current.head = partInfo
-      } else if (activeTab === 'body') {
-        selectedPartsMonster.current.body = partInfo
-      }
-    }
-
-    window.updatePhaserDisplay?.()
+      return next
+    })
   }
 
   const handleSaveImage = async () => {
     if (isSaving) return
     if (!name.trim()) return showTopAlert({ text: 'Введите имя монстра', variant: 'info' })
     if (name.length > 10)
-      return showTopAlert({ text: 'Имя монстра не должно превышать 15 символов', variant: 'info' })
-    if (!selectedPartsMonster.current.body)
-      return showTopAlert({ text: 'Выберите тело', variant: 'info' })
-    if (!selectedPartsMonster.current.head)
-      return showTopAlert({ text: 'Выберите голову', variant: 'info' })
-    if (!selectedPartsMonster.current.leftArm)
-      return showTopAlert({ text: 'Выберите руки', variant: 'info' })
+      return showTopAlert({ text: 'Имя монстра не должно превышать 10 символов', variant: 'info' })
+    if (!selectedParts.body) return showTopAlert({ text: 'Выберите тело', variant: 'info' })
+    if (!selectedParts.head) return showTopAlert({ text: 'Выберите голову', variant: 'info' })
+    if (!selectedParts.leftArm) return showTopAlert({ text: 'Выберите руки', variant: 'info' })
     if (!spriteAtlasJson || !spriteUrl) {
       showTopAlert({ text: 'Спрайты не загружены', variant: 'error' })
       return
@@ -186,61 +180,38 @@ const CreateMonster = observer(() => {
 
     setIsSaving(true)
 
-    const selected = selectedPartsMonster.current
-
     try {
-      const canvas = await assembleMonsterCanvas(selected, spriteAtlasJson, spriteUrl)
-
-      canvas.toBlob(async (blob) => {
-        if (!blob) return
-
-        const file = new File([blob], 'monster.png', { type: 'image/png' })
-
-        const formData = new FormData()
-        formData.append('file', file)
-        formData.append('name', 'monster')
-        formData.append('fileType', 'IMAGE')
-        formData.append('contentType', 'AVATAR_MONSTER')
-
-        const result = await uploadFile({
-          url: `${import.meta.env.VITE_API_FILE}/upload`,
-          formData,
-          token: userStore.user?.token,
-        })
-
-        const resultCreateMonster = await client.mutate({
-          mutation: MONSTER_CREATE,
-          variables: {
-            name: name.trim(),
-            fileId: result.id,
-            selectedPartsKey: {
-              headKey: selected.head?.key,
-              bodyKey: selected.body?.key,
-              leftArmKey: selected.leftArm?.key,
-              rightArmKey: selected.rightArm?.key,
-            },
+      const resultCreateMonster = await client.mutate({
+        mutation: MONSTER_CREATE,
+        variables: {
+          name: name.trim(),
+          selectedPartsKey: {
+            headKey: selectedParts.head?.key,
+            bodyKey: selectedParts.body?.key,
+            leftArmKey: selectedParts.leftArm?.key,
+            rightArmKey: selectedParts.rightArm?.key,
           },
-          errorPolicy: 'all',
-        })
+        },
+        errorPolicy: 'all',
+      })
 
-        if (resultCreateMonster.errors) {
-          if (resultCreateMonster.errors[0].message === 'Not enough energy to create a monster') {
-            showTopAlert({ text: 'Недостаточно энергии для создания монстра', variant: 'warning' })
-          } else if (resultCreateMonster.errors[0].message === 'User already has 4 monsters') {
-            showTopAlert({ text: 'У вас уже есть 4 монстра', variant: 'warning' })
-          } else {
-            showTopAlert({ text: 'Ошибка при создании монстра', variant: 'error' })
-          }
-          setIsSaving(false)
-          return
+      if (resultCreateMonster.errors) {
+        if (resultCreateMonster.errors[0].message === 'Not enough energy to create a monster') {
+          showTopAlert({ text: 'Недостаточно энергии для создания монстра', variant: 'warning' })
+        } else if (resultCreateMonster.errors[0].message === 'User already has 4 monsters') {
+          showTopAlert({ text: 'У вас уже есть 4 монстра', variant: 'warning' })
+        } else {
+          showTopAlert({ text: 'Ошибка при создании монстра', variant: 'error' })
         }
+        setIsSaving(false)
+        return
+      }
 
-        if (userStore.user?.id) {
-          await monsterStore.fetchMonsters(userStore.user?.id)
-        }
+      if (userStore.user?.id) {
+        await monsterStore.fetchMonsters(userStore.user?.id)
+      }
 
-        navigate('/laboratory')
-      }, 'image/png')
+      navigate('/laboratory')
     } catch (err) {
       console.log('Error saving monster:', err)
       setIsSaving(false)
@@ -248,12 +219,21 @@ const CreateMonster = observer(() => {
     }
   }
 
+  useEffect(() => {
+    if (!isLoading) {
+      setAnimateIn(true)
+    }
+  }, [isLoading])
+
   if (isLoading) {
     return <Loading />
   }
 
   return (
     <div className={styles.createMonster}>
+      <IncubatorOverlay open={isSaving} text="Создание монстра…" />
+
+      {/* ВЕРХ */}
       <div className={styles.header}>
         <RoundButton
           onClick={() => navigate('/laboratory')}
@@ -272,20 +252,15 @@ const CreateMonster = observer(() => {
       </div>
 
       <div className={styles.centerWrapper}>
-        <div className={styles.wrapperMonster}>
-          <PreviewMonster
-            spriteAtlas={spriteAtlasJson}
-            spriteSheets={spriteUrl}
-            partPreviews={partPreviews}
-            selectedPartsMonster={selectedPartsMonster}
-          />
-        </div>
-        <div className={styles.dotWrapper}>
-          <div className={styles.outerDot}>
-            <div className={styles.innerDot}></div>
-          </div>
-        </div>
+        <PreviewMonster
+          spriteAtlas={spriteAtlasJson}
+          spriteSheets={spriteUrl}
+          partPreviews={partPreviews}
+          selectedParts={selectedParts}
+          canvasRef={canvasRef}
+        />
       </div>
+
       <div className={styles.inputWrapper}>
         <MainInput
           value={name}
@@ -295,38 +270,40 @@ const CreateMonster = observer(() => {
           onButtonClick={isSaving ? () => {} : handleSaveImage}
         />
       </div>
-      <PartSelectorMonster
-        tabs={[
-          {
-            key: 'head',
-            icon: headIcon,
-            alt: 'Head',
-            parts: partPreviews.head,
-            selectedIndex: headIndex,
-            setSelectedIndex: setHeadIndex,
-          },
-          {
-            key: 'body',
-            icon: bodyIcon,
-            alt: 'Body',
-            parts: partPreviews.body,
-            selectedIndex: bodyIndex,
-            setSelectedIndex: setBodyIndex,
-          },
-          {
-            key: 'arms',
-            icon: armsIcon,
-            alt: 'Arms',
-            parts: partPreviews.arms,
-            selectedIndex: armsIndex,
-            setSelectedIndex: setArmsIndex,
-          },
-        ]}
-        activeTab={activeTab}
-        onTabChange={(tabKey) => setActiveTab(tabKey as keyof PartPreviews)}
-        spriteUrl={spriteUrl}
-        onSelectPart={handlePartSelect}
-      />
+      <div className={clsx(styles.partSelectorWrapper, { [styles.visible]: animateIn })}>
+        <PartSelectorMonster
+          tabs={[
+            {
+              key: 'head',
+              icon: headIcon,
+              alt: 'Head',
+              parts: partPreviews.head,
+              selectedIndex: headIndex,
+              setSelectedIndex: setHeadIndex,
+            },
+            {
+              key: 'body',
+              icon: bodyIcon,
+              alt: 'Body',
+              parts: partPreviews.body,
+              selectedIndex: bodyIndex,
+              setSelectedIndex: setBodyIndex,
+            },
+            {
+              key: 'arms',
+              icon: armsIcon,
+              alt: 'Arms',
+              parts: partPreviews.arms,
+              selectedIndex: armsIndex,
+              setSelectedIndex: setArmsIndex,
+            },
+          ]}
+          activeTab={activeTab}
+          onTabChange={(tabKey) => setActiveTab(tabKey as keyof PartPreviews)}
+          spriteUrl={spriteUrl}
+          onSelectPart={handlePartSelect}
+        />
+      </div>
     </div>
   )
 })

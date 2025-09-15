@@ -1,0 +1,71 @@
+.monsterSlot {
+  --design-w: 390;
+  --design-h: 340;
+  --scale: 0.9;
+  width: calc(var(--design-w) * 1px);
+  height: calc(var(--design-h) * 1px);
+  position: relative;
+  margin: 0 auto;
+  display: grid;
+  place-items: start center;
+}
+
+.monsterScaleBox {
+  position: relative;
+  width: calc(var(--design-w) * 1px);
+  height: calc(var(--design-h) * 1px);
+  transform: scale(var(--scale));
+  transform-origin: top top;
+}
+
+:where(.monsterSlot) {
+  --canvas-w-ratio: 0.6; /* 180 / 300 */
+  --canvas-h-ratio: 1; /* 380 / 380  */
+  --dot-outer-w-ratio: 1; /* 300 / 300 */
+  --dot-outer-h-ratio: 0.27; /* 81 / 300 —*/
+  --dot-inner-w-ratio: 0.6; /* 180 / 300 */
+  --dot-inner-h-ratio: 0.1167; /* 35 / 300 */
+  --dot-bottom-offset: -0.07;
+}
+.canvas {
+  position: relative;
+  width: calc(var(--design-w) * var(--canvas-w-ratio) * 1px);
+  height: calc(var(--design-h) * var(--canvas-h-ratio) * 1px);
+  display: block;
+  margin: 0 auto;
+  z-index: 2;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+.dotWrapper {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--design-h) * var(--dot-bottom-offset) * 1px);
+  transform: translateX(-50%);
+  z-index: 1;
+}
+.outerDot {
+  width: calc(var(--design-w) * var(--dot-outer-w-ratio) * 1px);
+  height: calc(var(--design-w) * var(--dot-outer-h-ratio) * 1px);
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.innerDot {
+  width: calc(var(--design-w) * var(--dot-inner-w-ratio) * 1px);
+  height: calc(var(--design-w) * var(--dot-inner-h-ratio) * 1px);
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+}
+@media (max-height: 670px) {
+  .monsterSlot {
+    --scale: 0.7;
+  }
+}
+@media (max-height: 590px) {
+  .monsterSlot {
+    --scale: 0.48;
+  }
+}
