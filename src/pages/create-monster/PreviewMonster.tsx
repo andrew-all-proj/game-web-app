@@ -29,22 +29,19 @@ interface MonsterPreviewProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>
 }
 
-function placeBodyCentered(
-  canvas: HTMLCanvasElement,
-  scale: number
-) {
+function placeBodyCentered(canvas: HTMLCanvasElement, scale: number) {
   const srcW = 300
   const srcH = 380
   const trimX = 380
   const trimY = 10
 
-  const drawW = srcW * scale;
-  const drawH = srcH * scale;
+  const drawW = srcW * scale
+  const drawH = srcH * scale
 
-  const bodyX = Math.round((canvas.clientWidth  - drawW) / 2 - trimX * scale);
-  const bodyY = Math.round((canvas.clientHeight - drawH) / 2 - trimY * scale);
+  const bodyX = Math.round((canvas.clientWidth - drawW) / 2 - trimX * scale)
+  const bodyY = Math.round((canvas.clientHeight - drawH) / 2 - trimY * scale)
 
-  return { bodyX, bodyY, scale };
+  return { bodyX, bodyY, scale }
 }
 const SCALE = 0.2
 
@@ -108,48 +105,47 @@ export default function PreviewMonster({
   }
 
   const draw = () => {
-  const canvas = canvasRef.current;
-  if (!canvas || !spriteAtlas || !atlasImage) return;
-  const ctx = canvas.getContext('2d');
-  if (!ctx || !atlasImage.complete) return;
+    const canvas = canvasRef.current
+    if (!canvas || !spriteAtlas || !atlasImage) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx || !atlasImage.complete) return
 
-  // очистка с учётом HiDPI
-  ctx.save();
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.restore();
+    // очистка с учётом HiDPI
+    ctx.save()
+    ctx.setTransform(1, 0, 0, 1, 0, 0)
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.restore()
 
-  const body = selectedParts.body;
-  if (!body) return;
+    const body = selectedParts.body
+    if (!body) return
 
-  const bodyStay = getStayFrame(body.key);
-  if (!bodyStay) return;
+    const bodyStay = getStayFrame(body.key)
+    if (!bodyStay) return
 
-  const bodyRec = spriteAtlas.frames[bodyStay];
-  const { bodyX, bodyY, scale } = placeBodyCentered(canvas, SCALE);
+    const bodyRec = spriteAtlas.frames[bodyStay]
+    const { bodyX, bodyY, scale } = placeBodyCentered(canvas, SCALE)
 
-  const bodyPointsFromAtlas: AtlasPoints | undefined = bodyRec?.points;
-  const bodyPoints =
-    bodyPointsFromAtlas ??
-    partPreviews.body.find((f) => f.key === body.key)?.frameData?.points ??
-    undefined;
-  if (!bodyPoints) return;
+    const bodyPointsFromAtlas: AtlasPoints | undefined = bodyRec?.points
+    const bodyPoints =
+      bodyPointsFromAtlas ??
+      partPreviews.body.find((f) => f.key === body.key)?.frameData?.points ??
+      undefined
+    if (!bodyPoints) return
 
-  const drawPart = (part: SelectedPartInfo | undefined, attach?: { x: number; y: number }) => {
-    if (!part || !attach) return;
-    const stay = getStayFrame(part.key);
-    if (!stay) return;
-    const x = bodyX + (attach.x - part.attachPoint.x) * scale;
-    const y = bodyY + (attach.y - part.attachPoint.y) * scale;
-    drawFrame(ctx, atlasImage, stay, x, y, scale);
-  };
+    const drawPart = (part: SelectedPartInfo | undefined, attach?: { x: number; y: number }) => {
+      if (!part || !attach) return
+      const stay = getStayFrame(part.key)
+      if (!stay) return
+      const x = bodyX + (attach.x - part.attachPoint.x) * scale
+      const y = bodyY + (attach.y - part.attachPoint.y) * scale
+      drawFrame(ctx, atlasImage, stay, x, y, scale)
+    }
 
-  drawPart(selectedParts.leftArm,  bodyPoints.attachLeftArm);
-  drawFrame(ctx, atlasImage, bodyStay, bodyX, bodyY, scale);
-  drawPart(selectedParts.head,     bodyPoints.attachToHead);
-  drawPart(selectedParts.rightArm, bodyPoints.attachRightArm);
-};
-
+    drawPart(selectedParts.leftArm, bodyPoints.attachLeftArm)
+    drawFrame(ctx, atlasImage, bodyStay, bodyX, bodyY, scale)
+    drawPart(selectedParts.head, bodyPoints.attachToHead)
+    drawPart(selectedParts.rightArm, bodyPoints.attachRightArm)
+  }
 
   useEffect(() => {
     if (!atlasImage) return

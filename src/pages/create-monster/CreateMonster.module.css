@@ -5,7 +5,7 @@
 .createMonster {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  place-items: center ;
+  place-items: center;
   grid-template-rows: auto 1fr auto var(--panel-height);
   margin: auto;
   height: var(--tg-vh, 100vh);
@@ -64,7 +64,7 @@
   grid-row: 4;
   position: relative;
   height: 100%;
-  width: 100% ;
+  width: 100%;
   opacity: 0;
   transition:
     transform 0.4s ease-out,
