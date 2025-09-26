@@ -43,8 +43,8 @@ export const USER_UPDATE = gql`
 `
 
 export const MONSTER_CREATE = gql`
-  mutation MonsterCreate($name: String!, $fileId: String!, $selectedPartsKey: SelectedPartsKey!) {
-    MonsterCreate(name: $name, fileId: $fileId, selectedPartsKey: $selectedPartsKey) {
+  mutation MonsterCreate($name: String!, $selectedPartsKey: SelectedPartsKey!) {
+    MonsterCreate(name: $name, selectedPartsKey: $selectedPartsKey) {
       id
       name
       level

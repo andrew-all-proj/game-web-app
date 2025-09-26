@@ -41,11 +41,14 @@ const BottomBattlteMenu = ({
   )
 
   const totalCost = (selectedAttack?.energyCost ?? 0) + (selectedDefense?.energyCost ?? 0)
-  const canConfirm =
-    (selectedAttackId !== null || selectedDefenseId !== null) && totalCost <= availableSp
+
+  const canConfirm = totalCost <= availableSp
+
+  const isSkip = selectedAttackId === null && selectedDefenseId === null
 
   const handleConfirm = useCallback(() => {
     if (!canConfirm) return
+    // pass = onConfirm(null, null)
     onConfirm(selectedAttackId, selectedDefenseId)
     setSelectedAttackId(null)
     setSelectedDefenseId(null)
@@ -109,9 +112,11 @@ const BottomBattlteMenu = ({
         disabled={!canConfirm}
         onClick={handleConfirm}
         aria-disabled={!canConfirm}
-        aria-label="Подтвердить выбор"
+        aria-label={isSkip ? 'Пропустить ход' : 'Подтвердить выбор'}
+        data-skip={isSkip ? 'true' : 'false'}
+        title={isSkip ? 'Пропустить ход' : 'Подтвердить выбор'}
       >
-        ✓
+        {isSkip ? '⏭' : '✓'}
       </button>
     </div>
   )

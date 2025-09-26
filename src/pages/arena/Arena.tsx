@@ -6,7 +6,6 @@ import { useParams } from 'react-router-dom'
 import styles from './Arena.module.css'
 import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
 import Loading from '../loading/Loading'
-import TestFight from './TestFight'
 import { MONSTER_BATTLE } from '../../api/graphql/query'
 import client from '../../api/apolloClient'
 import { FileItem, Monster, MonsterBattles } from '../../types/GraphResponse'
@@ -15,6 +14,7 @@ import { SpriteAtlas } from '../../types/sprites'
 import errorStore from '../../stores/ErrorStore'
 import { GetBattleReward } from '../../types/BattleRedis'
 import ResultBattle from '../result-battle/ResultBattle'
+import Fight from './Fight'
 
 const getSprite = async (
   monster?: Monster | null,
@@ -136,7 +136,7 @@ const Arena = observer(() => {
   return (
     <main className={styles.arena}>
       {startFight && atlas && atlasOpponent && battleId ? (
-        <TestFight
+        <Fight
           battleId={battleId}
           atlas={atlas}
           atlasOpponent={atlasOpponent}

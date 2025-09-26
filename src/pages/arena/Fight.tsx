@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import monsterStore from '../../stores/MonsterStore'
-import styles from './TestFight.module.css'
+import styles from './Fight.module.css'
 import { getSocket } from '../../api/socket'
 import userStore from '../../stores/UserStore'
 import { GetBattleReward, LastActionLog } from '../../types/BattleRedis'
@@ -29,7 +29,7 @@ interface TestFightProps {
   >
 }
 
-export default function TestFight({
+export default function Fight({
   battleId,
   atlas,
   atlasOpponent,
@@ -134,7 +134,7 @@ export default function TestFight({
     opponentLabel: monsterStore.opponentMonster?.name || 'Соперник',
   })
 
-  // Отправка выбранных действий
+  // Sending selected actions
   const handleConfirm = (attackId: string | null, defenseId: string | null) => {
     if (isLoading || !battleId || !monsterStore.selectedMonster?.id) return
     if (monsterStore.selectedMonster.id !== currentTurnMonsterId) return
@@ -143,6 +143,7 @@ export default function TestFight({
 
     const totalCost = costOf(attackId, myAttacks) + costOf(defenseId, myDefenses)
     if (totalCost > yourStamina) {
+      //TODO make custom alert
       alert(`Недостаточно SP: у вас ${yourStamina} SP, требуется ${totalCost} SP`)
       return
     }

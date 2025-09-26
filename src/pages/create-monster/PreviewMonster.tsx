@@ -1,168 +1,197 @@
-import { useEffect, useRef, useCallback } from 'react'
-import Phaser from 'phaser'
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { PartPreviews } from './CreateMonster'
-import { SpriteAtlas } from '../../types/sprites'
+import { SpriteAtlas as BaseSpriteAtlas } from '../../types/sprites'
+import type { SelectedParts, SelectedPartInfo } from './CreateMonster'
+import styles from './PreviewMonster.module.css'
 
-interface SelectedPartInfo {
-  key: string
-  attachPoint: { x: number; y: number }
-  frameSize?: { x: number; y: number; w: number; h: number }
+type AtlasPoints = {
+  attachLeftArm?: { x: number; y: number }
+  attachRightArm?: { x: number; y: number }
+  attachToHead?: { x: number; y: number }
 }
 
-interface SelectedParts {
-  head?: SelectedPartInfo
-  body?: SelectedPartInfo
-  leftArm?: SelectedPartInfo
-  rightArm?: SelectedPartInfo
+type AtlasFrameRecord = {
+  frame: { x: number; y: number; w: number; h: number }
+  rotated?: boolean
+  trimmed?: boolean
+  points?: AtlasPoints
+}
+
+type SpriteAtlas = Omit<BaseSpriteAtlas, 'frames'> & {
+  frames: Record<string, AtlasFrameRecord>
 }
 
 interface MonsterPreviewProps {
   spriteAtlas: SpriteAtlas | null
   spriteSheets: string | null
   partPreviews: PartPreviews
-  selectedPartsMonster: React.MutableRefObject<SelectedParts>
+  selectedParts: SelectedParts
+  canvasRef: React.RefObject<HTMLCanvasElement | null>
 }
 
-declare global {
-  interface Window {
-    updatePhaserDisplay?: () => void
-  }
+function placeBodyCentered(canvas: HTMLCanvasElement, scale: number) {
+  const srcW = 300
+  const srcH = 380
+  const trimX = 380
+  const trimY = 10
+
+  const drawW = srcW * scale
+  const drawH = srcH * scale
+
+  const bodyX = Math.round((canvas.clientWidth - drawW) / 2 - trimX * scale)
+  const bodyY = Math.round((canvas.clientHeight - drawH) / 2 - trimY * scale)
+
+  return { bodyX, bodyY, scale }
 }
+const SCALE = 0.2
 
 export default function PreviewMonster({
   spriteAtlas,
   spriteSheets,
   partPreviews,
-  selectedPartsMonster,
+  selectedParts,
+  canvasRef,
 }: MonsterPreviewProps) {
-  const phaserContainerRef = useRef<HTMLDivElement>(null)
-  const phaserRef = useRef<Phaser.Game | null>(null)
-  const sceneRef = useRef<Phaser.Scene | null>(null)
-
-  const generateStayAnimations = useCallback(
-    (scene: Phaser.Scene) => {
-      const texture = scene.textures.get('monster')
-      const stayAnimations: Record<string, string[]> = {}
-
-      for (const frameName in spriteAtlas?.frames || {}) {
-        if (!texture.has(frameName)) continue
-
-        const match = frameName.match(/^(.*\/stay)\/[^/]+$/)
-        if (!match) continue
-
-        const animKey = `${match[1]}_stay`
-        if (!stayAnimations[animKey]) stayAnimations[animKey] = []
-        stayAnimations[animKey].push(frameName)
-      }
-
-      for (const animKey in stayAnimations) {
-        scene.anims.create({
-          key: animKey,
-          frames: stayAnimations[animKey].sort().map((f) => ({ key: 'monster', frame: f })),
-          frameRate: 6,
-          repeat: -1,
-        })
-      }
-    },
-    [spriteAtlas],
-  )
-
-  const updateDisplay = useCallback(
-    (scene: Phaser.Scene) => {
-      scene.children.removeAll()
-
-      const scale = 0.16
-      const bodyX = 0
-      const bodyY = 145
-
-      const body = selectedPartsMonster.current.body
-      if (!body) return
-
-      const bodyFrame = partPreviews.body.find((f) => f.key === body.key)?.frameData
-      const bodyPoints = bodyFrame?.points
-      if (!bodyPoints) return
-
-      const drawPart = (part: SelectedPartInfo, attachPoint: { x: number; y: number }) => {
-        const baseAnimKey = part.key.replace(/\/[^/]+$/, '')
-        const animKey = baseAnimKey + '_stay'
-        const x = bodyX + (attachPoint.x - part.attachPoint.x) * scale
-        const y = bodyY + (attachPoint.y - part.attachPoint.y) * scale
-
-        scene.add.sprite(x, y, 'monster').setOrigin(0, 0).setScale(scale).play(animKey)
-      }
-
-      // Body
-      const baseBodyKey = body.key.replace(/\/[^/]+$/, '') + '_stay'
-      scene.add.sprite(bodyX, bodyY, 'monster').setOrigin(0, 0).setScale(scale).play(baseBodyKey)
-
-      if (selectedPartsMonster.current.leftArm && bodyPoints.attachLeftArm) {
-        drawPart(selectedPartsMonster.current.leftArm, bodyPoints.attachLeftArm)
-      }
-
-      if (selectedPartsMonster.current.rightArm && bodyPoints.attachRightArm) {
-        drawPart(selectedPartsMonster.current.rightArm, bodyPoints.attachRightArm)
-      }
-
-      if (selectedPartsMonster.current.head && bodyPoints.attachToHead) {
-        drawPart(selectedPartsMonster.current.head, bodyPoints.attachToHead)
-      }
-    },
-    [partPreviews, selectedPartsMonster],
-  )
+  const [imgUrl, setImgUrl] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!phaserContainerRef.current || !spriteAtlas || !spriteSheets) return
-
-    let monsterImage: HTMLImageElement
-
-    class PreviewScene extends Phaser.Scene {
-      constructor() {
-        super('PreviewScene')
-      }
-
-      preload() {
-        this.load.image('monsterImage', `${spriteSheets}?v=${Date.now()}`)
-      }
-
-      create() {
-        monsterImage = this.textures.get('monsterImage').getSourceImage() as HTMLImageElement
-        this.textures.addAtlasJSONHash('monster', monsterImage, spriteAtlas!)
-
-        generateStayAnimations(this)
-        sceneRef.current = this
-        updateDisplay(this)
-      }
-    }
-
-    const config: Phaser.Types.Core.GameConfig = {
-      type: Phaser.CANVAS,
-      width: 180,
-      height: 380,
-      parent: phaserContainerRef.current,
-      transparent: true,
-      scale: { mode: Phaser.Scale.NONE },
-      scene: PreviewScene,
-      audio: {
-        noAudio: true,
-      },
-    }
-
-    phaserRef.current = new Phaser.Game(config)
-
-    window.updatePhaserDisplay = () => {
-      try {
-        if (sceneRef.current) {
-          updateDisplay(sceneRef.current)
-        }
-      } catch (err) {
-        console.log(`${err instanceof Error ? err.message : String(err)}`)
-      }
-    }
-
+    let revoke: string | null = null
+    if (!spriteSheets) return
+    ;(async () => {
+      const res = await fetch(spriteSheets, { mode: 'cors', credentials: 'omit' })
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      revoke = url
+      setImgUrl(url)
+    })()
     return () => {
-      phaserRef.current?.destroy(true)
+      if (revoke) URL.revokeObjectURL(revoke)
     }
-  }, [spriteAtlas, spriteSheets, generateStayAnimations, updateDisplay])
+  }, [spriteSheets])
 
-  return <div ref={phaserContainerRef} />
+  const atlasImage = useMemo(() => {
+    if (!imgUrl) return null
+    const img = new Image()
+    img.src = imgUrl
+    return img
+  }, [imgUrl])
+
+  const getStayFrame = (keyOrBase: string): string | null => {
+    const frames = spriteAtlas?.frames
+    if (!frames) return null
+    if (frames[keyOrBase]) return keyOrBase
+    const stayIdx = keyOrBase.indexOf('/stay/')
+    const baseKey = stayIdx !== -1 ? keyOrBase.slice(0, stayIdx) : keyOrBase.replace(/\/[^/]+$/, '')
+    const prefix = `${baseKey}/stay/`
+    const names = Object.keys(frames).filter((n) => n.startsWith(prefix))
+    if (!names.length) return null
+    names.sort()
+    return names[0]
+  }
+
+  const drawFrame = (
+    ctx: CanvasRenderingContext2D,
+    img: HTMLImageElement,
+    frameName: string,
+    dx: number,
+    dy: number,
+    scale: number,
+  ) => {
+    const rec = spriteAtlas?.frames?.[frameName]
+    if (!rec) return
+    const { x, y, w, h } = rec.frame
+    ctx.imageSmoothingEnabled = false
+    ctx.drawImage(img, x, y, w, h, dx, dy, Math.round(w * scale), Math.round(h * scale))
+  }
+
+  const draw = () => {
+    const canvas = canvasRef.current
+    if (!canvas || !spriteAtlas || !atlasImage) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx || !atlasImage.complete) return
+
+    // очистка с учётом HiDPI
+    ctx.save()
+    ctx.setTransform(1, 0, 0, 1, 0, 0)
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.restore()
+
+    const body = selectedParts.body
+    if (!body) return
+
+    const bodyStay = getStayFrame(body.key)
+    if (!bodyStay) return
+
+    const bodyRec = spriteAtlas.frames[bodyStay]
+    const { bodyX, bodyY, scale } = placeBodyCentered(canvas, SCALE)
+
+    const bodyPointsFromAtlas: AtlasPoints | undefined = bodyRec?.points
+    const bodyPoints =
+      bodyPointsFromAtlas ??
+      partPreviews.body.find((f) => f.key === body.key)?.frameData?.points ??
+      undefined
+    if (!bodyPoints) return
+
+    const drawPart = (part: SelectedPartInfo | undefined, attach?: { x: number; y: number }) => {
+      if (!part || !attach) return
+      const stay = getStayFrame(part.key)
+      if (!stay) return
+      const x = bodyX + (attach.x - part.attachPoint.x) * scale
+      const y = bodyY + (attach.y - part.attachPoint.y) * scale
+      drawFrame(ctx, atlasImage, stay, x, y, scale)
+    }
+
+    drawPart(selectedParts.leftArm, bodyPoints.attachLeftArm)
+    drawFrame(ctx, atlasImage, bodyStay, bodyX, bodyY, scale)
+    drawPart(selectedParts.head, bodyPoints.attachToHead)
+    drawPart(selectedParts.rightArm, bodyPoints.attachRightArm)
+  }
+
+  useEffect(() => {
+    if (!atlasImage) return
+    const onLoad = () => draw()
+    if (atlasImage.complete) draw()
+    else atlasImage.addEventListener('load', onLoad)
+    return () => atlasImage.removeEventListener('load', onLoad)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [atlasImage, spriteAtlas])
+
+  useEffect(() => {
+    draw()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    spriteAtlas,
+    partPreviews,
+    selectedParts.body?.key,
+    selectedParts.head?.key,
+    selectedParts.leftArm?.key,
+    selectedParts.rightArm?.key,
+  ])
+
+  useLayoutEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const cssW = canvas.clientWidth
+    const cssH = canvas.clientHeight
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+
+    canvas.width = Math.round(cssW * dpr)
+    canvas.height = Math.round(cssH * dpr)
+
+    const ctx = canvas.getContext('2d')
+    if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0) // рисуем в CSS-пикселях
+  }, [])
+
+  return (
+    <div className={styles.monsterSlot}>
+      <div className={styles.monsterScaleBox}>
+        <canvas ref={canvasRef} className={styles.canvas} />
+        <div className={styles.dotWrapper}>
+          <div className={styles.outerDot}>
+            <div className={styles.innerDot} />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
