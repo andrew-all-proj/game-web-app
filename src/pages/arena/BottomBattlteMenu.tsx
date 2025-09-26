@@ -109,11 +109,11 @@ const BottomBattlteMenu = ({
       <div className={styles.decorElement}></div>
       <button
         className={styles.confirmBtn}
-        disabled={!canConfirm}              
+        disabled={!canConfirm}
         onClick={handleConfirm}
         aria-disabled={!canConfirm}
         aria-label={isSkip ? 'Пропустить ход' : 'Подтвердить выбор'}
-        data-skip={isSkip ? 'true' : 'false'} 
+        data-skip={isSkip ? 'true' : 'false'}
         title={isSkip ? 'Пропустить ход' : 'Подтвердить выбор'}
       >
         {isSkip ? '⏭' : '✓'}
