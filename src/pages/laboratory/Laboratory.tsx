@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { observer } from 'mobx-react-lite'
 import userStore from '../../stores/UserStore'
 import { useNavigate } from 'react-router-dom'
-
 import styles from './Laboratory.module.css'
 import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
 import Loading from '../loading/Loading'
@@ -20,6 +19,7 @@ import StatBarMain from '../../components/StatBar/StatBarMain'
 import RoundButton from '../../components/Button/RoundButton'
 import MonsterAvatarWithShadow from '../../components/MonsterAvatarWithShadow/MonsterAvatarWithShadow'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
+import InputBox from '../../components/InputBox/InputBox'
 
 const Laboratory = observer(() => {
   const navigate = useNavigate()
@@ -28,6 +28,8 @@ const Laboratory = observer(() => {
 
   const monsters = monsterStore.monsters
   const selectedMonster = monsters[monsterIndex]
+
+  const isActive = Boolean(selectedMonster?.isSelected)
 
   useEffect(() => {
     ;(async () => {
@@ -76,10 +78,6 @@ const Laboratory = observer(() => {
     navigate('/create-user')
   }
 
-  // const handleSelectMonster = (monster: Monster) => {
-  //   monsterStore.setSelectedMonster(monster.id)
-  // }
-
   const handleGoToMonsterMenu = (monster: Monster) => {
     if (!monster?.id) return
     navigate(`/monster-menu/${monster.id}`)
@@ -102,6 +100,12 @@ const Laboratory = observer(() => {
     if (monsters.length === 0) return
     const newIndex = (monsterIndex + 1) % monsters.length
     setMonsterIndex(newIndex)
+  }
+
+  const handleSetActive = () => {
+    if (!selectedMonster?.id) return
+    if (selectedMonster.isSelected) return
+    monsterStore.setSelectedMonster(selectedMonster.id)
   }
 
   return (
@@ -140,6 +144,9 @@ const Laboratory = observer(() => {
           height={40}
           className={styles.headerStatBarMain}
         />
+        <div className={styles.wrapperInputBox}>
+          <InputBox isActive={isActive} handleSetActive={handleSetActive} text="Активный" />
+        </div>
       </div>
       <div className={styles.centerContent}>
         <div className={styles.avatarMobileContainer}>
@@ -149,11 +156,15 @@ const Laboratory = observer(() => {
           />
         </div>
         <div className={styles.selectMonsters}>
-          <RoundButton onClick={handlePrevMonster} color="#D2FF49" />
+          <RoundButton onClick={handlePrevMonster} color="var(--green-secondary-color)" />
           <MainButton width={210} height={63} onClick={() => handleGoToArena(selectedMonster)}>
             Арена
           </MainButton>
-          <RoundButton onClick={handleNextMonster} type="next" color="#D2FF49" />
+          <RoundButton
+            onClick={handleNextMonster}
+            type="next"
+            color="var(--green-secondary-color)"
+          />
         </div>
       </div>
       <div className={styles.bottomMenu}>
