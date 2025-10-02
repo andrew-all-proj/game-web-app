@@ -15,6 +15,7 @@ import errorStore from '../../stores/ErrorStore'
 import { GetBattleReward } from '../../types/BattleRedis'
 import ResultBattle from '../result-battle/ResultBattle'
 import Fight from './Fight'
+import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 
 const getSprite = async (
   monster?: Monster | null,
@@ -62,13 +63,21 @@ const Arena = observer(() => {
         const battle = data.MonsterBattle
 
         if (battle.status === 'REJECTED') {
-          //setInfoMessage('Бой отменён')
+          showTopAlert({
+            open: true,
+            text: 'Бой отменён',
+            variant: 'warning',
+          })
           setStartFight(false)
           navigate('/search-battle')
         }
 
         if (battle.status === 'FINISHED') {
-          //setInfoMessage('Бой завершён')
+          showTopAlert({
+            open: true,
+            text: 'Бой завершён',
+            variant: 'warning',
+          })
           setStartFight(false)
           navigate('/search-battle')
         }
@@ -99,8 +108,12 @@ const Arena = observer(() => {
           setAtlas(atlasJson)
           setSpriteUrl(spriteFile.url)
         } else {
-          errorStore.setError({ error: true, message: 'Ошибка загрузки спрайтов' })
-          navigate('/error')
+          showTopAlert({
+            open: true,
+            text: 'Ошибка загрузки спрайтов',
+            variant: 'warning',
+          })
+          return navigate('/search-battle')
         }
 
         const { atlasFile: opponentAtlasFile, spriteFile: opponentSpriteFile } = await getSprite(
@@ -111,12 +124,20 @@ const Arena = observer(() => {
           setAtlasOpponent(atlasJson)
           setSpriteUrlOpponent(opponentSpriteFile.url)
         } else {
-          errorStore.setError({ error: true, message: 'Ошибка загрузки спрайтов соперника' })
-          navigate('/error')
+          showTopAlert({
+            open: true,
+            text: 'Ошибка загрузки спрайтов соперника',
+            variant: 'warning',
+          })
+          return navigate('/search-battle')
         }
       } catch (error) {
-        console.error('Ошибка при старте боя:', error)
-        //setInfoMessage('Ошибка при загрузке данных боя')
+        showTopAlert({
+          open: true,
+          text: 'Бой не найден',
+          variant: 'warning',
+        })
+        return navigate('/search-battle')
       } finally {
         setIsLoading(false)
       }
