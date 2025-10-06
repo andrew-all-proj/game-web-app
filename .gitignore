@@ -1,26 +1,28 @@
-# Logs
-logs
+.git
+.github
+.gitignore
+.vscode
+.idea
+.DS_Store
+
+# Логи/кеши
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+.eslintcache
+.cache
+.vite
+coverage
+*.tsbuildinfo
 
 node_modules
 dist
 dist-ssr
-*.local
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
+# Секреты
 .env
+.env.*
+
+!nginx.conf
+!package.json
+!yarn.lock
+!.yarnrc.yml
+!.yarn/**
