@@ -5,7 +5,7 @@
 ############################
 FROM node:20-alpine AS deps
 WORKDIR /app
-RUN corepack enable || true
+RUN apk add --no-cache git openssh && corepack enable || true
 ENV YARN_NODE_LINKER=node-modules
 
 RUN mkdir -p -m 700 /root/.ssh && ssh-keyscan github.com >> /root/.ssh/known_hosts
