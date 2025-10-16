@@ -52,6 +52,28 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set build args
+        id: cfg
+        shell: bash
+        run: |
+          BRANCH="${GITHUB_REF##*/}"
+          if [ "$BRANCH" = "master" ]; then
+            VITE_API_URL="https://api.game.managetlg.com/graphql"
+            VITE_API_FILE="https://api.game.managetlg.com"
+            VITE_SOCKET_URL="wss://api.game.managetlg.com/"
+            VITE_LOCAL="false"
+          else
+            # testing (или другие ветки)
+            VITE_API_URL="https://api.game.managetlg.com/graphql"
+            VITE_API_FILE="https://api.game.managetlg.com"
+            VITE_SOCKET_URL="wss://api.game.managetlg.com/"
+            VITE_LOCAL="false"
+          fi
+          echo "VITE_API_URL=$VITE_API_URL"           >> "$GITHUB_OUTPUT"
+          echo "VITE_API_FILE=$VITE_API_FILE"         >> "$GITHUB_OUTPUT"
+          echo "VITE_SOCKET_URL=$VITE_SOCKET_URL"     >> "$GITHUB_OUTPUT"
+          echo "VITE_LOCAL=$VITE_LOCAL"               >> "$GITHUB_OUTPUT"
+
       - name: Build & Push
         uses: docker/build-push-action@v6
         with:
@@ -63,3 +85,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+          build-args: |
+            VITE_API_URL=${{ steps.cfg.outputs.VITE_API_URL }}
+            VITE_API_FILE=${{ steps.cfg.outputs.VITE_API_FILE }}
+            VITE_SOCKET_URL=${{ steps.cfg.outputs.VITE_SOCKET_URL }}
+            VITE_LOCAL=${{ steps.cfg.outputs.VITE_LOCAL }}
