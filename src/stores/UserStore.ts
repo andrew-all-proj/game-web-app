@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import client from '../api/apolloClient'
-import { USER_APPLY_ENERGY, USER_LOGIN } from '../api/graphql/mutation'
+import { USER_APPLY_ENERGY, USER_LOGIN, USER_UPDATE } from '../api/graphql/mutation'
 import { USER } from '../api/graphql/query'
 import socketStore from './SocketStore'
 import { CommonResponse } from '../types/GraphResponse'
@@ -24,6 +24,12 @@ export type TelegramUser = {
   is_premium?: boolean
   added_to_attachment_menu?: boolean
   allows_write_to_pm?: boolean
+}
+
+export type UserSelectedPartsInput = {
+  bodyPartId: number
+  headPartId: number
+  emotionPartId: number
 }
 
 class UserStore {
@@ -87,6 +93,43 @@ class UserStore {
     }
 
     return user
+  }
+
+  async updateUserProfile(args: {
+    nameProfessor?: string
+    isRegistered?: boolean
+    avatarFileId?: string | null
+    userSelectedParts?: UserSelectedPartsInput | null
+  }): Promise<User | null> {
+    if (!this.user?.id) return null
+
+    const variables: Record<string, any> = {
+      id: this.user.id,
+      ...(args.nameProfessor !== undefined && { nameProfessor: args.nameProfessor }),
+      ...(args.isRegistered !== undefined && { isRegistered: args.isRegistered }),
+      ...(args.avatarFileId !== undefined && { avatarFileId: args.avatarFileId }),
+      ...(args.userSelectedParts !== undefined && { userSelectedParts: args.userSelectedParts }),
+    }
+
+    const { data } = await client.mutate({
+      mutation: USER_UPDATE,
+      variables,
+    })
+
+    const updated = data?.UserUpdate
+    if (!updated) return null
+
+    const transformed: User = {
+      id: updated.id,
+      name: updated.name,
+      nameProfessor: updated.nameProfessor,
+      isRegistered: updated.isRegistered,
+      avatar: updated.avatar ? { id: updated.avatar.id, url: updated.avatar.url } : null,
+      energy: this.user?.energy,
+      token: this.user?.token,
+    }
+    this.setUser(transformed)
+    return transformed
   }
 
   apllyEnergyToUser = async (userInventoryId: string): Promise<CommonResponse> => {

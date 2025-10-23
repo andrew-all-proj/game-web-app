@@ -6,9 +6,7 @@ import clothesIcon from '../../assets/icon/icon_clothes.svg'
 import emotionIcon from '../../assets/icon/icon_face.svg'
 import userStore from '../../stores/UserStore'
 import styles from './CreateUser.module.css'
-import { uploadFile } from '../../api/upload-file'
 import client from '../../api/apolloClient'
-import { USER_UPDATE } from '../../api/graphql/mutation'
 import { FILES } from '../../api/graphql/query'
 import { FileItem, GraphQLListResponse } from '../../types/GraphResponse'
 import { getMaxVersion } from '../../functions/get-max-version'
@@ -20,6 +18,7 @@ import errorStore from '../../stores/ErrorStore'
 import RoundButton from '../../components/Button/RoundButton'
 import clsx from 'clsx'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
+import IncubatorOverlay from '../../components/IncubatorOverlay/IncubatorOverlay'
 
 interface PartTypeAvatar {
   part: string
@@ -44,7 +43,7 @@ const CreateUser = observer(() => {
 
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-
+  const [isSaving, setIsSaving] = useState(false)
   const [animateIn, setAnimateIn] = useState(false)
 
   useEffect(() => {
@@ -211,7 +210,7 @@ const CreateUser = observer(() => {
       return
     }
     if (trimmedName.length > 10) {
-      showTopAlert({ text: 'Имя не должно превышать 15 символов.', variant: 'info' })
+      showTopAlert({ text: 'Имя не должно превышать 10 символов.', variant: 'info' })
       return
     }
 
@@ -221,7 +220,7 @@ const CreateUser = observer(() => {
       navigate('/laboratory')
       return
     }
-
+    setIsSaving(true)
     let avatarFileId = null
 
     if (!isEditing) {
@@ -236,56 +235,34 @@ const CreateUser = observer(() => {
         showTopAlert({ text: 'Пожалуйста, выберите голову, одежду и лицо.', variant: 'info' })
         return
       }
+    }
 
-      const canvas = canvasRef.current
-      if (!canvas) return
+    const toIndex = (s?: string): number | null => {
+      if (!s) return null
+      const m = s.match(/_(\d+)$/)
+      return m ? Number(m[1]) : null
+    }
 
-      const blob: Blob | null = await new Promise((resolve) =>
-        canvas.toBlob((b) => resolve(b), 'image/png'),
-      )
+    const headPartId = isEditing ? null : toIndex(headParts[headIndex]?.part)
+    const bodyPartId = isEditing ? null : toIndex(bodyParts[bodyIndex]?.part)
+    const emotionPartId = isEditing ? null : toIndex(emotionParts[emotionIndex]?.part)
 
-      if (!blob) {
-        showTopAlert({ text: 'Ошибка при создании изображения.', variant: 'error' })
-        return
-      }
-
-      const formData = new FormData()
-      formData.append('file', new File([blob], 'avatar.png', { type: 'image/png' }))
-      formData.append('name', 'avatar')
-      formData.append('fileType', 'IMAGE')
-      formData.append('contentType', 'AVATAR_PROFESSOR')
-
-      try {
-        const resultUploadFile = await uploadFile({
-          url: `${import.meta.env.VITE_API_FILE}/upload`,
-          formData,
-          token: userStore.user?.token,
-        })
-
-        avatarFileId = resultUploadFile.id || null
-      } catch {
-        showTopAlert({ text: 'Ошибка загрузки изображения.', variant: 'error' })
-        return
-      }
+    if (!isEditing && (headPartId == null || bodyPartId == null || emotionPartId == null)) {
+      showTopAlert({ text: 'Пожалуйста, выберите голову, одежду и лицо.', variant: 'info' })
+      return
     }
 
     try {
-      const { data } = await client.mutate({
-        mutation: USER_UPDATE,
-        variables: {
-          id: userStore.user?.id,
-          nameProfessor: trimmedName,
-          avatarFileId: avatarFileId ?? userStore.user?.avatar?.id ?? null,
-          isRegistered: true,
-        },
+      await userStore.updateUserProfile({
+        nameProfessor: trimmedName,
+        isRegistered: true,
+        avatarFileId: avatarFileId ?? userStore.user?.avatar?.id ?? null,
+        userSelectedParts: isEditing
+          ? undefined 
+          : { bodyPartId: bodyPartId!, headPartId: headPartId!, emotionPartId: emotionPartId! },
       })
 
-      if (data?.UserUpdate) {
-        userStore.setUser(data.UserUpdate)
-        navigate('/laboratory')
-      } else {
-        showTopAlert({ text: 'Аватар загружен, но пользователь не обновлён.', variant: 'error' })
-      }
+      navigate('/laboratory')
     } catch (error) {
       showTopAlert({ text: 'Ошибка сохранения. Попробуйте снова.', variant: 'error' })
     }
@@ -303,6 +280,7 @@ const CreateUser = observer(() => {
 
   return (
     <div className={styles.createUser}>
+      <IncubatorOverlay open={isSaving} text="Изменяем ваши внешние данные..." />
       <div className={styles.navigate}>
         <RoundButton onClick={() => navigate('/laboratory')} />
       </div>
@@ -312,12 +290,14 @@ const CreateUser = observer(() => {
           <canvas ref={canvasRef} width={142} height={142} className={styles.avatarCanvas} />
         </div>
 
-        <MainInput
-          placeholder="_введите Имя"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onButtonClick={handleSaveAvatar}
-        />
+        <div className={styles.inputWrapper}>
+          <MainInput
+            placeholder="_введите Имя"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onButtonClick={handleSaveAvatar}
+          />
+        </div>
       </div>
 
       <div className={clsx(styles.partSelectorWrapper, { [styles.visible]: animateIn })}>

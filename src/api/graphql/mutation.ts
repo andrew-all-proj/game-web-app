@@ -19,15 +19,15 @@ export const USER_LOGIN = gql`
 export const USER_UPDATE = gql`
   mutation UpdateUser(
     $id: String!
-    $nameProfessor: String!
-    $isRegistered: Boolean!
-    $avatarFileId: String
+    $nameProfessor: String
+    $isRegistered: Boolean
+    $userSelectedParts: UserSelectedBodyPartInput
   ) {
     UserUpdate(
       id: $id
       nameProfessor: $nameProfessor
       isRegistered: $isRegistered
-      avatarFileId: $avatarFileId
+      userSelectedParts: $userSelectedParts
     ) {
       id
       name
