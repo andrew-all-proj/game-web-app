@@ -27,6 +27,7 @@
   cursor: pointer;
   position: relative;
   display: block;
+  transform: translateY(-20px);
 }
 
 .dotWrapper {

@@ -31,7 +31,7 @@ export function usePhaserBattleScene({
   opponentLabel = 'Соперник',
   width = 400,
   height = 300,
-  scale = 0.15,
+  scale = 0.7,
 }: Params) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
