@@ -17,6 +17,7 @@ type Params = {
   width?: number
   height?: number
   scale?: number
+  opponentScale?: number
 }
 
 export function usePhaserBattleScene({
@@ -32,6 +33,7 @@ export function usePhaserBattleScene({
   width = 400,
   height = 300,
   scale = 0.7,
+  opponentScale = 0.6,
 }: Params) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
@@ -134,7 +136,7 @@ export function usePhaserBattleScene({
         .sprite(width * 0.75, height * 0.6, 'opponent', Object.keys(atlasOpponent!.frames)[0])
         .setOrigin(0.5, 0.86)
         .setFlipX(true) // зеркалим противника
-        .setScale(0.13)
+        .setScale(opponentScale)
         .setName('opponentMonster')
 
       layerYou.add(yourMonster)
