@@ -1,6 +1,6 @@
 import { Navigate, RouteObject } from 'react-router-dom'
+import { Suspense, lazy } from 'react'
 import CreateUser from '../pages/create-user/CreateUser'
-import Arena from '../pages/arena/Arena'
 import StartApp from '../pages/start-app/StartApp'
 import Laboratory from '../pages/laboratory/Laboratory'
 import ErrorPage from '../pages/error/ErrorPage'
@@ -12,6 +12,9 @@ import MutagensMenu from '../pages/mutagens-menu/MutagensMenu'
 import MonsterApplyMutagen from '../pages/monster-apply-mutagen/MonsterApplyMutagen'
 import SkillMenu from '../pages/skill-menu/SkillMenu'
 import EnergyMenu from '../pages/energy-menu/EnergyMenu'
+import Loading from '../pages/loading/Loading'
+
+const Arena = lazy(() => import('../pages/arena/Arena'))
 
 const routes: RouteObject[] = [
   {
@@ -20,7 +23,11 @@ const routes: RouteObject[] = [
   },
   {
     path: '/arena/:battleId',
-    element: <Arena />,
+    element: (
+      <Suspense fallback={<Loading />}>
+        <Arena />
+      </Suspense>
+    ),
   },
   {
     path: '/arena',

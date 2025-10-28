@@ -22,7 +22,7 @@
   --canvas-w-ratio: 0.6; /* 180 / 300 */
   --canvas-h-ratio: 1.1; /* 380 / 380  */
   --dot-outer-w-ratio: 0.78; /* 300 / 300 */
-  --dot-outer-h-ratio: 0.20; /* 81 / 300 —*/
+  --dot-outer-h-ratio: 0.2; /* 81 / 300 —*/
   --dot-inner-w-ratio: 0.6; /* 180 / 300 */
   --dot-inner-h-ratio: 0.1167; /* 35 / 300 */
   --dot-bottom-offset: -0.07;

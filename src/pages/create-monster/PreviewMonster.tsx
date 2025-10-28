@@ -44,26 +44,26 @@ export default function PreviewMonster({
   const [imgUrl, setImgUrl] = useState<string | null>(null)
 
   useEffect(() => {
-  let revoke: string | null = null
-  if (!spriteSheets) {
-    setImgUrl(null)
-    return
-  }
-
-  (async () => {
-    const res = await fetch(spriteSheets)
-    const blob = await res.blob()
-    const url = URL.createObjectURL(blob)
-    revoke = url
-    setImgUrl(url)
-  })()
-
-  return () => {
-    if (revoke) {
-      URL.revokeObjectURL(revoke)
+    let revoke: string | null = null
+    if (!spriteSheets) {
+      setImgUrl(null)
+      return
     }
-  }
-}, [spriteSheets])
+
+    ;(async () => {
+      const res = await fetch(spriteSheets)
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      revoke = url
+      setImgUrl(url)
+    })()
+
+    return () => {
+      if (revoke) {
+        URL.revokeObjectURL(revoke)
+      }
+    }
+  }, [spriteSheets])
 
   const atlasImage = useMemo(() => {
     if (!imgUrl) return null

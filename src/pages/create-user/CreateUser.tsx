@@ -258,7 +258,7 @@ const CreateUser = observer(() => {
         isRegistered: true,
         avatarFileId: avatarFileId ?? userStore.user?.avatar?.id ?? null,
         userSelectedParts: isEditing
-          ? undefined 
+          ? undefined
           : { bodyPartId: bodyPartId!, headPartId: headPartId!, emotionPartId: emotionPartId! },
       })
 
