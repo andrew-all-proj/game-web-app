@@ -1,4 +1,3 @@
-// FoodMenu.tsx
 import { observer } from 'mobx-react-lite'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useState, useCallback } from 'react'
@@ -105,6 +104,7 @@ const FoodMenu = observer(() => {
               key={monster.id}
               url={monster?.avatar || ''}
               satiety={monster.satiety}
+              name={monster.name || 'no name'}
               disabled={isFeeding}
               onButtonClick={() => !isFeeding && handlerFeedMonster(monster.id)}
             />
