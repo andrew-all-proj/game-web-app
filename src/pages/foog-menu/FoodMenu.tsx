@@ -15,12 +15,14 @@ import inventoriesStore from '../../stores/InventoriesStore'
 import { UserInventoryTypeEnum } from '../../types/enums/UserInventoryTypeEnum'
 import HeaderBar from '../../components/Header/HeaderBar'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
+import CardGetFood from './CardGetFood'
 
 const FoodMenu = observer(() => {
   const navigate = useNavigate()
   const { monsterIdParams } = useParams()
   const [isLoading, setIsLoading] = useState(true)
   const [feedingIds, setFeedingIds] = useState<Set<string>>(new Set())
+  const [disableGetFood, setDisableGetFood] = useState(false)
 
   const fetchInventoriesAndMonsters = useCallback(
     async (withLoading: boolean) => {
@@ -93,10 +95,21 @@ const FoodMenu = observer(() => {
     }
   }
 
+  const handleGetFood = async () => {
+    setDisableGetFood(true)
+    const getFood = await inventoriesStore.fetchGetFood() 
+    showTopAlert({ text:  getFood.message, open: true, variant: 'info' })
+    if(getFood.quantity > 0) {
+      fetchInventoriesAndMonsters(true)
+    }
+    setDisableGetFood(false)
+  }
+
   return (
     <div className={styles.foodMenu}>
       <HeaderBar icon={foodIcon} title={`Еда в наличии: ${inventoriesStore.quantityFood}`} />
       <div className={styles.content}>
+        {inventoriesStore.quantityFood === 0 ? <CardGetFood onButtonClick={handleGetFood} disabled={disableGetFood} /> : <></>}
         {monsterStore.monsters.map((monster) => {
           const isFeeding = feedingIds.has(monster.id)
           return (

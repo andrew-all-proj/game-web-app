@@ -182,3 +182,10 @@ export interface MonsterApplyMutagenResponse {
   oldDefense: number
   oldEvasion: number
 }
+
+export interface GetFoodToday {
+  message: string
+  quantity: number
+  userInventoryId?: string
+  food?: Food
+}

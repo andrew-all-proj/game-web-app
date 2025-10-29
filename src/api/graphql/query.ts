@@ -318,3 +318,23 @@ export const SKILL = gql`
     }
   }
 `
+export const GET_FOOD_TODAY = gql`
+  query GetFoodToday($userId: String!) {
+    GetFoodToday(userId: $userId) {
+      message
+      quantity
+      food {
+        createdAt
+        description
+        iconFile {
+          url
+        }
+        iconFileId
+        id
+        name
+        satietyBonus
+        updatedAt
+      }
+    }
+  }
+`
