@@ -78,6 +78,7 @@ const InfoPopupSkill = ({
         <div className={styles.body}>
           <div className={styles.desc}>
             {userInventory.skill?.description || 'Описание мутагена...'} <br />
+            Стоимость выносливости: {userInventory.skill?.energyCost}
             <br />
             Стоит ли?
           </div>

@@ -48,9 +48,9 @@ export default function CardSkillDescriptions({
 
         {(skill.defense || skill.strength || skill.evasion) && (
           <div className={styles.row}>
-            {skill.defense ? `Защита: +${skill.defense} ` : ''}
-            {skill.strength ? `Атака: +${skill.strength} ` : ''}
-            {skill.evasion ? `Уклонение: +${skill.evasion} ` : ''}
+            {skill.defense ? `Защита: x${skill.defense} ` : ''}
+            {skill.strength ? `Атака: x${skill.strength} ` : ''}
+            {skill.evasion ? `Уклонение: x${skill.evasion} ` : ''}
           </div>
         )}
 
