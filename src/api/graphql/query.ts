@@ -292,3 +292,29 @@ export const USER_INVENTORY = gql`
     }
   }
 `
+
+export const SKILL = gql`
+  query Skill($skillId: String!) {
+    Skill(id: $skillId) {
+      cooldown
+      defense
+      description
+      effects
+      energyCost
+      evasion
+      iconFile {
+        url
+        id
+        fileType
+        contentType
+      }
+      iconFileId
+      id
+      name
+      rarity
+      strength
+      type
+      updatedAt
+    }
+  }
+`

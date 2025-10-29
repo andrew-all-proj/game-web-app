@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 import client from '../api/apolloClient'
-import { USER_INVENTORY } from '../api/graphql/query'
-import { GraphQLListResponse, UserInventory } from '../types/GraphResponse'
+import { SKILL, USER_INVENTORY } from '../api/graphql/query'
+import { GraphQLListResponse, Skill, UserInventory } from '../types/GraphResponse'
 import { UserInventoryTypeEnum } from '../types/enums/UserInventoryTypeEnum'
 
 class InventoriesStore {
@@ -61,6 +61,19 @@ class InventoriesStore {
 
   get quantityFood() {
     return inventoriesStore.food.reduce((acc, item) => acc + (item.quantity ?? 0), 0)
+  }
+
+  async fetchSkillById(id: string): Promise<Skill | null> {
+    try {
+      const { data }: { data: { Skill: Skill } } = await client.query({
+        query: SKILL,
+        variables: { id: id },
+        fetchPolicy: 'no-cache',
+      })
+      return data.Skill
+    } catch {
+      return null
+    }
   }
 
   clear() {

@@ -19,6 +19,7 @@ import PopupCard from '../../components/PopupCard/PopupCard'
 import SelectMonster from './SelectMonster'
 import InfoPopupSkill from './InfoPopupSkill'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
+import CardSkillDescriptions from './CardSkillDescriptions'
 
 const SkillMenu = observer(() => {
   const navigate = useNavigate()
@@ -79,7 +80,7 @@ const SkillMenu = observer(() => {
     }
   }
 
-  const handlerDeleteMutagen = async (userInventory: UserInventory) => {
+  const handlerDeleteSkill = async (userInventory: UserInventory) => {
     try {
       await client.query({
         query: USER_INVENTORY_DELETE,
@@ -124,18 +125,30 @@ const SkillMenu = observer(() => {
           onClose={() => setShowSelectMonster(false)}
         />
       ) : (
-        <SimpleBar className={styles.scrollArea}>
-          <CardsSelectSkill
-            skillIdForReplace={replacedSkillIdParams}
-            monsters={monsterStore.monsters}
-            inventoriesStore={inventoriesStore.inventories}
-            onSelectSkill={(inventory) => {
-              setSelectedInventory(inventory)
-              setShowInfoPopupSkill(true)
-            }}
-          />
-        </SimpleBar>
+        <>
+          {replacedSkillIdParams && monsterIdParams ? (
+            <CardSkillDescriptions
+              skillId={replacedSkillIdParams}
+              monsterId={monsterIdParams}
+              monsterStore={monsterStore}
+            />
+          ) : (
+            <></>
+          )}
+          <SimpleBar className={styles.scrollArea}>
+            <CardsSelectSkill
+              skillIdForReplace={replacedSkillIdParams}
+              monsters={monsterStore.monsters}
+              inventoriesStore={inventoriesStore.inventories}
+              onSelectSkill={(inventory) => {
+                setSelectedInventory(inventory)
+                setShowInfoPopupSkill(true)
+              }}
+            />
+          </SimpleBar>
+        </>
       )}
+
       <InfoPopupSkill
         showInfoPopupSkill={showInfoPopupSkill}
         userInventory={selectedInventory}
@@ -144,12 +157,13 @@ const SkillMenu = observer(() => {
         onClickDelete={() => setOpenPopupCard(true)}
         monsterId={monsterIdParams}
       />
+
       {openPopupCard && selectedInventory && (
         <PopupCard
           title={`Утилизировать ${selectedInventory.skill?.name || 'апгрейд'}?`}
           subtitle={'Это действие нельзя отменить'}
           onClose={() => setOpenPopupCard(false)}
-          onButtonClick={() => handlerDeleteMutagen(selectedInventory)}
+          onButtonClick={() => handlerDeleteSkill(selectedInventory)}
         />
       )}
     </div>
