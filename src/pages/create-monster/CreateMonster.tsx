@@ -25,7 +25,6 @@ import CharacteristicMonster from '../../components/CharacteristicMonster/Charac
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 import IncubatorOverlay from '../../components/IncubatorOverlay/IncubatorOverlay'
 import clsx from 'clsx'
-import BaseJson from '../../assets/baseAtlas.json'
 import BaseSprite from '../../assets/baseSprite.png'
 
 declare global {
