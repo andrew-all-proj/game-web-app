@@ -1,5 +1,4 @@
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
-import { PartPreviews } from './CreateMonster'
 import { SpriteAtlas as BaseSpriteAtlas } from '../../types/sprites'
 import type { SelectedParts } from './CreateMonster'
 import styles from './PreviewMonster.module.css'
@@ -15,7 +14,6 @@ type SpriteAtlas = Omit<BaseSpriteAtlas, 'frames'> & {
 interface MonsterPreviewProps {
   spriteAtlas: SpriteAtlas | null
   spriteSheets: string | null
-  partPreviews: PartPreviews
   selectedParts: SelectedParts
   canvasRef: React.RefObject<HTMLCanvasElement | null>
 }
@@ -111,10 +109,10 @@ export default function PreviewMonster({
     ctx.restore()
 
     const partsToDraw = [
+      selectedParts.rightArm,
       selectedParts.body,
       selectedParts.head,
       selectedParts.leftArm,
-      selectedParts.rightArm,
     ].filter(Boolean)
 
     for (const part of partsToDraw) {

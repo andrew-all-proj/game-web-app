@@ -97,9 +97,9 @@ const FoodMenu = observer(() => {
 
   const handleGetFood = async () => {
     setDisableGetFood(true)
-    const getFood = await inventoriesStore.fetchGetFood() 
-    showTopAlert({ text:  getFood.message, open: true, variant: 'info' })
-    if(getFood.quantity > 0) {
+    const getFood = await inventoriesStore.fetchGetFood()
+    showTopAlert({ text: getFood.message, open: true, variant: 'info' })
+    if (getFood.quantity > 0) {
       fetchInventoriesAndMonsters(true)
     }
     setDisableGetFood(false)
@@ -109,7 +109,11 @@ const FoodMenu = observer(() => {
     <div className={styles.foodMenu}>
       <HeaderBar icon={foodIcon} title={`Еда в наличии: ${inventoriesStore.quantityFood}`} />
       <div className={styles.content}>
-        {inventoriesStore.quantityFood === 0 ? <CardGetFood onButtonClick={handleGetFood} disabled={disableGetFood} /> : <></>}
+        {inventoriesStore.quantityFood === 0 ? (
+          <CardGetFood onButtonClick={handleGetFood} disabled={disableGetFood} />
+        ) : (
+          <></>
+        )}
         {monsterStore.monsters.map((monster) => {
           const isFeeding = feedingIds.has(monster.id)
           return (

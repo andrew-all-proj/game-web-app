@@ -2,25 +2,13 @@ import styles from './PartSelector.module.css'
 import { FrameData } from '../../types/sprites'
 import SpriteCropper from './SpriteCropper'
 
-type PartSingle = {
+export type PartIconEntry = {
+  id: string
   key: string
   frameData: FrameData
 }
 
-type PartArm = {
-  arm: {
-    left: {
-      key: string
-      frameData: FrameData
-    }
-    right: {
-      key: string
-      frameData: FrameData
-    }
-  }
-}
-
-type PartItem = PartSingle | PartArm | null
+type PartItem = PartIconEntry | null
 
 interface TabItem {
   key: string
@@ -36,7 +24,7 @@ interface PartSelectorProps {
   activeTab: string
   onTabChange: (tabKey: string) => void
   spriteUrl: string | null
-  onSelectPart: (part: PartItem) => void
+  onSelectPart: (id: string) => void
 }
 
 export default function PartSelectorMonster({
@@ -48,9 +36,9 @@ export default function PartSelectorMonster({
 }: PartSelectorProps) {
   const currentTab = tabs.find((tab) => tab.key === activeTab)
 
-  const parts = currentTab?.parts || []
+  const parts: PartItem[] = currentTab?.parts || []
   const selectedIndex = currentTab?.selectedIndex ?? -1
-  const onSelect = currentTab?.setSelectedIndex ?? (() => {})
+  const onSelectIndex = currentTab?.setSelectedIndex ?? (() => {})
 
   const fullParts: PartItem[] = [...parts]
   while (fullParts.length < 8) {
@@ -71,50 +59,32 @@ export default function PartSelectorMonster({
         ))}
       </div>
 
+      {/* Сетка иконок */}
       <div className={styles.gridWrapper}>
         {fullParts.map((item, index) => {
-          const onClick = () => {
-            if (item) {
-              onSelect(index)
-              onSelectPart(item)
-            }
-          }
-
           if (!item) {
             return <div key={index} className={styles.partItem} />
           }
 
-          if ('arm' in item) {
-            return (
-              <div key={index} className={styles.partItem} onClick={onClick}>
-                <SpriteCropper
-                  spriteSrc={spriteUrl}
-                  frame={item.arm.right.frameData.frame}
-                  width={64}
-                  height={64}
-                />
-              </div>
-            )
+          const handleClick = () => {
+            onSelectIndex(index)
+            onSelectPart(item.id)
           }
 
-          if ('frameData' in item) {
-            return (
-              <div
-                key={index}
-                className={`${styles.partItem} ${index === selectedIndex ? styles.active : ''}`}
-                onClick={onClick}
-              >
-                <SpriteCropper
-                  spriteSrc={spriteUrl}
-                  frame={item.frameData.frame}
-                  width={64}
-                  height={64}
-                />
-              </div>
-            )
-          }
-
-          return <div key={index} className={styles.partItem} />
+          return (
+            <div
+              key={item.key}
+              className={`${styles.partItem} ${index === selectedIndex ? styles.active : ''}`}
+              onClick={handleClick}
+            >
+              <SpriteCropper
+                spriteSrc={spriteUrl}
+                frame={item.frameData.frame}
+                width={64}
+                height={64}
+              />
+            </div>
+          )
         })}
       </div>
     </div>

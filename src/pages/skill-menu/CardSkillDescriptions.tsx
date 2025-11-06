@@ -4,25 +4,24 @@ import MonsterStore from '../../stores/MonsterStore'
 interface CardsSelectSkillProps {
   monsterId: string
   skillId: string
-  monsterStore: typeof MonsterStore 
+  monsterStore: typeof MonsterStore
 }
 
 export default function CardSkillDescriptions({
   monsterId,
   skillId,
-  monsterStore
+  monsterStore,
 }: CardsSelectSkillProps) {
-  
   const monster = monsterStore.getMonsterById(monsterId)
-  if(!monster) {
+  if (!monster) {
     return
   }
   const monsterAttack = monster?.monsterAttacks.find((attack) => attack.skillId === skillId)
   let skill = monsterAttack?.skill
-  if(!skill) {
+  if (!skill) {
     const monsterDefens = monster?.monsterDefenses.find((attack) => attack.skillId === skillId)
     skill = monsterDefens?.skill
-    if(!skill) {
+    if (!skill) {
       return
     }
   }

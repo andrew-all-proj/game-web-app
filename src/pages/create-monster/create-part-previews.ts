@@ -1,14 +1,45 @@
 import { SpriteAtlas } from '../../types/sprites'
-import { PartPreviewEntry, PartPreviews } from './CreateMonster'
+import { PartIcons, PartPreviewEntry, PartPreviews } from './CreateMonster'
 
-export const createPartPreviews = (spriteAtlas: SpriteAtlas): PartPreviews => {
+export const createPartPreviews = (
+  spriteAtlas: SpriteAtlas,
+): { parts: PartPreviews; icons: PartIcons } => {
   const newPartPreviews: PartPreviews = { head: [], body: [], arms: [] }
   const armsMap: Record<string, { left?: PartPreviewEntry; right?: PartPreviewEntry }> = {}
+  const icons: PartIcons = { head: [], body: [], arms: [] }
 
   for (const frameName in spriteAtlas.frames) {
+    const partData = spriteAtlas.frames[frameName]
+
+    // --- 1. Icons ---
+    if (frameName.includes('/icon/')) {
+      const partData = spriteAtlas.frames[frameName]
+
+      const [category, name] = frameName.split('/icon/')
+
+      const baseName = name.replace('_icon', '')
+      const id = `${category}/stay/${baseName}_0`
+
+      const iconEntry = {
+        id, // link stay frame
+        key: frameName, // icon-frame
+        frameData: partData,
+      }
+
+      if (category.startsWith('head')) {
+        icons.head.push(iconEntry)
+      } else if (category.startsWith('body')) {
+        icons.body.push(iconEntry)
+      } else if (category.startsWith('left_arm')) {
+        icons.arms.push(iconEntry)
+      }
+
+      continue
+    }
+
+    // --- Main stay  ---
     if (frameName.includes('/stay/')) {
       const [category] = frameName.split('/stay/')
-      const partData = spriteAtlas.frames[frameName]
       const previewEntry: PartPreviewEntry = { key: frameName, frameData: partData }
 
       if (category.startsWith('head') && frameName.endsWith('_0')) {
@@ -26,11 +57,8 @@ export const createPartPreviews = (spriteAtlas: SpriteAtlas): PartPreviews => {
 
         if (!armsMap[commonName]) armsMap[commonName] = {}
 
-        if (armSide === 'right_arm') {
-          armsMap[commonName].right = previewEntry
-        } else if (armSide === 'left_arm') {
-          armsMap[commonName].left = previewEntry
-        }
+        if (armSide === 'right_arm') armsMap[commonName].right = previewEntry
+        else if (armSide === 'left_arm') armsMap[commonName].left = previewEntry
       }
     }
   }
@@ -42,5 +70,5 @@ export const createPartPreviews = (spriteAtlas: SpriteAtlas): PartPreviews => {
     )
     .map((armPair) => ({ arm: armPair }))
 
-  return newPartPreviews
+  return { parts: newPartPreviews, icons }
 }

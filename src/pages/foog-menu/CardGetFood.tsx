@@ -2,14 +2,10 @@ import styles from './CardGetFood.module.css'
 
 interface CardGetFoodProps {
   onButtonClick: () => void
-  disabled: boolean,
+  disabled: boolean
 }
 
-export default function CardGetFood({
-  onButtonClick,
-  disabled = false,
-}: CardGetFoodProps) {
-
+export default function CardGetFood({ onButtonClick, disabled = false }: CardGetFoodProps) {
   return (
     <div className={styles.cardFeedMonster}>
       <div className={styles.satietyInfo}>

@@ -25,6 +25,8 @@ import CharacteristicMonster from '../../components/CharacteristicMonster/Charac
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 import IncubatorOverlay from '../../components/IncubatorOverlay/IncubatorOverlay'
 import clsx from 'clsx'
+import BaseJson from '../../assets/baseAtlas.json'
+import BaseSprite from '../../assets/baseSprite.png'
 
 declare global {
   interface Window {
@@ -39,7 +41,6 @@ export interface PartPreviewEntry {
 
 export interface SelectedPartInfo {
   key: string
-  attachPoint: { x: number; y: number }
   frameSize: { w: number; h: number; x: number; y: number }
 }
 
@@ -56,6 +57,12 @@ export interface PartPreviews {
   arms: { arm: { left: PartPreviewEntry; right: PartPreviewEntry } }[]
 }
 
+export interface PartIcons {
+  head: { id: string; key: string; frameData: FrameData }[]
+  body: { id: string; key: string; frameData: FrameData }[]
+  arms: { id: string; key: string; frameData: FrameData }[]
+}
+
 type PartTab = keyof PartPreviews
 
 type HeadBodyPart = PartPreviewEntry
@@ -66,7 +73,10 @@ const CreateMonster = observer(() => {
   const navigate = useNavigate()
   const [name, setName] = useState('')
   const [spriteAtlasJson, setSpriteAtlasJson] = useState<SpriteAtlas | null>(null)
-  const [partPreviews, setPartPreviews] = useState<PartPreviews>({ head: [], body: [], arms: [] })
+  const [partPreviews, setPartPreviews] = useState<{ parts: PartPreviews; icons: PartIcons }>({
+    parts: { head: [], body: [], arms: [] },
+    icons: { head: [], body: [], arms: [] },
+  })
   const [spriteUrl, setSpriteUrl] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -113,7 +123,7 @@ const CreateMonster = observer(() => {
           }
           setSpriteAtlasJson(atlasJson)
           setPartPreviews(createPartPreviews(atlasJson))
-          setSpriteUrl(spriteFile.url)
+          setSpriteUrl(BaseSprite)
         } else {
           errorStore.setError({
             error: true,
@@ -134,34 +144,62 @@ const CreateMonster = observer(() => {
     fetchMainSprite()
   }, [navigate])
 
-  const handlePartSelect = (part: SelectablePart) => {
-    if (!part) return
+  const handlePartSelect = (id: string) => {
+    if (!id) return
+
 
     setSelectedParts((prev) => {
-      const next = { ...prev }
+      const next: SelectedParts = { ...prev }
 
-      if (activeTab === 'arms' && 'arm' in part) {
-        next.leftArm = {
-          key: part.arm.left.key,
-          attachPoint: part.arm.left.frameData?.points?.attachToBody || { x: 0, y: 0 },
-          frameSize: part.arm.left.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
-        }
-        next.rightArm = {
-          key: part.arm.right.key,
-          attachPoint: part.arm.right.frameData?.points?.attachToBody || { x: 0, y: 0 },
-          frameSize: part.arm.right.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
-        }
-      } else if (part && 'frameData' in part) {
-        const attachPoint = part.frameData?.points?.attachToBody || { x: 0, y: 0 }
-        const partInfo: SelectedPartInfo = {
+      // HEAD
+      if (activeTab === 'head') {
+        const part = partPreviews.parts.head.find((item) => item.key === id)
+        if (!part) return prev
+
+        next.head = {
           key: part.key,
-          attachPoint,
-          frameSize: part.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
+          frameSize: part.frameData?.frame ?? { x: 0, y: 0, w: 0, h: 0 },
         }
-        if (activeTab === 'head') next.head = partInfo
-        else if (activeTab === 'body') next.body = partInfo
+
+        return next
       }
-      return next
+
+      // BODY
+      if (activeTab === 'body') {
+        const part = partPreviews.parts.body.find((item) => item.key === id)
+        if (!part) return prev
+
+        next.body = {
+          key: part.key,
+          frameSize: part.frameData?.frame ?? { x: 0, y: 0, w: 0, h: 0 },
+        }
+
+        return next
+      }
+
+      if (activeTab === 'arms') {
+        const armPair = partPreviews.parts.arms.find(
+          (pair) => pair.arm.left.key === id || pair.arm.right.key === id,
+        )
+        if (!armPair) return prev
+
+        const left = armPair.arm.left
+        const right = armPair.arm.right
+
+        next.leftArm = {
+          key: left.key,
+          frameSize: left.frameData?.frame ?? { x: 0, y: 0, w: 0, h: 0 },
+        }
+
+        next.rightArm = {
+          key: right.key,
+          frameSize: right.frameData?.frame ?? { x: 0, y: 0, w: 0, h: 0 },
+        }
+
+        return next
+      }
+
+      return prev
     })
   }
 
@@ -255,7 +293,6 @@ const CreateMonster = observer(() => {
         <PreviewMonster
           spriteAtlas={spriteAtlasJson}
           spriteSheets={spriteUrl}
-          partPreviews={partPreviews}
           selectedParts={selectedParts}
           canvasRef={canvasRef}
         />
@@ -277,7 +314,7 @@ const CreateMonster = observer(() => {
               key: 'head',
               icon: headIcon,
               alt: 'Head',
-              parts: partPreviews.head,
+              parts: partPreviews.icons.head,
               selectedIndex: headIndex,
               setSelectedIndex: setHeadIndex,
             },
@@ -285,7 +322,7 @@ const CreateMonster = observer(() => {
               key: 'body',
               icon: bodyIcon,
               alt: 'Body',
-              parts: partPreviews.body,
+              parts: partPreviews.icons.body,
               selectedIndex: bodyIndex,
               setSelectedIndex: setBodyIndex,
             },
@@ -293,7 +330,7 @@ const CreateMonster = observer(() => {
               key: 'arms',
               icon: armsIcon,
               alt: 'Arms',
-              parts: partPreviews.arms,
+              parts: partPreviews.icons.arms,
               selectedIndex: armsIndex,
               setSelectedIndex: setArmsIndex,
             },
