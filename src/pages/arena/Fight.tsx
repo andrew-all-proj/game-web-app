@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import monsterStore from '../../stores/MonsterStore'
 import styles from './Fight.module.css'
 import { getSocket } from '../../api/socket'
@@ -176,6 +176,17 @@ export default function Fight({
     window.addEventListener('resize', setVars)
     return () => window.removeEventListener('resize', setVars)
   }, [])
+
+  useEffect(() => {
+    if(isLoading) return
+    const socket = getSocket()
+    if (!socket) return
+    socket.emit('startBattle', {
+        battleId,
+        monsterId: monsterStore.selectedMonster?.id,
+      })
+
+  }, [isLoading])
 
   return (
     <>
