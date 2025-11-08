@@ -150,7 +150,7 @@ const MonsterMenu = observer(() => {
         <div
           className={styles.center}
           onClick={() => {
-            navigate(`/food-menu/${userStore.user?.id || ''}`)
+            navigate(`/food-menu || ''}`)
           }}
         >
           <div className={styles.barWrapper}>

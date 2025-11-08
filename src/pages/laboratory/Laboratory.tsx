@@ -175,7 +175,7 @@ const Laboratory = observer(() => {
             className={styles.tabIconImage}
             onClick={() => {
               if (userStore.user?.id) {
-                navigate(`/food-menu/${userStore.user.id}`)
+                navigate(`/food-menu`)
               }
             }}
           />
