@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate} from 'react-router-dom'
 import { useEffect, useState, useCallback } from 'react'
 import styles from './FoodMenu.module.css'
 import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
@@ -19,7 +19,6 @@ import CardGetFood from './CardGetFood'
 
 const FoodMenu = observer(() => {
   const navigate = useNavigate()
-  const { monsterIdParams } = useParams()
   const [isLoading, setIsLoading] = useState(true)
   const [feedingIds, setFeedingIds] = useState<Set<string>>(new Set())
   const [disableGetFood, setDisableGetFood] = useState(false)
@@ -44,7 +43,7 @@ const FoodMenu = observer(() => {
 
   useEffect(() => {
     fetchInventoriesAndMonsters(true)
-  }, [monsterIdParams, fetchInventoriesAndMonsters])
+  }, [fetchInventoriesAndMonsters])
 
   if (isLoading && inventoriesStore.inventories.length === 0) {
     return <Loading />

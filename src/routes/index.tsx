@@ -58,7 +58,7 @@ const routes: RouteObject[] = [
     element: <MonsterMenu />,
   },
   {
-    path: '/food-menu/:userIdParams',
+    path: '/food-menu',
     element: <FoodMenu />,
   },
   {
