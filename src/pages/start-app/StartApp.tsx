@@ -35,7 +35,7 @@ const StartApp = observer(() => {
         if (startParam === 'food-menu') {
           navigate('/food-menu')
         } else if (startParam && startParam.startsWith('arena-')) {
-          const [_, uid] = startParam.split('-', 2)
+          const uid = startParam.substring(startParam.indexOf('-') + 1)
 
           if (uid) {
             navigate(`/arena/${uid}`)
