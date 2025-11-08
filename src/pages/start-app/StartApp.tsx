@@ -34,6 +34,15 @@ const StartApp = observer(() => {
       } else {
         if (startParam === 'food-menu') {
           navigate('/food-menu')
+        } else if (startParam && startParam.startsWith('arena/')) {
+          const parts = startParam.split('/')
+          const battleId = parts[1]
+
+          if (battleId) {
+            navigate(`/arena/${battleId}`)
+          } else {
+            navigate('/laboratory')
+          }
         } else {
           navigate('/laboratory')
         }
