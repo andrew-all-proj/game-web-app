@@ -43,8 +43,7 @@ export default function PartSelector({
   while (fullParts.length < totalSlots) {
     fullParts.push(null)
   }
-
-  console.log('tabs', tabs)
+  console.log('FULL PARTS', tabs)
 
   return (
     <div className={styles.selectPart}>

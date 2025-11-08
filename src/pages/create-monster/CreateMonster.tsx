@@ -25,7 +25,6 @@ import CharacteristicMonster from '../../components/CharacteristicMonster/Charac
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 import IncubatorOverlay from '../../components/IncubatorOverlay/IncubatorOverlay'
 import clsx from 'clsx'
-import BaseSprite from '../../assets/baseSprite.png'
 
 declare global {
   interface Window {
@@ -122,7 +121,7 @@ const CreateMonster = observer(() => {
           }
           setSpriteAtlasJson(atlasJson)
           setPartPreviews(createPartPreviews(atlasJson))
-          setSpriteUrl(BaseSprite)
+          setSpriteUrl(spriteFile.url)
         } else {
           errorStore.setError({
             error: true,
