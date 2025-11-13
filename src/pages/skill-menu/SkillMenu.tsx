@@ -109,12 +109,23 @@ const SkillMenu = observer(() => {
     setSelectedInventory(null)
   }
 
+  const handleExit = () => {
+    const idx = (window.history.state && (window.history.state as any).idx) ?? 0
+    const canGoBack = idx > 0 || window.history.length > 1
+
+    if (canGoBack) {
+      navigate(-1)
+    } else {
+      navigate('/laboratory', { replace: true })
+    }
+  }
+
   return (
     <div className={styles.SkillMenu}>
       <HeaderBar
         icon={upgradeIcon}
         title={`Апгрейды`}
-        rightContent={<RoundButton type="exit" onClick={() => navigate('/laboratory')} />}
+        rightContent={<RoundButton type="exit" onClick={handleExit} />}
       />
       {showSelectMonster && selectedInventory ? (
         <SelectMonster

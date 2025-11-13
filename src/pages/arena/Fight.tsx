@@ -178,14 +178,13 @@ export default function Fight({
   }, [])
 
   useEffect(() => {
-    if(isLoading) return
+    if (isLoading) return
     const socket = getSocket()
     if (!socket) return
     socket.emit('startBattle', {
-        battleId,
-        monsterId: monsterStore.selectedMonster?.id,
-      })
-
+      battleId,
+      monsterId: monsterStore.selectedMonster?.id,
+    })
   }, [isLoading])
 
   return (

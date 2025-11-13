@@ -145,7 +145,6 @@ const CreateMonster = observer(() => {
   const handlePartSelect = (id: string) => {
     if (!id) return
 
-
     setSelectedParts((prev) => {
       const next: SelectedParts = { ...prev }
 

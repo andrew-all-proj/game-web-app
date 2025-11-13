@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite'
-import { useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useEffect, useState, useCallback } from 'react'
 import styles from './FoodMenu.module.css'
 import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
