@@ -3,6 +3,7 @@ import styles from './PartSelectorMonsterMenu.module.css'
 import SkillsGrid from './SkillsGrid'
 import MutagensGrid from './MutagensGrid'
 import { SkillType } from '../../types/enums/SkillType'
+import { useTranslation } from 'react-i18next'
 
 interface PartSelectorProps {
   inventories: UserInventory[]
@@ -15,8 +16,8 @@ interface PartSelectorProps {
 }
 
 const TABS = [
-  { key: 'skills' as const, text: 'Навыки' },
-  { key: 'mutagens' as const, text: 'Мутации' },
+  { key: 'skills' as const, textKey: 'monsterMenu.skills' },
+  { key: 'mutagens' as const, textKey: 'monsterMenu.mutagens' },
 ]
 
 export default function PartSelectorMonsterMenu({
@@ -28,6 +29,7 @@ export default function PartSelectorMonsterMenu({
   onSelectInventory,
   onSelectedMonsterSkill,
 }: PartSelectorProps) {
+  const { t } = useTranslation()
   let typeSkillForReplace: SkillType | null = null
   if (applyInventoryId) {
     typeSkillForReplace =
@@ -42,7 +44,7 @@ export default function PartSelectorMonsterMenu({
             className={`${styles.tabIcon} ${activeTab === tab.key ? styles.activeTab : ''}`}
             onClick={() => onTabChange(tab.key)}
           >
-            <span className={styles.tabText}>{tab.text}</span>
+            <span className={styles.tabText}>{t(tab.textKey)}</span>
           </div>
         ))}
       </div>

@@ -25,6 +25,7 @@ import CharacteristicMonster from '../../components/CharacteristicMonster/Charac
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 import IncubatorOverlay from '../../components/IncubatorOverlay/IncubatorOverlay'
 import clsx from 'clsx'
+import { useTranslation } from 'react-i18next'
 
 declare global {
   interface Window {
@@ -68,6 +69,7 @@ type ArmPair = { arm: { left: PartPreviewEntry; right: PartPreviewEntry } }
 export type SelectablePart = HeadBodyPart | ArmPair | null
 
 const CreateMonster = observer(() => {
+  const { t } = useTranslation();
   const navigate = useNavigate()
   const [name, setName] = useState('')
   const [spriteAtlasJson, setSpriteAtlasJson] = useState<SpriteAtlas | null>(null)
@@ -266,9 +268,8 @@ const CreateMonster = observer(() => {
 
   return (
     <div className={styles.createMonster}>
-      <IncubatorOverlay open={isSaving} text="Создание монстра…" />
+      <IncubatorOverlay open={isSaving} text={t('createMonster.creatingMonster')}  />
 
-      {/* ВЕРХ */}
       <div className={styles.header}>
         <RoundButton
           onClick={() => navigate('/laboratory')}
@@ -299,7 +300,8 @@ const CreateMonster = observer(() => {
         <MainInput
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="_введите имя"
+          label={t('createMonster.name')}
+          placeholder={t('createMonster.inputName')}
           type="text"
           onButtonClick={isSaving ? () => {} : handleSaveImage}
         />

@@ -1,0 +1,117 @@
+{
+  "createMonster": {
+    "creatingMonster": "Creating a monster…",
+    "inputName": "__input name",
+    "name": "Name"
+  },
+  "createUser": {
+    "inputName": "__input name",
+    "name": "Name"
+  },
+  "energy": "Energy",
+  "energyMenu": {
+    "buyMoreEnergy": "buy more energy",
+    "energy": "Energy",
+    "powerUnitCapacity": "Power unit capacity"
+  },
+  "foodMenu": {
+    "errorLoading": "Error loading",
+    "feed": "Feed",
+    "feedingError": "Feeding error",
+    "foodInStock": "Food in stock",
+    "full": "Full",
+    "getFood": "Get Food",
+    "mainMenu": "Main Menu",
+    "monsterAlreadyFull": "The monster is already full",
+    "name": "Name",
+    "noFoodToFeed": "No food to feed",
+    "requestFoodHint": "If things are bad and there is nothing to feed the monsters, ask for food from social services.",
+    "satiety": "Satiety"
+  },
+  "laboratory": {
+    "active": "Active",
+    "arena": "Arena",
+    "create": "Create",
+    "energy": "Energy",
+    "notEnoughEnergy": "Not enough energy for battle, need 125. You have: {{value}}",
+    "selectPet": "Select a pet",
+    "monsterHungry": "Monster is hungry. Feed it!",
+    "noMonstersTitle": "Time to create\n your first monster!"
+  },
+  "monsterMenu": {
+    "skills": "Skills",
+    "mutagens": "Mutagens"
+  },
+  "mutagensMenu": {
+    "mutagens": "Mutagens",
+    "dispose": "Dispose",
+    "disposeConfirmTitle": "Dispose of {{mutagen}}?",
+    "disposeConfirmSubtitle": "This action cannot be undone",
+    "selectMutagenForDisposal": "Select a mutagen to dispose!",
+    "errorLoading": "Error loading",
+    "mutagenNotFound": "Mutagen not found",
+    "mutationError": "Error during mutation",
+    "mutagenFallback": "mutagen",
+    "mutagenDescriptionFallback": "Mutagen description...",
+    "shouldApply": "Apply it?",
+    "apply": "Apply",
+    "toStrength": "to Strength",
+    "toDefense": "to Defense",
+    "toEvasion": "to Evasion",
+    "noEffect": "No effect"
+  },
+  "skillMenu": {
+    "errorLoading": "Error loading",
+    "applySkillError": "Error applying skill",
+    "skillNotFound": "Skill not found",
+    "deleteSkillError": "Error deleting skill",
+    "upgrades": "Upgrades",
+    "disposeConfirmTitle": "Dispose of {{skill}}?",
+    "disposeConfirmSubtitle": "This action cannot be undone",
+    "skillFallback": "upgrade",
+    "skillDescriptionFallback": "Skill description...",
+    "energyCost": "Stamina cost: {{cost}}",
+    "shouldApply": "Apply it?",
+    "apply": "Apply",
+    "selectMonster": "Select a monster",
+    "dispose": "Dispose",
+    "fromStrength": "from Strength",
+    "fromDefense": "from Defense",
+    "fromEvasion": "from Evasion",
+    "noEffect": "No effect",
+    "choose": "Choose",
+    "back": "Back"
+  },
+  "arena": {
+    "battleRejected": "Battle cancelled",
+    "battleFinished": "Battle finished",
+    "spriteLoadError": "Sprite loading error",
+    "opponentSpriteLoadError": "Opponent sprite loading error",
+    "battleNotFound": "Battle not found",
+    "myTurn": "Your turn",
+    "opponentTurn": "Opponent's turn",
+    "you": "You",
+    "opponent": "Opponent",
+    "notEnoughSp": "Not enough SP: you have {{current}} SP, need {{required}} SP"
+  },
+  "resultBattle": {
+    "victory": "Victory!",
+    "defeat": "Defeat",
+    "tryAgain": "You'll get it next time!",
+    "mainMenu": "Main Menu"
+  },
+  "searchBattle": {
+    "accept": "Accept",
+    "laboratory": "Laboratory",
+    "noOpponentsAvailable": "No opponents available",
+    "notEnoughEnergyOrHungryMonster": "Not enough energy or hungry monster",
+    "selectAnOpponent": "Select an opponent"
+  },
+  "stats": {
+    "defense": "Defense",
+    "evasion": "Evasion",
+    "health": "Health",
+    "stamina": "Stamina",
+    "strength": "Strength"
+  }
+}

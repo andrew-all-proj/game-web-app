@@ -19,6 +19,8 @@ import RoundButton from '../../components/Button/RoundButton'
 import clsx from 'clsx'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 import IncubatorOverlay from '../../components/IncubatorOverlay/IncubatorOverlay'
+import LanguageDropdown from '../../components/LanguageDropdown/LanguageDropdown'
+import { useTranslation } from 'react-i18next'
 
 type AtlasFrames = Record<
   string,
@@ -48,6 +50,7 @@ interface PartTypeAvatar {
 const CreateUser = observer(() => {
   const navigate = useNavigate()
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const { t } = useTranslation();
 
   const [headParts, setHeadParts] = useState<PartTypeAvatar[]>([])
   const [bodyParts, setBodyParts] = useState<PartTypeAvatar[]>([])
@@ -311,6 +314,9 @@ const CreateUser = observer(() => {
       <IncubatorOverlay open={isSaving} text="Изменяем ваши внешние данные..." />
       <div className={styles.navigate}>
         <RoundButton onClick={() => navigate('/laboratory')} />
+        <LanguageDropdown
+            defaultLang="ru"
+        /> 
       </div>
 
       <div className={styles.centerContent}>
@@ -320,7 +326,8 @@ const CreateUser = observer(() => {
 
         <div className={styles.inputWrapper}>
           <MainInput
-            placeholder="_введите Имя"
+            label={t('createUser.name')}
+            placeholder={t('createUser.inputName')}
             value={name}
             onChange={(e) => setName(e.target.value)}
             onButtonClick={handleSaveAvatar}

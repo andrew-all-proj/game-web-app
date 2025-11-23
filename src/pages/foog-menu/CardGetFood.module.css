@@ -7,7 +7,7 @@
   border-radius: 15px;
   margin: 15px 0;
   box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);
-  height: 80px;
+  height: 93px;
   width: 95%;
   max-width: var(--max-width);
   box-sizing: border-box;
@@ -37,7 +37,7 @@
 
 .feedButton {
   width: 114px;
-  height: 80px;
+  height: 93px;
   border-radius: 18px;
   background: #ff5ca4;
   border: 5px solid #362f2d;

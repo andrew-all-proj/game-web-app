@@ -15,11 +15,13 @@ import StatBarEnergy from '../../components/StatBar/StatBarEnergy/StatBarStatBar
 import CardsApplyEnergy from './CardsApplyEnergy'
 import { UserInventory } from '../../types/GraphResponse'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
+import { useTranslation } from 'react-i18next'
 
 const EnergyMenu = observer(() => {
   const navigate = useNavigate()
   const { monsterIdParams } = useParams()
   const [isLoading, setIsLoading] = useState(true)
+   const { t } = useTranslation();
 
   const fetchInventories = useCallback(
     async (withLoading: boolean) => {
@@ -71,14 +73,14 @@ const EnergyMenu = observer(() => {
     <div className={styles.foodMenu}>
       <HeaderBar
         icon={mutagenIcon}
-        title={'Энергия'}
+        title={t('energyMenu.energy')}
         rightContent={<RoundButton type="exit" onClick={() => navigate('/laboratory')} />}
       />
       <div className={styles.content}>
         <StatBarEnergy
           current={userStore.user?.energy || 0}
           max={1000}
-          title={'Емкость энергоблока'}
+          title={t('energyMenu.powerUnitCapacity')}
         />
         <CardsApplyEnergy
           inventories={inventoriesStore.energies}
@@ -90,7 +92,7 @@ const EnergyMenu = observer(() => {
             height={93}
             backgroundColor="var(--red-primary-color)"
           >
-            Приобрести
+            {t('energyMenu.buyMoreEnergy')}
           </MainButton>
         </div>
       </div>

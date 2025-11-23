@@ -16,12 +16,14 @@ import { UserInventoryTypeEnum } from '../../types/enums/UserInventoryTypeEnum'
 import HeaderBar from '../../components/Header/HeaderBar'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 import CardGetFood from './CardGetFood'
+import { useTranslation } from 'react-i18next'
 
 const FoodMenu = observer(() => {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(true)
   const [feedingIds, setFeedingIds] = useState<Set<string>>(new Set())
   const [disableGetFood, setDisableGetFood] = useState(false)
+  const { t } = useTranslation();
 
   const fetchInventoriesAndMonsters = useCallback(
     async (withLoading: boolean) => {
@@ -34,7 +36,7 @@ const FoodMenu = observer(() => {
 
         setIsLoading(false)
       } catch {
-        showTopAlert({ open: true, text: 'Ошибка при загрузке', variant: 'error' })
+        showTopAlert({ open: true, text: t('foodMenu.errorLoading'), variant: 'error' })
         setIsLoading(false)
       }
     },
@@ -57,7 +59,7 @@ const FoodMenu = observer(() => {
         inventory?.quantity > 0 && inventory.userInventoryType === UserInventoryTypeEnum.FOOD,
     )
     if (!food) {
-      showTopAlert({ text: 'Нет еды для кормления', open: true, variant: 'warning' })
+      showTopAlert({ text: t('foodMenu.noFoodToFeed'), open: true, variant: 'warning' })
       return
     }
 
@@ -81,9 +83,9 @@ const FoodMenu = observer(() => {
         message = String(error)
       }
       if (message.includes('The monster is already full')) {
-        showTopAlert({ text: 'Монстр уже сыт', open: true, variant: 'info' })
+        showTopAlert({ text: t('foodMenu.monsterAlreadyFull'), open: true, variant: 'info' })
       } else {
-        showTopAlert({ text: 'Ошибка при кормлении', open: true, variant: 'error' })
+        showTopAlert({ text: t('foodMenu.feedingError'), open: true, variant: 'error' })
       }
     } finally {
       setFeedingIds((prev) => {
@@ -106,7 +108,7 @@ const FoodMenu = observer(() => {
 
   return (
     <div className={styles.foodMenu}>
-      <HeaderBar icon={foodIcon} title={`Еда в наличии: ${inventoriesStore.quantityFood}`} />
+      <HeaderBar icon={foodIcon} title={`${t('foodMenu.foodInStock')} ${inventoriesStore.quantityFood}`} />
       <div className={styles.content}>
         {inventoriesStore.quantityFood === 0 ? (
           <CardGetFood onButtonClick={handleGetFood} disabled={disableGetFood} />
@@ -132,7 +134,7 @@ const FoodMenu = observer(() => {
             height={93}
             backgroundColor="var(--blue-primary-color)"
           >
-            Главное Меню
+            {t('foodMenu.mainMenu')}
           </MainButton>
         </div>
       </div>

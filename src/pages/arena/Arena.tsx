@@ -15,6 +15,7 @@ import { GetBattleReward } from '../../types/BattleRedis'
 import ResultBattle from '../result-battle/ResultBattle'
 import Fight from './Fight'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
+import { useTranslation } from 'react-i18next'
 
 const getSprite = async (
   monster?: Monster | null,
@@ -34,9 +35,9 @@ const getSprite = async (
 }
 
 const Arena = observer(() => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { battleId } = useParams()
-  //const [infoMessage, setInfoMessage] = useState('')
   const [startFight, setStartFight] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
   const [atlas, setAtlas] = useState<SpriteAtlas | null>(null)
@@ -64,7 +65,7 @@ const Arena = observer(() => {
         if (battle.status === 'REJECTED') {
           showTopAlert({
             open: true,
-            text: 'Бой отменён',
+            text: t('arena.battleRejected'),
             variant: 'warning',
           })
           setStartFight(false)
@@ -74,7 +75,7 @@ const Arena = observer(() => {
         if (battle.status === 'FINISHED') {
           showTopAlert({
             open: true,
-            text: 'Бой завершён',
+            text: t('arena.battleFinished'),
             variant: 'warning',
           })
           setStartFight(false)
@@ -109,7 +110,7 @@ const Arena = observer(() => {
         } else {
           showTopAlert({
             open: true,
-            text: 'Ошибка загрузки спрайтов',
+            text: t('arena.spriteLoadError'),
             variant: 'warning',
           })
           return navigate('/search-battle')
@@ -125,7 +126,7 @@ const Arena = observer(() => {
         } else {
           showTopAlert({
             open: true,
-            text: 'Ошибка загрузки спрайтов соперника',
+            text: t('arena.opponentSpriteLoadError'),
             variant: 'warning',
           })
           return navigate('/search-battle')
@@ -133,7 +134,7 @@ const Arena = observer(() => {
       } catch (error) {
         showTopAlert({
           open: true,
-          text: 'Бой не найден',
+          text: t('arena.battleNotFound'),
           variant: 'warning',
         })
         return navigate('/search-battle')

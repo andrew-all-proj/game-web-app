@@ -1,5 +1,5 @@
 :root {
-  --panel-height: 260px;
+  --panel-height: 270px;
 }
 
 .createMonster {
@@ -57,6 +57,7 @@
   display: flex;
   justify-content: center;
   grid-row: 3;
+  margin-top: 10px;
   padding-bottom: 10px;
 }
 

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import styles from './CardGetFood.module.css'
 
 interface CardGetFoodProps {
@@ -6,10 +7,11 @@ interface CardGetFoodProps {
 }
 
 export default function CardGetFood({ onButtonClick, disabled = false }: CardGetFoodProps) {
+  const { t } = useTranslation();
   return (
     <div className={styles.cardFeedMonster}>
       <div className={styles.satietyInfo}>
-        <span>Если все плохо и нечем кормить монстров попроси еду в соц.службах</span>
+        <span>{t('foodMenu.requestFoodHint')}</span>
       </div>
 
       <div className={styles.buttonWrapper}>
@@ -20,7 +22,7 @@ export default function CardGetFood({ onButtonClick, disabled = false }: CardGet
           disabled={disabled}
           aria-disabled={disabled}
         >
-          {'Попросить'}
+          {t('foodMenu.getFood')}
         </button>
       </div>
     </div>

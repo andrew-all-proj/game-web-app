@@ -17,6 +17,7 @@ import { MonsterOpponent } from '../../types/BattleRedis'
 import DuelInvites from './DuelInvites'
 import SimpleBar from 'simplebar-react'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
+import { useTranslation } from 'react-i18next'
 
 interface DuelChallengeResponsePayload {
   result: boolean
@@ -37,6 +38,7 @@ const SearchBattle = observer(() => {
   // const [cursor, setCursor] = useState('0')
   // const [nextCursor, setNextCursor] = useState('0')
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   useEffect(() => {
     const initSearch = async () => {
@@ -94,13 +96,13 @@ const SearchBattle = observer(() => {
   })
 
   useSocketEvent<DuelChallengeResponsePayload>('duelChallengeResponce', (data) => {
-    if (!data.result) {
-      showTopAlert({
-        open: true,
-        text: 'Недостаточно энергии или голоден монстр',
-        variant: 'warning',
-      })
-      setWaitOpponent(true)
+      if (!data.result) {
+        showTopAlert({
+          open: true,
+          text: t('searchBattle.notEnoughEnergyOrHungryMonster'),
+          variant: 'warning',
+        })
+        setWaitOpponent(true)
     } else {
       getSocket()?.emit('registerMonsterForBattle', {
         isFindOpponent: false,
@@ -203,10 +205,10 @@ const SearchBattle = observer(() => {
 
   return (
     <div className={styles.searchBattle}>
-      <HeaderBar title="Выбрать противника" />
+      <HeaderBar title={t('searchBattle.selectAnOpponent')} />
       <div className={styles.content}>
         {opponents.length === 0 ? (
-          <div>Нет доступных противников</div>
+          <div>{t('searchBattle.noOpponentsAvailable')}</div>
         ) : (
           <SimpleBar className={styles.scrollArea}>
             <OpponentList opponents={opponents} onChallenge={handleChallenge} />
@@ -223,7 +225,7 @@ const SearchBattle = observer(() => {
         </div>
       </div>
       <div className={styles.bottomMenu}>
-        <MainButton onClick={handleGoToLab}>Лаборатория</MainButton>
+        <MainButton onClick={handleGoToLab}>{t('searchBattle.laboratory')}</MainButton>
       </div>
     </div>
   )

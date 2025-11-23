@@ -1,0 +1,56 @@
+{
+  "active": "Active",
+  "arena": "Arena",
+  "buy more energy": "Buy more energy",
+  "create": "Create",
+  "createMonster": {
+    "creatingMonster": "Creating a monster…",
+    "inputName": "__input name",
+    "name": "Name"
+  },
+  "createUser": {
+    "inputName": "__input name",
+    "name": "Name"
+  },
+  "energy": "Energy",
+  "energyMenu": {
+    "buyMoreEnergy": "buy more energy",
+    "energy": "Energy",
+    "powerUnitCapacity": "Power unit capacity"
+  },
+  "foodMenu": {
+    "errorLoading": "Error loading",
+    "feed": "Feed",
+    "feedingError": "Feeding error",
+    "foodInStock": "Food in stock",
+    "full": "Full",
+    "getFood": "Get Food",
+    "mainMenu": "Main Menu",
+    "monsterAlreadyFull": "The monster is already full",
+    "name": "Name",
+    "noFoodToFeed": "No food to feed",
+    "requestFoodHint": "If things are bad and there is nothing to feed the monsters, ask for food from social services.",
+    "satiety": "Satiety"
+  },
+  "laboratory": {
+    "active": "Active",
+    "arena": "Arena",
+    "create": "Create",
+    "energy": "Energy"
+  },
+  "name": "Name",
+  "searchBattle": {
+    "accept": "Accept",
+    "laboratory": "Laboratory",
+    "noOpponentsAvailable": "No opponents available",
+    "notEnoughEnergyOrHungryMonster": "Not enough energy or hungry monster",
+    "selectAnOpponent": "Select an opponent"
+  },
+  "stats": {
+    "defense": "Defense",
+    "evasion": "Evasion",
+    "health": "Health",
+    "stamina": "Stamina",
+    "strength": "Strength"
+  }
+}

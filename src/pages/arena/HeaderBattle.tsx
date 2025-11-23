@@ -3,6 +3,7 @@ import styles from './HeaderBattle.module.css'
 import StatBar from '../../components/StatBar/StatBar'
 import smallEnergyIcon from '../../assets/icon/small-stamina-icon.svg'
 import smallHeartIcon from '../../assets/icon/small-hp-icon.svg'
+import { useTranslation } from 'react-i18next'
 
 interface HeaderBattleProps {
   chalengerHealth: number
@@ -33,6 +34,7 @@ const HeaderBattle = ({
   turnTimeLimitMs = 30000,
   serverNowMs,
 }: HeaderBattleProps) => {
+  const { t } = useTranslation()
   const [offset, setOffset] = useState(0)
   useEffect(() => {
     if (serverNowMs) setOffset(serverNowMs - Date.now())
@@ -102,7 +104,7 @@ const HeaderBattle = ({
         className={`${styles.statusPill} ${isCurrentTurn ? styles.statusMyTurn : styles.statusEnemyTurn}`}
         style={isCurrentTurn ? fillStyle : undefined}
       >
-        {isCurrentTurn ? 'Ваш ход' : 'Ход противника'}
+        {isCurrentTurn ? t('arena.myTurn') : t('arena.opponentTurn')}
       </div>
     </div>
   )

@@ -1,0 +1,117 @@
+{
+  "createMonster": {
+    "creatingMonster": "Создание монстра…",
+    "inputName": "__введите Имя",
+    "name": "Имя"
+  },
+  "createUser": {
+    "inputName": "__введите Имя",
+    "name": "Имя"
+  },
+  "energy": "Энергия",
+  "energyMenu": {
+    "buyMoreEnergy": "Купить энергию",
+    "energy": "Энергия",
+    "powerUnitCapacity": "Емкость энергоблока"
+  },
+  "foodMenu": {
+    "errorLoading": "Ошибка загрузки",
+    "feed": "Кормить",
+    "feedingError": "Ошибка кормления",
+    "foodInStock": "Еды в запасе",
+    "full": "Сыт",
+    "getFood": "Попросить еды",
+    "mainMenu": "Главное Меню",
+    "monsterAlreadyFull": "Монстр уже сыт",
+    "name": "Имя",
+    "noFoodToFeed": "Нет еды для кормления",
+    "requestFoodHint": "Если дела плохи и нечем кормить монстров, попросите еду в социальных службах.",
+    "satiety": "Сытость"
+  },
+  "laboratory": {
+    "active": "Активный",
+    "arena": "Арена",
+    "create": "Создать",
+    "energy": "Энергия",
+    "notEnoughEnergy": "Недостаточно энергии для боя, нужно 125. У вас: {{value}}",
+    "selectPet": "Выберите питомца",
+    "monsterHungry": "Монстр голоден. Покорми!",
+    "noMonstersTitle": "Пришло время\nсоздать своего\nпервого монстрика!"
+  },
+  "monsterMenu": {
+    "skills": "Навыки",
+    "mutagens": "Мутагены"
+  },
+  "mutagensMenu": {
+    "mutagens": "Мутагены",
+    "dispose": "Утилизировать",
+    "disposeConfirmTitle": "Утилизировать {{mutagen}}?",
+    "disposeConfirmSubtitle": "Это действие нельзя отменить",
+    "selectMutagenForDisposal": "Выберите мутаген для утилизации!",
+    "errorLoading": "Ошибка при загрузке",
+    "mutagenNotFound": "Мутаген не найден",
+    "mutationError": "Ошибка при мутации",
+    "mutagenFallback": "мутаген",
+    "mutagenDescriptionFallback": "Описание мутагена...",
+    "shouldApply": "Стоит ли?",
+    "apply": "Применить",
+    "toStrength": "к Силе",
+    "toDefense": "к Защите",
+    "toEvasion": "к Увороту",
+    "noEffect": "Без эффекта"
+  },
+  "skillMenu": {
+    "errorLoading": "Ошибка при загрузке",
+    "applySkillError": "Ошибка при применении скилла",
+    "skillNotFound": "Скилл не найден",
+    "deleteSkillError": "Ошибка при удаление скилла",
+    "upgrades": "Апгрейды",
+    "disposeConfirmTitle": "Утилизировать {{skill}}?",
+    "disposeConfirmSubtitle": "Это действие нельзя отменить",
+    "skillFallback": "апгрейд",
+    "skillDescriptionFallback": "Описание навыка...",
+    "energyCost": "Стоимость выносливости: {{cost}}",
+    "shouldApply": "Стоит ли?",
+    "apply": "Применить",
+    "selectMonster": "Выбрать монстрика",
+    "dispose": "Утилизировать",
+    "fromStrength": "от Силы",
+    "fromDefense": "от Защиты",
+    "fromEvasion": "от Уворота",
+    "noEffect": "Без эффекта",
+    "choose": "Выбрать",
+    "back": "Назад"
+  },
+  "arena": {
+    "battleRejected": "Бой отменён",
+    "battleFinished": "Бой завершён",
+    "spriteLoadError": "Ошибка загрузки спрайтов",
+    "opponentSpriteLoadError": "Ошибка загрузки спрайтов соперника",
+    "battleNotFound": "Бой не найден",
+    "myTurn": "Ваш ход",
+    "opponentTurn": "Ход противника",
+    "you": "Вы",
+    "opponent": "Соперник",
+    "notEnoughSp": "Недостаточно SP: у вас {{current}} SP, требуется {{required}} SP"
+  },
+  "resultBattle": {
+    "victory": "Победа!",
+    "defeat": "Поражение",
+    "tryAgain": "В следующий раз точно получится!",
+    "mainMenu": "Главное меню"
+  },
+  "searchBattle": {
+    "accept": "Принять",
+    "laboratory": "Лаборатория",
+    "noOpponentsAvailable": "Нет доступных противников",
+    "notEnoughEnergyOrHungryMonster": "Недостаточно энергии или голоден монстр",
+    "selectAnOpponent": "Выбрать противника"
+  },
+  "stats": {
+    "defense": "Защита",
+    "evasion": "Уворот",
+    "health": "Жизнь",
+    "stamina": "Вынос.",
+    "strength": "Сила"
+  }
+}

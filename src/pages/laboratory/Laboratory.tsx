@@ -20,11 +20,13 @@ import RoundButton from '../../components/Button/RoundButton'
 import MonsterAvatarWithShadow from '../../components/MonsterAvatarWithShadow/MonsterAvatarWithShadow'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 import InputBox from '../../components/InputBox/InputBox'
+import { useTranslation } from 'react-i18next'
 
 const Laboratory = observer(() => {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(true)
   const [monsterIndex, setMonsterIndex] = useState(0)
+  const { t } = useTranslation()
 
   const monsters = monsterStore.monsters
   const selectedMonster = monsters[monsterIndex]
@@ -48,7 +50,7 @@ const Laboratory = observer(() => {
     if ((userStore.user?.energy ?? 0) < 125) {
       showTopAlert({
         open: true,
-        text: `Недостаточно энергии для боя, нужно 125. У вас: ${userStore.user?.energy ?? 0}`,
+        text: t('laboratory.notEnoughEnergy', { value: userStore.user?.energy ?? 0 }),
         variant: 'warning',
       })
       userStore.fetchUser(userStore.user?.id) //TODO THINKING
@@ -58,7 +60,7 @@ const Laboratory = observer(() => {
     if (!monsterStore.selectedMonster) {
       showTopAlert({
         open: true,
-        text: `Выберите питомца`,
+        text: t('laboratory.selectPet'),
         variant: 'warning',
       })
       return
@@ -66,7 +68,7 @@ const Laboratory = observer(() => {
     if (monsterStore.selectedMonster.satiety < 25) {
       showTopAlert({
         open: true,
-        text: `Монстр голоден. Покорми!!!!`,
+        text: t('laboratory.monsterHungry'),
         variant: 'warning',
       })
       return
@@ -115,7 +117,7 @@ const Laboratory = observer(() => {
           className={styles.headerBtnCreate}
           onClick={() => navigate('/create-monster')}
         >
-          Создать
+          {t('laboratory.create')}
         </SecondButton>
         <div className={styles.avatarWrapper}>
           <img
@@ -127,7 +129,7 @@ const Laboratory = observer(() => {
         <StatBarButton
           current={userStore.user?.energy || 0}
           max={1000}
-          text="Энергия"
+          text={t('laboratory.energy')}
           color="#61FFBE"
           backgroundColor="#94c9b3"
           width={120}
@@ -145,7 +147,7 @@ const Laboratory = observer(() => {
           className={styles.headerStatBarMain}
         />
         <div className={styles.wrapperInputBox}>
-          <InputBox isActive={isActive} handleSetActive={handleSetActive} text="Активный" />
+          <InputBox isActive={isActive} handleSetActive={handleSetActive} text={t('laboratory.active')} />
         </div>
       </div>
       <div className={styles.centerContent}>
@@ -158,7 +160,7 @@ const Laboratory = observer(() => {
         <div className={styles.selectMonsters}>
           <RoundButton onClick={handlePrevMonster} color="var(--green-secondary-color)" />
           <MainButton width={210} height={63} onClick={() => handleGoToArena(selectedMonster)}>
-            Арена
+            {t('laboratory.arena')}
           </MainButton>
           <RoundButton
             onClick={handleNextMonster}

@@ -20,6 +20,7 @@ import SelectMonster from './SelectMonster'
 import InfoPopupSkill from './InfoPopupSkill'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 import CardSkillDescriptions from './CardSkillDescriptions'
+import { useTranslation } from 'react-i18next'
 
 const SkillMenu = observer(() => {
   const navigate = useNavigate()
@@ -29,6 +30,7 @@ const SkillMenu = observer(() => {
   const [openPopupCard, setOpenPopupCard] = useState(false)
   const [showSelectMonster, setShowSelectMonster] = useState(false)
   const [showInfoPopupSkill, setShowInfoPopupSkill] = useState(false)
+  const { t } = useTranslation()
 
   const fetchInventoriesAndMonsters = useCallback(
     async (withLoading: boolean) => {
@@ -41,11 +43,11 @@ const SkillMenu = observer(() => {
 
         setIsLoading(false)
       } catch {
-        showTopAlert({ text: 'Ошибка при загрузке', open: true, variant: 'error' })
+        showTopAlert({ text: t('skillMenu.errorLoading'), open: true, variant: 'error' })
         setIsLoading(false)
       }
     },
-    [navigate],
+    [navigate, t],
   )
 
   useEffect(() => {
@@ -67,7 +69,7 @@ const SkillMenu = observer(() => {
         )
         navigate(`/monster-menu/${monsterIdParams}`)
       } catch {
-        showTopAlert({ text: 'Ошибка при применении скилла', open: true, variant: 'error' })
+        showTopAlert({ text: t('skillMenu.applySkillError'), open: true, variant: 'error' })
       }
     }
     setShowSelectMonster(true)
@@ -100,9 +102,9 @@ const SkillMenu = observer(() => {
         message = String(error)
       }
       if (message.includes('Skill not found in user inventory')) {
-        showTopAlert({ text: 'Скилл не найден', variant: 'error', open: true })
+        showTopAlert({ text: t('skillMenu.skillNotFound'), variant: 'error', open: true })
       } else {
-        showTopAlert({ text: 'Ошибка при удаление скилла', open: true, variant: 'error' })
+        showTopAlert({ text: t('skillMenu.deleteSkillError'), open: true, variant: 'error' })
       }
     }
     setOpenPopupCard(false)
@@ -124,7 +126,7 @@ const SkillMenu = observer(() => {
     <div className={styles.SkillMenu}>
       <HeaderBar
         icon={upgradeIcon}
-        title={`Апгрейды`}
+        title={t('skillMenu.upgrades')}
         rightContent={<RoundButton type="exit" onClick={handleExit} />}
       />
       {showSelectMonster && selectedInventory ? (
@@ -171,8 +173,10 @@ const SkillMenu = observer(() => {
 
       {openPopupCard && selectedInventory && (
         <PopupCard
-          title={`Утилизировать ${selectedInventory.skill?.name || 'апгрейд'}?`}
-          subtitle={'Это действие нельзя отменить'}
+          title={t('skillMenu.disposeConfirmTitle', {
+            skill: selectedInventory.skill?.name || t('skillMenu.skillFallback'),
+          })}
+          subtitle={t('skillMenu.disposeConfirmSubtitle')}
           onClose={() => setOpenPopupCard(false)}
           onButtonClick={() => handlerDeleteSkill(selectedInventory)}
         />

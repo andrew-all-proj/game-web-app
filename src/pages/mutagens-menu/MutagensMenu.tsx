@@ -20,8 +20,10 @@ import 'simplebar-react/dist/simplebar.min.css'
 import '../../assets/styles/simplebar-overrides.css'
 import PopupCard from '../../components/PopupCard/PopupCard'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
+import { useTranslation } from 'react-i18next'
 
 const MutagensMenu = observer(() => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(true)
   const [selectedInventory, setSelectedInventory] = useState<UserInventory | null>(null)
@@ -38,7 +40,7 @@ const MutagensMenu = observer(() => {
 
         setIsLoading(false)
       } catch {
-        showTopAlert({ text: 'Ошибка при загрузке', variant: 'error', open: true })
+        showTopAlert({ text: t('mutagensMenu.errorLoading'), variant: 'error', open: true })
         setIsLoading(false)
       }
     },
@@ -67,7 +69,11 @@ const MutagensMenu = observer(() => {
 
   const showPopupCard = () => {
     if (!inventoryToDelete) {
-      showTopAlert({ text: 'Выберите мутаген для утилизации!', variant: 'info', open: true })
+      showTopAlert({
+        text: t('mutagensMenu.selectMutagenForDisposal'),
+        variant: 'info',
+        open: true,
+      })
       return
     }
     setInventoryToDelete(inventoryToDelete)
@@ -94,9 +100,9 @@ const MutagensMenu = observer(() => {
         message = String(error)
       }
       if (message.includes('Mutagen not found in user inventory')) {
-        showTopAlert({ text: 'Мутаген не найден', variant: 'warning', open: true })
+        showTopAlert({ text: t('mutagensMenu.mutagenNotFound'), variant: 'warning', open: true })
       } else {
-        showTopAlert({ text: 'Ошибка при мутации', variant: 'error', open: true })
+        showTopAlert({ text: t('mutagensMenu.mutationError'), variant: 'error', open: true })
       }
     }
     setOpenPopupCard(false)
@@ -108,7 +114,7 @@ const MutagensMenu = observer(() => {
     <div className={styles.mutagensMenu}>
       <HeaderBar
         icon={mutagenIcon}
-        title={'Мутагены'}
+        title={t('mutagensMenu.mutagens')}
         rightContent={<RoundButton type="exit" onClick={() => navigate('/laboratory')} />}
       />
       <div className={styles.content}>
@@ -121,7 +127,7 @@ const MutagensMenu = observer(() => {
         </SimpleBar>
         <div className={styles.bottomMenu}>
           <MainButton onClick={showPopupCard} color="black" backgroundColor="#FB6B6B">
-            Утилизировать
+            {t('mutagensMenu.dispose')}
           </MainButton>
         </div>
         <InfoPopupMutagen
@@ -131,8 +137,10 @@ const MutagensMenu = observer(() => {
         />
         {openPopupCard && inventoryToDelete && (
           <PopupCard
-            title={`Утилизировать ${inventoryToDelete.mutagen?.name || 'мутаген'}?`}
-            subtitle={'Это действие нельзя отменить'}
+            title={t('mutagensMenu.disposeConfirmTitle', {
+              mutagen: inventoryToDelete.mutagen?.name || t('mutagensMenu.mutagenFallback'),
+            })}
+            subtitle={t('mutagensMenu.disposeConfirmSubtitle')}
             onClose={() => setOpenPopupCard(false)}
             onButtonClick={() => handlerDeleteMutagen(inventoryToDelete)}
           />

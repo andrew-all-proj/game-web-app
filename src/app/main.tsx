@@ -5,6 +5,7 @@ import routes from '../routes'
 import ApolloProvider from '../api/ApolloProvider'
 import '../assets/styles/global.css'
 import TopAlertHost from '../components/TopAlert/TopAlertHost'
+import "../i18n";
 import TelegramViewportSync from '../components/TelegramViewportSync/TelegramViewportSync'
 
 const AppRouter = () => useRoutes(routes)

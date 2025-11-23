@@ -14,11 +14,12 @@ import { useBattleInitAndHeartbeat } from './hooks/useBattleInitAndHeartbeat'
 import { useAutoPassTurn } from './hooks/useAutoPassTurn'
 import { useBattleResponse } from './hooks/useBattleResponse'
 import { usePhaserBattleScene } from './hooks/usePhaserBattleScene'
+import { useTranslation } from 'react-i18next'
 
 const DEFAULT_TURN_LIMIT = 15_000
 const CHECK_BATTLE_LIMIT = 18_000
 
-interface TestFightProps {
+interface FightProps {
   battleId: string
   atlas: SpriteAtlas
   atlasOpponent: SpriteAtlas
@@ -36,7 +37,8 @@ export default function Fight({
   spriteUrl,
   spriteUrlOpponent,
   setBattleResult,
-}: TestFightProps) {
+}: FightProps) {
+  const { t } = useTranslation()
   const yourHealthRef = useRef<number>(100)
   const opponentHealthRef = useRef<number>(100)
   const yourHealthBarRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>
@@ -130,8 +132,8 @@ export default function Fight({
     setIsLoading,
     yourHealthRef,
     opponentHealthRef,
-    youLabel: monsterStore.selectedMonster?.name || 'Вы',
-    opponentLabel: monsterStore.opponentMonster?.name || 'Соперник',
+    youLabel: monsterStore.selectedMonster?.name || t('arena.you'),
+    opponentLabel: monsterStore.opponentMonster?.name || t('arena.opponent'),
   })
 
   // Sending selected actions
@@ -144,7 +146,7 @@ export default function Fight({
     const totalCost = costOf(attackId, myAttacks) + costOf(defenseId, myDefenses)
     if (totalCost > yourStamina) {
       //TODO make custom alert
-      alert(`Недостаточно SP: у вас ${yourStamina} SP, требуется ${totalCost} SP`)
+      alert(t('arena.notEnoughSp', { current: yourStamina, required: totalCost }))
       return
     }
 
