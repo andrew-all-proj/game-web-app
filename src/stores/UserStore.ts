@@ -7,7 +7,6 @@ import { CommonResponse } from '../types/GraphResponse'
 import { authorizationAndInitTelegram } from '../functions/authorization-and-init-telegram'
 import { NavigateFunction } from 'react-router-dom'
 import { LanguageEnum } from '../types/enums/LanguageEnum'
-import inventoriesStore from './InventoriesStore'
 import i18next from 'i18next'
 
 export interface User {
