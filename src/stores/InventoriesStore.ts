@@ -78,11 +78,6 @@ class InventoriesStore {
     }
   }
 
-  /**
-   * забрать еду за сегодня
-   * - сервер может сказать "ты уже брал" -> quantity = 0
-   * - или может выдать новую еду в поле food + quantity
-   */
   async fetchGetFood(): Promise<GetFoodToday> {
     try {
       const { data }: { data: { GetFoodToday: GetFoodToday } } = await client.query({

@@ -1,30 +1,34 @@
 import { useState, useRef, useEffect } from "react";
 import i18next from "i18next";
 import styles from "./LanguageDropdown.module.css";
+import { LanguageEnum } from "../../types/enums/LanguageEnum";
 
-const LANGUAGES = [
-  { code: "ru", label: "Ru" },
-  { code: "en", label: "En" },
+
+export const LANGUAGE_LIST: { code: LanguageEnum; label: string }[] = [
+  { code: LanguageEnum.RU, label: "RU" },
+  { code: LanguageEnum.EN, label: "EN" },
 ];
 
 type Props = {
-  defaultLang?: string;            
-  onChange?: (lang: string) => void; 
-  useI18n?: boolean;                
-  persist?: boolean;                
+  defaultLang?: LanguageEnum;
+  onChange?: (lang: LanguageEnum) => void;
+  useI18n?: boolean;
+  persist?: boolean;
 };
 
 export default function LanguageDropdown({
-  defaultLang = "en",
+  defaultLang = LanguageEnum.RU,
   onChange,
   useI18n = true,
   persist = true,
 }: Props) {
   const initial =
-    i18next.resolvedLanguage || i18next.language || defaultLang;
+    (i18next.resolvedLanguage?.toUpperCase() as LanguageEnum) ||
+    (i18next.language?.toUpperCase() as LanguageEnum) ||
+    defaultLang;
 
   const [open, setOpen] = useState(false);
-  const [lang, setLang] = useState(initial);
+  const [lang, setLang] = useState<LanguageEnum>(initial);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,25 +40,18 @@ export default function LanguageDropdown({
   }, []);
 
   useEffect(() => {
-    const handler = (lng: string) => setLang(lng);
+    const handler = (lng: string) => setLang(lng.toUpperCase() as LanguageEnum);
     i18next.on("languageChanged", handler);
     return () => {
       i18next.off("languageChanged", handler);
     };
   }, []);
 
-  const handleSelect = async (code: string) => {
-    if (code === lang) {
-      setOpen(false);
-      return;
-    }
+  const handleSelect = async (code: LanguageEnum) => {
+    if (code === lang) return setOpen(false);
 
     if (useI18n) {
-      try {
-        await i18next.changeLanguage(code);
-      } catch {
-        // ignore
-      }
+      await i18next.changeLanguage(code.toLowerCase());
     } else {
       setLang(code);
     }
@@ -72,18 +69,18 @@ export default function LanguageDropdown({
   return (
     <div className={styles.wrap} ref={ref}>
       <button className={styles.btn} onClick={() => setOpen(!open)}>
-        {LANGUAGES.find((l) => l.code === lang)?.label} ▼
+        {LANGUAGE_LIST.find((l) => l.code === lang)?.label} ▼
       </button>
 
       {open && (
         <div className={styles.menu}>
-          {LANGUAGES.map((l) => (
+          {LANGUAGE_LIST.map(({ code, label }) => (
             <button
-              key={l.code}
-              onClick={() => handleSelect(l.code)}
-              className={`${styles.item} ${l.code === lang ? styles.active : ""}`}
+              key={code}
+              onClick={() => handleSelect(code)}
+              className={`${styles.item} ${code === lang ? styles.active : ""}`}
             >
-              {l.label}
+              {label}
             </button>
           ))}
         </div>

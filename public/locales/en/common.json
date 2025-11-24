@@ -6,7 +6,13 @@
   },
   "createUser": {
     "inputName": "__input name",
-    "name": "Name"
+    "name": "Name",
+    "spritesLoadError": "Failed to load sprites from server",
+    "spritesLoadErrorWithReason": "Failed to load sprites from server: {{reason}}",
+    "enterName": "Please enter a name.",
+    "nameTooLong": "Name must not exceed 10 characters.",
+    "selectParts": "Please select head, clothes, and face.",
+    "saveError": "Save error. Please try again."
   },
   "energy": "Energy",
   "energyMenu": {

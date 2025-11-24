@@ -21,6 +21,7 @@ import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 import IncubatorOverlay from '../../components/IncubatorOverlay/IncubatorOverlay'
 import LanguageDropdown from '../../components/LanguageDropdown/LanguageDropdown'
 import { useTranslation } from 'react-i18next'
+import { LanguageEnum } from '../../types/enums/LanguageEnum'
 
 type AtlasFrames = Record<
   string,
@@ -50,7 +51,7 @@ interface PartTypeAvatar {
 const CreateUser = observer(() => {
   const navigate = useNavigate()
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   const [headParts, setHeadParts] = useState<PartTypeAvatar[]>([])
   const [bodyParts, setBodyParts] = useState<PartTypeAvatar[]>([])
@@ -108,7 +109,7 @@ const CreateUser = observer(() => {
         if (!spriteFile || !atlasFile) {
           errorStore.setError({
             error: true,
-            message: 'Не удалось загрузить спрайты с сервера',
+            message: t('createUser.spritesLoadError'),
           })
           navigate('/error')
           return
@@ -159,7 +160,7 @@ const CreateUser = observer(() => {
       } catch (err) {
         errorStore.setError({
           error: true,
-          message: `Не удалось загрузить спрайты с сервера: ${err}`,
+          message: t('createUser.spritesLoadErrorWithReason', { reason: String(err) }),
         })
         navigate('/error')
       }
@@ -233,11 +234,11 @@ const CreateUser = observer(() => {
     const trimmedName = name.trim()
 
     if (!trimmedName) {
-      showTopAlert({ text: 'Пожалуйста, введите имя.', variant: 'info' })
+      showTopAlert({ text: t('createUser.enterName'), variant: 'info' })
       return
     }
     if (trimmedName.length > 10) {
-      showTopAlert({ text: 'Имя не должно превышать 10 символов.', variant: 'info' })
+      showTopAlert({ text: t('createUser.nameTooLong'), variant: 'info' })
       return
     }
 
@@ -259,7 +260,7 @@ const CreateUser = observer(() => {
         !bodyParts[bodyIndex]?.part ||
         !emotionParts[emotionIndex]?.part
       ) {
-        showTopAlert({ text: 'Пожалуйста, выберите голову, одежду и лицо.', variant: 'info' })
+        showTopAlert({ text: t('createUser.selectParts'), variant: 'info' })
         setIsSaving(false)
         return
       }
@@ -276,7 +277,7 @@ const CreateUser = observer(() => {
     const emotionPartId = isEditing ? null : toIndex(emotionParts[emotionIndex]?.part)
 
     if (!isEditing && (headPartId == null || bodyPartId == null || emotionPartId == null)) {
-      showTopAlert({ text: 'Пожалуйста, выберите голову, одежду и лицо.', variant: 'info' })
+      showTopAlert({ text: t('createUser.selectParts'), variant: 'info' })
       setIsSaving(false)
       return
     }
@@ -293,10 +294,14 @@ const CreateUser = observer(() => {
 
       navigate('/laboratory')
     } catch (error) {
-      showTopAlert({ text: 'Ошибка сохранения. Попробуйте снова.', variant: 'error' })
+      showTopAlert({ text: t('createUser.saveError'), variant: 'error' })
     } finally {
       setIsSaving(false)
     }
+  }
+
+  const handlerUpdateLanguage = (lang: LanguageEnum) => {
+    userStore.setLanguage(lang, navigate)
   }
 
   useEffect(() => {
@@ -315,7 +320,8 @@ const CreateUser = observer(() => {
       <div className={styles.navigate}>
         <RoundButton onClick={() => navigate('/laboratory')} />
         <LanguageDropdown
-            defaultLang="ru"
+            defaultLang={userStore.user?.language || LanguageEnum.RU}
+            onChange={handlerUpdateLanguage}
         /> 
       </div>
 

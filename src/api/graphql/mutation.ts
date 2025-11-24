@@ -22,22 +22,25 @@ export const USER_UPDATE = gql`
     $nameProfessor: String
     $isRegistered: Boolean
     $userSelectedParts: UserSelectedBodyPartInput
+    $language: UserLanguage
   ) {
     UserUpdate(
       id: $id
       nameProfessor: $nameProfessor
       isRegistered: $isRegistered
       userSelectedParts: $userSelectedParts
+      language: $language
     ) {
       id
       name
       nameProfessor
       isRegistered
-      avatarFileId
+      language
       avatar {
         id
         url
       }
+      avatarFileId
     }
   }
 `
