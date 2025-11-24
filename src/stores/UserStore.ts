@@ -8,6 +8,7 @@ import { authorizationAndInitTelegram } from '../functions/authorization-and-ini
 import { NavigateFunction } from 'react-router-dom'
 import { LanguageEnum } from '../types/enums/LanguageEnum'
 import inventoriesStore from './InventoriesStore'
+import i18next from 'i18next'
 
 export interface User {
   id: string
@@ -86,6 +87,8 @@ class UserStore {
     const user = response.data?.UserLogin
     if (!user?.id) return null
 
+    await i18next.changeLanguage(response.data?.UserLogin.language?.toLowerCase() || 'en')
+
     this.setUser({
       id: user.id,
       name: tgUser.first_name || tgUser.username || 'Unknown',
@@ -157,10 +160,17 @@ class UserStore {
   async setLanguage(languageCode: LanguageEnum, navigate: NavigateFunction): Promise<void> {
     if (!this.user?.id) return
 
+    await i18next.changeLanguage(languageCode.toLowerCase())
+
+    try {
+      localStorage.setItem('i18nextLng', languageCode)
+    } catch {
+      console.warn('Cannot access localStorage to set language preference.')
+    }
+
     await this.updateUserProfile({ language: languageCode })
 
     await authorizationAndInitTelegram(navigate)
-    await inventoriesStore.fetchInventories()
   }
 
   setUser(user: User) {

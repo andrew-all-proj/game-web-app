@@ -8,6 +8,7 @@ export const USER_LOGIN = gql`
       nameProfessor
       isRegistered
       energy
+      language
       avatar {
         id
         url

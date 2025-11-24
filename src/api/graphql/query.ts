@@ -220,6 +220,7 @@ export const USER = gql`
       id
       energy
       avatarFileId
+      language
       avatar {
         url
       }
