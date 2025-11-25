@@ -207,33 +207,34 @@ export default function Fight({
       />
 
       <div className={styles.battleCenter}>
-        {lastAction && (
+  <div className={styles.phaserContainerWrapper}>
+    {lastAction && (
+      <>
+        {lastAction.monsterId === monsterStore.selectedMonster?.id ? (
           <>
-            {lastAction.monsterId === monsterStore.selectedMonster?.id ? (
-              <>
-                <div className={`${styles.lastActionOverlay} ${styles.opponentOverlay}`}>
-                  -{lastAction.damage}HP
-                </div>
-                <div className={`${styles.lastActionOverlay} ${styles.yourOverlay}`}>
-                  +{lastAction.stamina}SP
-                </div>
-              </>
-            ) : (
-              <>
-                <div className={`${styles.lastActionOverlay} ${styles.yourOverlay}`}>
-                  -{lastAction.damage}HP
-                </div>
-                <div className={`${styles.lastActionOverlay} ${styles.opponentOverlay}`}>
-                  +{lastAction.stamina}SP
-                </div>
-              </>
-            )}
+            <div className={`${styles.lastActionOverlay} ${styles.opponentOverlay}`}>
+              -{lastAction.damage}HP
+            </div>
+            <div className={`${styles.lastActionOverlay} ${styles.yourOverlay}`}>
+              +{lastAction.stamina}SP
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={`${styles.lastActionOverlay} ${styles.yourOverlay}`}>
+              -{lastAction.damage}HP
+            </div>
+            <div className={`${styles.lastActionOverlay} ${styles.opponentOverlay}`}>
+              +{lastAction.stamina}SP
+            </div>
           </>
         )}
-        <div className={styles.phaserContainerWrapper}>
-          <div ref={containerRef} />
-        </div>
-      </div>
+      </>
+    )}
+
+    <div ref={containerRef} />
+  </div>
+</div>
 
       {!isBattleOver && (
         <BottomBattlteMenu

@@ -9,6 +9,7 @@ interface BattleButtonProps {
   color?: string
   selected?: boolean
   availableSp?: number
+  multiplier?: number            
 }
 
 const BattleButtonBase: React.FC<BattleButtonProps> = ({
@@ -19,6 +20,7 @@ const BattleButtonBase: React.FC<BattleButtonProps> = ({
   color,
   selected,
   availableSp,
+  multiplier,                    // <--- используем
 }) => {
   const styleVars: React.CSSProperties = color ? { ['--btn-color' as any]: color } : {}
 
@@ -28,7 +30,7 @@ const BattleButtonBase: React.FC<BattleButtonProps> = ({
   const badgeClass = [
     styles.attackSp,
     isInsufficient || isClickDisabled ? styles.attackSpGray : '',
-    isClickDisabled ? styles.attackSpNoText : '', // текст скрываем только когда нет onClick
+    isClickDisabled ? styles.attackSpNoText : '',
   ]
     .join(' ')
     .trim()
@@ -43,11 +45,17 @@ const BattleButtonBase: React.FC<BattleButtonProps> = ({
       aria-disabled={isClickDisabled ? true : undefined}
     >
       <div className={badgeClass}>
-        {/* при нехватке SP текст показываем; скрываем только если onClick отсутствует */}
         {!isClickDisabled ? <>{spCost}</> : null}
       </div>
+
       <div className={styles.attackContent}>
         <img alt={name} src={img} />
+
+        {multiplier && multiplier > 1 && (       
+          <div className={styles.attackMultiplier}>
+            x{multiplier}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -66,6 +74,7 @@ const BattleButton = React.memo(BattleButtonBase, (prev, next) => {
     prev.color === next.color &&
     prev.selected === next.selected &&
     prev.onClick === next.onClick &&
+    prev.multiplier === next.multiplier &&                
     prevIns === nextIns &&
     prevDisable === nextDisable
   )

@@ -18,7 +18,6 @@ i18n
       loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
     detection: {
-      // отключим htmlTag, куки и т.п., если не нужно
       order: ['customDetector', 'querystring', 'localStorage', 'navigator'],
     },
     interpolation: { escapeValue: false },

@@ -74,8 +74,6 @@ export function usePhaserBattleScene({
     let hitOverlayYou: Phaser.GameObjects.Ellipse
     let yourShadow: Phaser.GameObjects.Image
     let oppShadow: Phaser.GameObjects.Image
-    let youText: Phaser.GameObjects.Text
-    let oppText: Phaser.GameObjects.Text
     let bamCenter: Phaser.GameObjects.Image
     let powCenter: Phaser.GameObjects.Image
 
@@ -158,24 +156,6 @@ export function usePhaserBattleScene({
       layerOpp.add(oppShadow)
       layerYou.moveTo(yourShadow, 0) // низ слоя → под спрайтом
       layerOpp.moveTo(oppShadow, 0)
-
-      // ПОДПИСИ: над головой (y - displayHeight - gap), в UI-слое
-      const labelGap = 10
-      youText = this.add
-        .text(yourMonster.x, yourMonster.y - yourMonster.displayHeight - labelGap, youLabel, {
-          fontSize: '14px',
-          color: '#ffffff',
-        })
-        .setOrigin(0.5)
-      oppText = this.add
-        .text(
-          opponentMonster.x,
-          opponentMonster.y - opponentMonster.displayHeight - labelGap,
-          opponentLabel,
-          { fontSize: '14px', color: '#ffffff' },
-        )
-        .setOrigin(0.5)
-      layerUI.add([youText, oppText])
 
       // АНИМАЦИИ
       this.anims.create({
@@ -395,18 +375,6 @@ export function usePhaserBattleScene({
         opponentMonster.x,
         opponentMonster.y - opponentMonster.displayHeight * 0.5,
       )
-
-      // подписи над головой (если спрайты двигались/скейлились)
-      const labelGap = 10
-      youText.setPosition(yourMonster.x, yourMonster.y - yourMonster.displayHeight - labelGap)
-      oppText.setPosition(
-        opponentMonster.x,
-        opponentMonster.y - opponentMonster.displayHeight - labelGap,
-      )
-
-      // «смерть» поворотом
-      if (opponentHealthRef.current! <= 0) opponentMonster.angle = 90
-      if (yourHealthRef.current! <= 0) yourMonster.angle = -90
     }
 
     if (gameRef.current) {

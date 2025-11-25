@@ -1,5 +1,4 @@
 :root {
-  /* примерные значения; можно переопределять из JS, см. ниже */
   --header-h: 110px; /* высота HeaderBattle */
   --menu-h: 240px; /* высота меню снизу */
   --gap-h: 12px; /* отступы/зазоры между блоками */
@@ -27,6 +26,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 /* сам canvas растягиваем в обёртку */
@@ -45,12 +45,12 @@
 }
 
 .yourOverlay {
-  top: 22%;
+  top: 1%;
   left: 25%;
   transform: translate(-50%, 0);
 }
 .opponentOverlay {
-  top: 22%;
+  top: 1%;
   left: 75%;
   transform: translate(-50%, 0);
 }
