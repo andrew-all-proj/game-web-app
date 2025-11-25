@@ -209,7 +209,7 @@ const CreateUser = observer(() => {
 
     const scaleX = canvas.width / maxW
     const scaleY = canvas.height / maxH
-    const scale = Math.min(scaleX, scaleY) * 1 
+    const scale = Math.min(scaleX, scaleY) * 1
 
     for (const layer of layers) {
       const { x, y, w, h } = layer.frame
@@ -220,8 +220,14 @@ const CreateUser = observer(() => {
 
       ctx.drawImage(
         spriteImg,
-        x, y, w, h,     // src rect
-        dx, dy, dstW, dstH // dst rect
+        x,
+        y,
+        w,
+        h, // src rect
+        dx,
+        dy,
+        dstW,
+        dstH, // dst rect
       )
     }
   }, [headIndex, bodyIndex, emotionIndex, headParts, bodyParts, emotionParts, isEditing, getFrame])
@@ -320,9 +326,9 @@ const CreateUser = observer(() => {
       <div className={styles.navigate}>
         <RoundButton onClick={() => navigate('/laboratory')} />
         <LanguageDropdown
-            defaultLang={userStore.user?.language || LanguageEnum.RU}
-            onChange={handlerUpdateLanguage}
-        /> 
+          defaultLang={userStore.user?.language || LanguageEnum.RU}
+          onChange={handlerUpdateLanguage}
+        />
       </div>
 
       <div className={styles.centerContent}>
@@ -348,7 +354,7 @@ const CreateUser = observer(() => {
               key: 'head',
               icon: hairIcon,
               alt: 'Голова',
-              parts: headParts,           
+              parts: headParts,
               selectedIndex: headIndex,
               setSelectedIndex: setHeadIndex,
             },
@@ -356,7 +362,7 @@ const CreateUser = observer(() => {
               key: 'body',
               icon: clothesIcon,
               alt: 'Одежда',
-              parts: bodyParts,          
+              parts: bodyParts,
               selectedIndex: bodyIndex,
               setSelectedIndex: setBodyIndex,
             },
@@ -364,7 +370,7 @@ const CreateUser = observer(() => {
               key: 'emotion',
               icon: emotionIcon,
               alt: 'Эмоции',
-              parts: emotionParts,        
+              parts: emotionParts,
               selectedIndex: emotionIndex,
               setSelectedIndex: setEmotionIndex,
             },
@@ -374,9 +380,9 @@ const CreateUser = observer(() => {
           activeTab={activeTab}
           onTabChange={setActiveTab}
           setIsEditing={setIsEditing}
-          spriteImg={spriteImgRef.current}         
-          getFrame={getFrame}                      
-          iconSize={70}   
+          spriteImg={spriteImgRef.current}
+          getFrame={getFrame}
+          iconSize={70}
         />
       </div>
     </div>

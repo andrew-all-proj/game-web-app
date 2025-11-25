@@ -33,7 +33,7 @@ export default function CharacteristicMonster({
   className,
 }: Props) {
   const [mode, setMode] = useState<Mode>('closed')
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   const toggle = () => setMode((prev) => order[(order.indexOf(prev) + 1) % order.length])
 

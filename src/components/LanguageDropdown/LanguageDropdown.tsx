@@ -1,45 +1,42 @@
-import { useState, useRef, useEffect } from "react";
-import styles from "./LanguageDropdown.module.css";
-import { LanguageEnum } from "../../types/enums/LanguageEnum";
+import { useState, useRef, useEffect } from 'react'
+import styles from './LanguageDropdown.module.css'
+import { LanguageEnum } from '../../types/enums/LanguageEnum'
 
 export const LANGUAGE_LIST: { code: LanguageEnum; label: string }[] = [
-  { code: LanguageEnum.RU, label: "RU" },
-  { code: LanguageEnum.EN, label: "EN" },
-];
+  { code: LanguageEnum.RU, label: 'RU' },
+  { code: LanguageEnum.EN, label: 'EN' },
+]
 
 type Props = {
-  defaultLang?: LanguageEnum;
-  onChange?: (lang: LanguageEnum) => void;
-};
+  defaultLang?: LanguageEnum
+  onChange?: (lang: LanguageEnum) => void
+}
 
-export default function LanguageDropdown({
-  defaultLang = LanguageEnum.RU,
-  onChange,
-}: Props) {
-  const [open, setOpen] = useState(false);
-  const [lang, setLang] = useState<LanguageEnum>(defaultLang);
-  const ref = useRef<HTMLDivElement>(null);
+export default function LanguageDropdown({ defaultLang = LanguageEnum.RU, onChange }: Props) {
+  const [open, setOpen] = useState(false)
+  const [lang, setLang] = useState<LanguageEnum>(defaultLang)
+  const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const close = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
+        setOpen(false)
       }
-    };
-    document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
-  }, []);
+    }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [])
 
   const handleSelect = (code: LanguageEnum) => {
     if (code === lang) {
-      setOpen(false);
-      return;
+      setOpen(false)
+      return
     }
 
-    setLang(code);
-    onChange?.(code);
-    setOpen(false);
-  };
+    setLang(code)
+    onChange?.(code)
+    setOpen(false)
+  }
 
   return (
     <div className={styles.wrap} ref={ref}>
@@ -53,9 +50,7 @@ export default function LanguageDropdown({
             <button
               key={code}
               onClick={() => handleSelect(code)}
-              className={`${styles.item} ${
-                code === lang ? styles.active : ""
-              }`}
+              className={`${styles.item} ${code === lang ? styles.active : ''}`}
             >
               {label}
             </button>
@@ -63,5 +58,5 @@ export default function LanguageDropdown({
         </div>
       )}
     </div>
-  );
+  )
 }

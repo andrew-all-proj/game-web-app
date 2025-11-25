@@ -96,13 +96,13 @@ const SearchBattle = observer(() => {
   })
 
   useSocketEvent<DuelChallengeResponsePayload>('duelChallengeResponce', (data) => {
-      if (!data.result) {
-        showTopAlert({
-          open: true,
-          text: t('searchBattle.notEnoughEnergyOrHungryMonster'),
-          variant: 'warning',
-        })
-        setWaitOpponent(true)
+    if (!data.result) {
+      showTopAlert({
+        open: true,
+        text: t('searchBattle.notEnoughEnergyOrHungryMonster'),
+        variant: 'warning',
+      })
+      setWaitOpponent(true)
     } else {
       getSocket()?.emit('registerMonsterForBattle', {
         isFindOpponent: false,

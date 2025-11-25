@@ -23,7 +23,7 @@ const FoodMenu = observer(() => {
   const [isLoading, setIsLoading] = useState(true)
   const [feedingIds, setFeedingIds] = useState<Set<string>>(new Set())
   const [disableGetFood, setDisableGetFood] = useState(false)
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   const fetchInventoriesAndMonsters = useCallback(
     async (withLoading: boolean) => {
@@ -108,7 +108,10 @@ const FoodMenu = observer(() => {
 
   return (
     <div className={styles.foodMenu}>
-      <HeaderBar icon={foodIcon} title={`${t('foodMenu.foodInStock')} ${inventoriesStore.quantityFood}`} />
+      <HeaderBar
+        icon={foodIcon}
+        title={`${t('foodMenu.foodInStock')} ${inventoriesStore.quantityFood}`}
+      />
       <div className={styles.content}>
         {inventoriesStore.quantityFood === 0 ? (
           <CardGetFood onButtonClick={handleGetFood} disabled={disableGetFood} />

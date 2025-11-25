@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next'
 import styles from './CardGetFood.module.css'
 
 interface CardGetFoodProps {
@@ -7,7 +7,7 @@ interface CardGetFoodProps {
 }
 
 export default function CardGetFood({ onButtonClick, disabled = false }: CardGetFoodProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   return (
     <div className={styles.cardFeedMonster}>
       <div className={styles.satietyInfo}>

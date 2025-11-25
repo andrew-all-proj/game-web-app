@@ -25,7 +25,7 @@ export default function CardFeedMonster({
 }: CardFeedMonsterProps) {
   const isMax = satiety >= 100
   const isDisabled = isMax || disabled
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
     <div className={styles.cardFeedMonster}>
@@ -36,8 +36,12 @@ export default function CardFeedMonster({
       </div>
 
       <div className={styles.satietyInfo}>
-        <span>{t('foodMenu.name')}: {name}</span>
-        <span>{t('foodMenu.satiety')}: {satiety}/100</span>
+        <span>
+          {t('foodMenu.name')}: {name}
+        </span>
+        <span>
+          {t('foodMenu.satiety')}: {satiety}/100
+        </span>
       </div>
 
       <div className={styles.buttonWrapper}>

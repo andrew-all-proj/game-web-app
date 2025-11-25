@@ -11,7 +11,7 @@ interface DuelInvitesProps {
 }
 
 const DuelInvites = ({ invites, onAccept, onDecline }: DuelInvitesProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   useEffect(() => {
     invites.forEach((invite) => {
       const timerId = setTimeout(() => {

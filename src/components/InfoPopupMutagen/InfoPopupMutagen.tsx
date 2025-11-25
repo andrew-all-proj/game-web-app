@@ -74,7 +74,8 @@ const InfoPopupMutagen = ({ userInventory, onClose, onClick }: InfoPopupMutagenP
         </div>
         <div className={styles.body}>
           <div className={styles.desc}>
-            {userInventory.mutagen.description || t('mutagensMenu.mutagenDescriptionFallback')} <br />
+            {userInventory.mutagen.description || t('mutagensMenu.mutagenDescriptionFallback')}{' '}
+            <br />
             <br />
             {t('mutagensMenu.shouldApply')}
           </div>

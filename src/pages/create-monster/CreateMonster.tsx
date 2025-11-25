@@ -69,7 +69,7 @@ type ArmPair = { arm: { left: PartPreviewEntry; right: PartPreviewEntry } }
 export type SelectablePart = HeadBodyPart | ArmPair | null
 
 const CreateMonster = observer(() => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [name, setName] = useState('')
   const [spriteAtlasJson, setSpriteAtlasJson] = useState<SpriteAtlas | null>(null)
@@ -268,7 +268,7 @@ const CreateMonster = observer(() => {
 
   return (
     <div className={styles.createMonster}>
-      <IncubatorOverlay open={isSaving} text={t('createMonster.creatingMonster')}  />
+      <IncubatorOverlay open={isSaving} text={t('createMonster.creatingMonster')} />
 
       <div className={styles.header}>
         <RoundButton

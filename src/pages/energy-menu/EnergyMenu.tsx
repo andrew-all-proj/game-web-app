@@ -21,7 +21,7 @@ const EnergyMenu = observer(() => {
   const navigate = useNavigate()
   const { monsterIdParams } = useParams()
   const [isLoading, setIsLoading] = useState(true)
-   const { t } = useTranslation();
+  const { t } = useTranslation()
 
   const fetchInventories = useCallback(
     async (withLoading: boolean) => {

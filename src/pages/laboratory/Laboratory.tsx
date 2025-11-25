@@ -147,7 +147,11 @@ const Laboratory = observer(() => {
           className={styles.headerStatBarMain}
         />
         <div className={styles.wrapperInputBox}>
-          <InputBox isActive={isActive} handleSetActive={handleSetActive} text={t('laboratory.active')} />
+          <InputBox
+            isActive={isActive}
+            handleSetActive={handleSetActive}
+            text={t('laboratory.active')}
+          />
         </div>
       </div>
       <div className={styles.centerContent}>

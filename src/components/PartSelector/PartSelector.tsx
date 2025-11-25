@@ -159,7 +159,7 @@ export default function PartSelector({
                 <CanvasIcon
                   spriteImg={spriteImg}
                   getFrame={getFrame}
-                  frameName={part.icon}    // показываем именно ИКОНКУ
+                  frameName={part.icon} // показываем именно ИКОНКУ
                   size={iconSize}
                 />
               ) : (
