@@ -124,7 +124,7 @@
     "opponent": "Opponent",
     "notEnoughSp": "Not enough SP: you have {{current}} SP, need {{required}} SP",
     "waitingForAction": "Waiting for the next action…",
-    "lastActionText": "{{actor}} used {{action}} on {{target}}: -{{damage}} HP, +{{stamina}} SP",
+    "lastActionText": "{{actor}} used {{action}} on {{target}}",
     "actionUnknown": "action",
     "battleErrorCanceled": "Battle error, battle cancelled"
   },
