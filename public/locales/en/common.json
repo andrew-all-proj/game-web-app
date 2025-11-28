@@ -2,7 +2,17 @@
   "createMonster": {
     "creatingMonster": "Creating a monster…",
     "inputName": "__input name",
-    "name": "Name"
+    "name": "Name",
+    "enterName": "Enter the monster name",
+    "nameTooLong": "Monster name must be at most 10 characters",
+    "selectBody": "Select a body",
+    "selectHead": "Select a head",
+    "selectArms": "Select arms",
+    "spritesNotLoaded": "Sprites are not loaded",
+    "notEnoughEnergy": "Not enough energy to create a monster",
+    "maxMonstersReached": "You already have 4 monsters",
+    "creationError": "Error creating monster",
+    "saveError": "Error saving monster"
   },
   "createUser": {
     "inputName": "__input name",
@@ -18,7 +28,10 @@
   "energyMenu": {
     "buyMoreEnergy": "buy more energy",
     "energy": "Energy",
-    "powerUnitCapacity": "Power unit capacity"
+    "powerUnitCapacity": "Power unit capacity",
+    "errorLoading": "Error loading",
+    "monsterAlreadyFull": "The monster is already full",
+    "feedingError": "Feeding error"
   },
   "foodMenu": {
     "errorLoading": "Error loading",
@@ -46,7 +59,18 @@
   },
   "monsterMenu": {
     "skills": "Skills",
-    "mutagens": "Mutagens"
+    "mutagens": "Mutagens",
+    "selectMonster": "Select a monster",
+    "monsterNotFound": "Monster not found",
+    "errorLoading": "Error loading",
+    "applySkillError": "Error applying skill",
+    "mutagenNotFound": "Mutagen not found",
+    "mutationError": "Error during mutation"
+  },
+  "monsterApplyMutagen": {
+    "mutagenNotFound": "Mutagen not found",
+    "errorLoading": "Error loading",
+    "mutationError": "Error during mutation"
   },
   "mutagensMenu": {
     "mutagens": "Mutagens",
@@ -98,7 +122,11 @@
     "opponentTurn": "Opponent's turn",
     "you": "You",
     "opponent": "Opponent",
-    "notEnoughSp": "Not enough SP: you have {{current}} SP, need {{required}} SP"
+    "notEnoughSp": "Not enough SP: you have {{current}} SP, need {{required}} SP",
+    "waitingForAction": "Waiting for the next action…",
+    "lastActionText": "{{actor}} used {{action}} on {{target}}: -{{damage}} HP, +{{stamina}} SP",
+    "actionUnknown": "action",
+    "battleErrorCanceled": "Battle error, battle cancelled"
   },
   "resultBattle": {
     "victory": "Victory!",

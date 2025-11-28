@@ -26,15 +26,17 @@ import PopupCardAppliedMutagen from '../../components/PopupCardAppliedMutagen/Po
 import { GetMonsterNewCharacteristicLines } from '../../components/GetMonsterNewCharacteristicLines/GetMonsterNewCharacteristicLines'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 import userStore from '../../stores/UserStore'
+import { useTranslation } from 'react-i18next'
 
 const MonsterMenu = observer(() => {
   const navigate = useNavigate()
   const { monsterIdParams, inventoryIdParams } = useParams()
+  const { t } = useTranslation()
 
   if (!monsterIdParams) {
-    showTopAlert({ text: 'Выберите монстра', variant: 'warning', open: true })
+    showTopAlert({ text: t('monsterMenu.selectMonster'), variant: 'warning', open: true })
     navigate('/laboratory')
-    return
+    return null
   }
 
   const [selectedMonster, setSelectedMonster] = useState<Monster | null>(
@@ -54,13 +56,13 @@ const MonsterMenu = observer(() => {
         await authorizationAndInitTelegram(navigate)
         const monster = await monsterStore.fetchMonster(monsterIdParams)
         if (!monster) {
-          showTopAlert({ text: 'Нету такого монстра', variant: 'warning', open: true })
+          showTopAlert({ text: t('monsterMenu.monsterNotFound'), variant: 'warning', open: true })
           navigate('/laboratory')
         }
         setSelectedMonster(monster)
         setIsLoading(false)
       } catch {
-        showTopAlert({ text: 'Ошибка при загрузке', variant: 'error', open: true })
+        showTopAlert({ text: t('monsterMenu.errorLoading'), variant: 'error', open: true })
       }
 
       if (inventoryIdParams) {
@@ -69,7 +71,7 @@ const MonsterMenu = observer(() => {
     }
 
     starting()
-  }, [monsterIdParams, navigate, inventoryIdParams])
+  }, [monsterIdParams, navigate, inventoryIdParams, t])
 
   useEffect(() => {
     if (!isLoading) {
@@ -83,7 +85,7 @@ const MonsterMenu = observer(() => {
         await monsterStore.apllySkillToMonster(monsterIdParams, inventoryIdParams, skill?.id)
         navigate(`/skills-menu/${monsterIdParams}`)
       } catch {
-        showTopAlert({ text: 'Ошибка при применении скилла', variant: 'error', open: true })
+        showTopAlert({ text: t('monsterMenu.applySkillError'), variant: 'error', open: true })
       }
     } else if (monsterIdParams) {
       navigate(`/skills-menu/${monsterIdParams}/${skill?.id || ''}`)
@@ -125,9 +127,9 @@ const MonsterMenu = observer(() => {
           message = String(error)
         }
         if (message.includes('Mutagen not found in user inventory')) {
-          showTopAlert({ text: 'Мутаген не найден', variant: 'warning', open: true })
+          showTopAlert({ text: t('monsterMenu.mutagenNotFound'), variant: 'warning', open: true })
         } else {
-          showTopAlert({ text: 'Ошибка при мутации', variant: 'error', open: true })
+          showTopAlert({ text: t('monsterMenu.mutationError'), variant: 'error', open: true })
         }
       }
     }

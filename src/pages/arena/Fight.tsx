@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import monsterStore from '../../stores/MonsterStore'
 import styles from './Fight.module.css'
 import { getSocket } from '../../api/socket'
@@ -39,6 +39,8 @@ export default function Fight({
   setBattleResult,
 }: FightProps) {
   const { t } = useTranslation()
+  const youName = monsterStore.selectedMonster?.name || t('arena.you')
+  const opponentName = monsterStore.opponentMonster?.name || t('arena.opponent')
   const yourHealthRef = useRef<number>(100)
   const opponentHealthRef = useRef<number>(100)
   const yourHealthBarRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>
@@ -109,7 +111,7 @@ export default function Fight({
     defaultTurnLimitMs: DEFAULT_TURN_LIMIT,
 
     onRejected: () => {
-      showTopAlert({ open: true, variant: 'error', text: 'Ошибка боя, бой отменен' })
+      showTopAlert({ open: true, variant: 'error', text: t('arena.battleErrorCanceled') })
       navigate('/search-battle')
     },
 
@@ -189,6 +191,19 @@ export default function Fight({
     })
   }, [isLoading])
 
+  const lastActionText = useMemo(() => {
+    if (!lastAction) return t('arena.waitingForAction')
+    const isUserAction = lastAction.monsterId === monsterStore.selectedMonster?.id
+    const actor = isUserAction ? youName : opponentName
+    const target = isUserAction ? opponentName : youName
+
+    return t('arena.lastActionText', {
+      actor,
+      action: lastAction.actionName || t('arena.actionUnknown'),
+      target
+    })
+  }, [lastAction, opponentName, t, youName])
+
   return (
     <>
       <HeaderBattle
@@ -207,6 +222,9 @@ export default function Fight({
       />
 
       <div className={styles.battleCenter}>
+        <div className={styles.actionBanner} aria-live="polite">
+          {lastActionText}
+        </div>
         <div className={styles.phaserContainerWrapper}>
           {lastAction && (
             <>

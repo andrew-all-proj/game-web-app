@@ -2,7 +2,17 @@
   "createMonster": {
     "creatingMonster": "Создание монстра…",
     "inputName": "__введите Имя",
-    "name": "Имя"
+    "name": "Имя",
+    "enterName": "Введите имя монстра",
+    "nameTooLong": "Имя монстра не должно превышать 10 символов",
+    "selectBody": "Выберите тело",
+    "selectHead": "Выберите голову",
+    "selectArms": "Выберите руки",
+    "spritesNotLoaded": "Спрайты не загружены",
+    "notEnoughEnergy": "Недостаточно энергии для создания монстра",
+    "maxMonstersReached": "У вас уже есть 4 монстра",
+    "creationError": "Ошибка при создании монстра",
+    "saveError": "Ошибка при сохранении монстра"
   },
   "createUser": {
     "inputName": "__введите Имя",
@@ -18,7 +28,10 @@
   "energyMenu": {
     "buyMoreEnergy": "Купить энергию",
     "energy": "Энергия",
-    "powerUnitCapacity": "Емкость энергоблока"
+    "powerUnitCapacity": "Емкость энергоблока",
+    "errorLoading": "Ошибка при загрузке",
+    "monsterAlreadyFull": "Монстр уже сыт",
+    "feedingError": "Ошибка при кормлении"
   },
   "foodMenu": {
     "errorLoading": "Ошибка загрузки",
@@ -46,7 +59,18 @@
   },
   "monsterMenu": {
     "skills": "Навыки",
-    "mutagens": "Мутагены"
+    "mutagens": "Мутагены",
+    "selectMonster": "Выберите монстра",
+    "monsterNotFound": "Монстр не найден",
+    "errorLoading": "Ошибка при загрузке",
+    "applySkillError": "Ошибка при применении скилла",
+    "mutagenNotFound": "Мутаген не найден",
+    "mutationError": "Ошибка при мутации"
+  },
+  "monsterApplyMutagen": {
+    "mutagenNotFound": "Мутаген не найден",
+    "errorLoading": "Ошибка при загрузке",
+    "mutationError": "Ошибка при мутации"
   },
   "mutagensMenu": {
     "mutagens": "Мутагены",
@@ -98,7 +122,11 @@
     "opponentTurn": "Ход противника",
     "you": "Вы",
     "opponent": "Соперник",
-    "notEnoughSp": "Недостаточно SP: у вас {{current}} SP, требуется {{required}} SP"
+    "notEnoughSp": "Недостаточно SP: у вас {{current}} SP, требуется {{required}} SP",
+    "waitingForAction": "Ожидание действия…",
+    "lastActionText": "{{actor}} использует {{action}} против {{target}}: -{{damage}} HP, +{{stamina}} SP",
+    "actionUnknown": "действие",
+    "battleErrorCanceled": "Ошибка боя, бой отменён"
   },
   "resultBattle": {
     "victory": "Победа!",
