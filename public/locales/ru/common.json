@@ -110,7 +110,13 @@
     "fromEvasion": "от Уворота",
     "noEffect": "Без эффекта",
     "choose": "Выбрать",
-    "back": "Назад"
+    "back": "Назад",
+    "nameLabel": "Название",
+    "descriptionLabel": "Описание",
+    "defenseMultiplier": "Защита: x{{value}}",
+    "strengthMultiplier": "Атака: x{{value}}",
+    "evasionMultiplier": "Уклонение: x{{value}}",
+    "staminaCostLabel": "Стоимость выносливости"
   },
   "arena": {
     "battleRejected": "Бой отменён",
@@ -139,7 +145,8 @@
     "laboratory": "Лаборатория",
     "noOpponentsAvailable": "Нет доступных противников",
     "notEnoughEnergyOrHungryMonster": "Недостаточно энергии или голоден монстр",
-    "selectAnOpponent": "Выбрать противника"
+    "selectAnOpponent": "Выбрать противника",
+    "invitesTitle": "Приглашения ({{count}})"
   },
   "stats": {
     "defense": "Защита",

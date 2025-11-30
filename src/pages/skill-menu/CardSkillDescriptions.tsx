@@ -1,5 +1,6 @@
 import styles from './CardSkillDescriptions.module.css'
 import MonsterStore from '../../stores/MonsterStore'
+import { useTranslation } from 'react-i18next'
 
 interface CardsSelectSkillProps {
   monsterId: string
@@ -12,9 +13,10 @@ export default function CardSkillDescriptions({
   skillId,
   monsterStore,
 }: CardsSelectSkillProps) {
+  const { t } = useTranslation()
   const monster = monsterStore.getMonsterById(monsterId)
   if (!monster) {
-    return
+    return null
   }
   const monsterAttack = monster?.monsterAttacks.find((attack) => attack.skillId === skillId)
   let skill = monsterAttack?.skill
@@ -22,9 +24,15 @@ export default function CardSkillDescriptions({
     const monsterDefens = monster?.monsterDefenses.find((attack) => attack.skillId === skillId)
     skill = monsterDefens?.skill
     if (!skill) {
-      return
+      return null
     }
   }
+
+  const statLines = [
+    skill.defense ? t('skillMenu.defenseMultiplier', { value: skill.defense }) : null,
+    skill.strength ? t('skillMenu.strengthMultiplier', { value: skill.strength }) : null,
+    skill.evasion ? t('skillMenu.evasionMultiplier', { value: skill.evasion }) : null,
+  ].filter(Boolean) as string[]
 
   return (
     <div className={styles.cardSkillDescriptions}>
@@ -35,27 +43,21 @@ export default function CardSkillDescriptions({
       <div className={styles.descriptionSkill}>
         {skill.name && (
           <div className={styles.row}>
-            <b>Название:</b> {skill.name}
+            <b>{t('skillMenu.nameLabel')}:</b> {skill.name}
           </div>
         )}
 
         {skill.description && (
           <div className={styles.row}>
-            <b>Описание:</b> {skill.description}
+            <b>{t('skillMenu.descriptionLabel')}:</b> {skill.description}
           </div>
         )}
 
-        {(skill.defense || skill.strength || skill.evasion) && (
-          <div className={styles.row}>
-            {skill.defense ? `Защита: x${skill.defense} ` : ''}
-            {skill.strength ? `Атака: x${skill.strength} ` : ''}
-            {skill.evasion ? `Уклонение: x${skill.evasion} ` : ''}
-          </div>
-        )}
+        {statLines.length > 0 && <div className={styles.row}>{statLines.join(' ')}</div>}
 
         {skill.energyCost && (
           <div className={styles.row}>
-            <b>Стоимость выносливости:</b> {skill.energyCost}
+            <b>{t('skillMenu.staminaCostLabel')}:</b> {skill.energyCost}
           </div>
         )}
       </div>

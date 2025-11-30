@@ -110,7 +110,13 @@
     "fromEvasion": "from Evasion",
     "noEffect": "No effect",
     "choose": "Choose",
-    "back": "Back"
+    "back": "Back",
+    "nameLabel": "Name",
+    "descriptionLabel": "Description",
+    "defenseMultiplier": "Defense: x{{value}}",
+    "strengthMultiplier": "Attack: x{{value}}",
+    "evasionMultiplier": "Evasion: x{{value}}",
+    "staminaCostLabel": "Stamina cost"
   },
   "arena": {
     "battleRejected": "Battle cancelled",
@@ -139,7 +145,8 @@
     "laboratory": "Laboratory",
     "noOpponentsAvailable": "No opponents available",
     "notEnoughEnergyOrHungryMonster": "Not enough energy or hungry monster",
-    "selectAnOpponent": "Select an opponent"
+    "selectAnOpponent": "Select an opponent",
+    "invitesTitle": "Invites ({{count}})"
   },
   "stats": {
     "defense": "Defense",

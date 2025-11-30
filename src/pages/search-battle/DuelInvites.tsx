@@ -25,7 +25,9 @@ const DuelInvites = ({ invites, onAccept, onDecline }: DuelInvitesProps) => {
 
   return (
     <div className={styles.duelInvites}>
-      <div className={styles.titleDuelInvites}>Приглашения ({invites.length})</div>
+      <div className={styles.titleDuelInvites}>
+        {t('searchBattle.invitesTitle', { count: invites.length })}
+      </div>
       {invites.map((invite) => (
         <CardMenuMonster
           key={invite.monsterId}
