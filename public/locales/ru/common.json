@@ -124,7 +124,7 @@
     "opponent": "Соперник",
     "notEnoughSp": "Недостаточно SP: у вас {{current}} SP, требуется {{required}} SP",
     "waitingForAction": "Ожидание действия…",
-    "lastActionText": "{{actor}} использует {{action}} против {{target}}: -{{damage}} HP, +{{stamina}} SP",
+    "lastActionText": "{{actor}} использует {{action}} против {{target}}",
     "actionUnknown": "действие",
     "battleErrorCanceled": "Ошибка боя, бой отменён"
   },
