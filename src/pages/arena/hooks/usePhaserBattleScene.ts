@@ -91,10 +91,12 @@ export function usePhaserBattleScene({
 
       this.load.on('progress', (value: number) => {
         loadingText.setText(`Loading... ${Math.floor(value * 100)}%`)
+        if (value > 0.5) {
+          setIsLoading(false)
+        }
       })
       this.load.on('complete', () => {
         loadingText.destroy()
-        setIsLoading(false)
       })
       this.load.on('loaderror', (file: Phaser.Loader.File) => {
         loadingText.setText(`Error loading: ${file.key}`)
