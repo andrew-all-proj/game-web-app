@@ -1,35 +1,98 @@
-.inputWrapper {
+.wrapper {
   position: relative;
   display: inline-block;
 }
 
-.inputField {
+.field {
+  position: relative;
   display: flex;
   align-items: center;
-  background-color: #e8eaea;
+
   border: 5px solid #2c2323;
-  border-radius: 25px;
-  padding: 6px 10px;
+  border-radius: 20px;
   box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.25);
-  width: fit-content;
+
+  width: 280px;
+  height: 40px;
+  overflow: hidden;
 }
 
-.mainInput::placeholder {
-  color: #2c2323;
-  opacity: 1;
+.empty {
+  background-color: #e8eaea;
 }
 
-.mainInput {
-  border: none;
-  background: transparent;
-  outline: none;
+.filled {
+  background-color: #fff;
+}
+
+.leftTag {
+  flex-shrink: 0;
+  width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-right: 5px solid #2c2323;
+
   font-family: "Nunito", sans-serif;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 800;
+}
+
+.leftTagVisible {
+  background-color: #ffc53d;
   color: #2c2323;
-  padding: 4px;
-  height: 20px;
-  width: 220px;
+  padding: 12px 12px;
+}
+
+.leftTagHidden {
+  background-color: transparent;
+  color: transparent;
+  padding: 10px 12px;
+  border-right-color: transparent;
+}
+
+/* инпут часть */
+.inputEmpty,
+.inputFilled {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  height: 100%;
+
+  font-family: "Nunito", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #2c2323;
+
+  padding: 10px 12px;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.empty .inputEmpty {
+  background-color: transparent;
+}
+
+.inputEmpty::placeholder {
+  color: #2c2323;
+  opacity: 1;
+  font-weight: 700;
+}
+
+.filled .inputFilled {
+  background-color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c2323;
+}
+
+.inputFilled::placeholder {
+  color: #2c2323;
+  opacity: 1;
+  font-weight: 700;
 }
 
 .buttonOverlap {

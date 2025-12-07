@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import CardMenuMonster from '../../components/CardMenuMonster/CardMenuMonster'
 import { MonsterOpponent } from '../../types/BattleRedis'
 import styles from './DuelInvites.module.css'
+import { useTranslation } from 'react-i18next'
 
 interface DuelInvitesProps {
   invites: MonsterOpponent[]
@@ -10,6 +11,7 @@ interface DuelInvitesProps {
 }
 
 const DuelInvites = ({ invites, onAccept, onDecline }: DuelInvitesProps) => {
+  const { t } = useTranslation()
   useEffect(() => {
     invites.forEach((invite) => {
       const timerId = setTimeout(() => {
@@ -23,14 +25,16 @@ const DuelInvites = ({ invites, onAccept, onDecline }: DuelInvitesProps) => {
 
   return (
     <div className={styles.duelInvites}>
-      <div className={styles.titleDuelInvites}>Приглашения ({invites.length})</div>
+      <div className={styles.titleDuelInvites}>
+        {t('searchBattle.invitesTitle', { count: invites.length })}
+      </div>
       {invites.map((invite) => (
         <CardMenuMonster
           key={invite.monsterId}
           level={invite.level}
           url={invite.avatar || ''}
           onButtonClick={() => onAccept(invite)}
-          textButton="Принять"
+          textButton={t('searchBattle.accept')}
         >
           <span>{invite.name}</span>
           <span>Lvl. {invite.level}</span>

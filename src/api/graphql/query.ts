@@ -220,6 +220,7 @@ export const USER = gql`
       id
       energy
       avatarFileId
+      language
       avatar {
         url
       }
@@ -288,6 +289,52 @@ export const USER_INVENTORY = gql`
         userInventoryType
         id
         foodId
+      }
+    }
+  }
+`
+
+export const SKILL = gql`
+  query Skill($skillId: String!) {
+    Skill(id: $skillId) {
+      cooldown
+      defense
+      description
+      effects
+      energyCost
+      evasion
+      iconFile {
+        url
+        id
+        fileType
+        contentType
+      }
+      iconFileId
+      id
+      name
+      rarity
+      strength
+      type
+      updatedAt
+    }
+  }
+`
+export const GET_FOOD_TODAY = gql`
+  query GetFoodToday($userId: String!) {
+    GetFoodToday(userId: $userId) {
+      message
+      quantity
+      food {
+        createdAt
+        description
+        iconFile {
+          url
+        }
+        iconFileId
+        id
+        name
+        satietyBonus
+        updatedAt
       }
     }
   }

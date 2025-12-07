@@ -6,9 +6,7 @@ import clothesIcon from '../../assets/icon/icon_clothes.svg'
 import emotionIcon from '../../assets/icon/icon_face.svg'
 import userStore from '../../stores/UserStore'
 import styles from './CreateUser.module.css'
-import { uploadFile } from '../../api/upload-file'
 import client from '../../api/apolloClient'
-import { USER_UPDATE } from '../../api/graphql/mutation'
 import { FILES } from '../../api/graphql/query'
 import { FileItem, GraphQLListResponse } from '../../types/GraphResponse'
 import { getMaxVersion } from '../../functions/get-max-version'
@@ -20,6 +18,30 @@ import errorStore from '../../stores/ErrorStore'
 import RoundButton from '../../components/Button/RoundButton'
 import clsx from 'clsx'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
+import IncubatorOverlay from '../../components/IncubatorOverlay/IncubatorOverlay'
+import LanguageDropdown from '../../components/LanguageDropdown/LanguageDropdown'
+import { useTranslation } from 'react-i18next'
+import { LanguageEnum } from '../../types/enums/LanguageEnum'
+
+type AtlasFrames = Record<
+  string,
+  {
+    frame: { x: number; y: number; w: number; h: number }
+    rotated: boolean
+    trimmed: boolean
+    spriteSourceSize: { x: number; y: number; w: number; h: number }
+    sourceSize: { w: number; h: number }
+  }
+>
+
+type Atlas = {
+  frames: AtlasFrames
+  meta: {
+    image: string
+    size: { w: number; h: number }
+    scale?: number | string
+  }
+}
 
 interface PartTypeAvatar {
   part: string
@@ -29,9 +51,10 @@ interface PartTypeAvatar {
 const CreateUser = observer(() => {
   const navigate = useNavigate()
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const { t } = useTranslation()
 
   const [headParts, setHeadParts] = useState<PartTypeAvatar[]>([])
-  const [bodyParts, setClothesParts] = useState<PartTypeAvatar[]>([])
+  const [bodyParts, setBodyParts] = useState<PartTypeAvatar[]>([])
   const [emotionParts, setEmotionParts] = useState<PartTypeAvatar[]>([])
 
   const [headIndex, setHeadIndex] = useState(0)
@@ -44,23 +67,29 @@ const CreateUser = observer(() => {
 
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-
+  const [isSaving, setIsSaving] = useState(false)
   const [animateIn, setAnimateIn] = useState(false)
 
+  const spriteImgRef = useRef<HTMLImageElement | null>(null)
+  const atlasRef = useRef<Atlas | null>(null)
+
   useEffect(() => {
-    const loadSvgSprite = async () => {
+    const loadSpriteAndAtlas = async () => {
       if (!userStore.user?.id) {
         const auth = await authorizationAndInitTelegram(navigate)
         if (!auth) {
           navigate('/')
+          return
         }
       }
+
       setName(userStore.user?.nameProfessor || '')
+
       try {
         const { data }: { data: { Files: GraphQLListResponse<FileItem> } } = await client.query({
           query: FILES,
           variables: {
-            limit: 10,
+            limit: 50,
             offset: 0,
             contentType: 'SPRITE_SHEET_USER_AVATAR',
           },
@@ -68,75 +97,88 @@ const CreateUser = observer(() => {
         })
 
         const spriteFiles = data?.Files?.items?.filter(
-          (item) => item.fileType === 'IMAGE' && item.url.endsWith('.svg'),
+          (item) => item.fileType === 'IMAGE' && item.url.endsWith('.png'),
+        )
+        const atlasFiles = data?.Files?.items?.filter(
+          (item) => item.fileType === 'JSON' && item.url.endsWith('.json'),
         )
 
         const spriteFile = getMaxVersion(spriteFiles)
+        const atlasFile = getMaxVersion(atlasFiles)
 
-        if (!spriteFile) {
+        if (!spriteFile || !atlasFile) {
           errorStore.setError({
             error: true,
-            message: 'Не удалось загрузить спрайты с сервера',
+            message: t('createUser.spritesLoadError'),
           })
           navigate('/error')
           return
         }
 
-        const res = await fetch(`${spriteFile.url}?t=${Date.now()}`)
-        const svgText = await res.text()
+        const atlasJsonRes = await fetch(`${atlasFile.url}?t=${Date.now()}`)
+        const atlasJson = (await atlasJsonRes.json()) as Atlas
+        atlasRef.current = atlasJson
 
-        const container = document.createElement('div')
-        container.style.display = 'none'
-        container.innerHTML = svgText
-        document.body.appendChild(container)
+        const img = new Image()
+        img.crossOrigin = 'anonymous'
+        await new Promise<void>((resolve, reject) => {
+          img.onload = () => resolve()
+          img.onerror = (e) => reject(e)
+          img.src = `${spriteFile.url}?t=${Date.now()}`
+        })
+        spriteImgRef.current = img
 
-        const parser = new DOMParser()
-        const doc = parser.parseFromString(svgText, 'image/svg+xml')
-        const symbols = Array.from(doc.querySelectorAll('symbol'))
-
+        const frames = Object.keys(atlasJson.frames)
         const heads: PartTypeAvatar[] = []
-        const clothes: PartTypeAvatar[] = []
+        const bodies: PartTypeAvatar[] = []
         const emotions: PartTypeAvatar[] = []
-        for (const symbol of symbols) {
-          const id = symbol.getAttribute('id') || ''
-          const match = id.match(/^ava-(head|clothes|emotion)_icon_(\d+)$/)
-          if (!match) continue
 
-          const [, type, index] = match
-          const partId = `ava-${type}_${index}`
+        const iconRe = /^ava-(head|clothes|emotion)_icon_(\d+)$/
 
-          const foundPart = symbols.find((s) => s.getAttribute('id') === partId)
-          if (!foundPart) continue
-
-          const entry = { icon: id, part: partId }
-          if (type === 'head') heads.push(entry)
-          else if (type === 'clothes') clothes.push(entry)
-          else if (type === 'emotion') emotions.push(entry)
+        for (const f of frames) {
+          const m = f.match(iconRe)
+          if (!m) continue
+          const [, type, idx] = m
+          const partName = `ava-${type}_${idx}`
+          if (atlasJson.frames[partName]) {
+            const entry: PartTypeAvatar = { icon: f, part: partName }
+            if (type === 'head') heads.push(entry)
+            else if (type === 'clothes') bodies.push(entry)
+            else if (type === 'emotion') emotions.push(entry)
+          }
         }
 
         if (userStore.user?.avatar?.url) {
           setIsEditing(true)
         }
 
-        setHeadParts(heads)
-        setClothesParts(clothes)
-        setEmotionParts(emotions)
+        setHeadParts(heads.sort())
+        setBodyParts(bodies.sort())
+        setEmotionParts(emotions.sort())
+
         setIsLoading(false)
       } catch (err) {
         errorStore.setError({
           error: true,
-          message: `Не удалось загрузить спрайты с сервера ${err}`,
+          message: t('createUser.spritesLoadErrorWithReason', { reason: String(err) }),
         })
         navigate('/error')
       }
     }
 
-    loadSvgSprite()
-  }, [navigate])
+    loadSpriteAndAtlas()
+  }, [navigate, t])
+
+  const getFrame = useCallback((name?: string) => {
+    if (!name || !atlasRef.current) return null
+    return atlasRef.current.frames[name] ?? null
+  }, [])
 
   const drawAvatarToCanvas = useCallback(async () => {
     const canvas = canvasRef.current
-    if (!canvas) return
+    const spriteImg = spriteImgRef.current
+    const atlas = atlasRef.current
+    if (!canvas || !spriteImg || !atlas) return
 
     const ctx = canvas.getContext('2d')
     if (!ctx) return
@@ -156,48 +198,39 @@ const CreateUser = observer(() => {
       return
     }
 
-    const serveData = (id: string | undefined) => {
-      if (!id) return null
-      const symbol = document.getElementById(id) as unknown as SVGSymbolElement
-      if (!symbol) return null
+    const layers = [
+      getFrame(bodyParts[bodyIndex]?.part),
+      getFrame(headParts[headIndex]?.part),
+      getFrame(emotionParts[emotionIndex]?.part),
+    ].filter(Boolean) as AtlasFrames[keyof AtlasFrames][]
 
-      const viewBox = symbol.getAttribute('viewBox')
-      if (!viewBox) return null
+    const maxW = Math.max(...layers.map((l) => l.frame.w))
+    const maxH = Math.max(...layers.map((l) => l.frame.h))
 
-      const [, , vbWidth, vbHeight] = viewBox.split(' ').map(Number)
+    const scaleX = canvas.width / maxW
+    const scaleY = canvas.height / maxH
+    const scale = Math.min(scaleX, scaleY) * 1
 
-      const svgContent = `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}">
-        ${symbol.innerHTML}
-      </svg>`
+    for (const layer of layers) {
+      const { x, y, w, h } = layer.frame
+      const dstW = Math.max(1, Math.round(w * scale))
+      const dstH = Math.max(1, Math.round(h * scale))
+      const dx = Math.round((canvas.width - dstW) / 2)
+      const dy = Math.round((canvas.height - dstH) / 2)
 
-      const blob = new Blob([svgContent], { type: 'image/svg+xml' })
-      const url = URL.createObjectURL(blob)
-
-      return { url, vbWidth, vbHeight }
+      ctx.drawImage(
+        spriteImg,
+        x,
+        y,
+        w,
+        h, // src rect
+        dx,
+        dy,
+        dstW,
+        dstH, // dst rect
+      )
     }
-
-    const parts = [
-      serveData(bodyParts[bodyIndex]?.part),
-      serveData(headParts[headIndex]?.part),
-      serveData(emotionParts[emotionIndex]?.part),
-    ].filter(Boolean) as { url: string; vbWidth: number; vbHeight: number }[]
-
-    for (const part of parts) {
-      const { url, vbWidth, vbHeight } = part
-
-      await new Promise<void>((resolve) => {
-        const img = new Image()
-        img.onload = () => {
-          const scale = 0.85
-          ctx.drawImage(img, 0, 0, vbWidth * scale, vbHeight * scale)
-          URL.revokeObjectURL(url)
-          resolve()
-        }
-        img.src = url
-      })
-    }
-  }, [headIndex, bodyIndex, emotionIndex, headParts, bodyParts, emotionParts, isEditing])
+  }, [headIndex, bodyIndex, emotionIndex, headParts, bodyParts, emotionParts, isEditing, getFrame])
 
   useEffect(() => {
     drawAvatarToCanvas()
@@ -207,11 +240,11 @@ const CreateUser = observer(() => {
     const trimmedName = name.trim()
 
     if (!trimmedName) {
-      showTopAlert({ text: 'Пожалуйста, введите имя.', variant: 'info' })
+      showTopAlert({ text: t('createUser.enterName'), variant: 'info' })
       return
     }
     if (trimmedName.length > 10) {
-      showTopAlert({ text: 'Имя не должно превышать 15 символов.', variant: 'info' })
+      showTopAlert({ text: t('createUser.nameTooLong'), variant: 'info' })
       return
     }
 
@@ -221,8 +254,8 @@ const CreateUser = observer(() => {
       navigate('/laboratory')
       return
     }
-
-    let avatarFileId = null
+    setIsSaving(true)
+    const avatarFileId = null
 
     if (!isEditing) {
       if (
@@ -233,62 +266,48 @@ const CreateUser = observer(() => {
         !bodyParts[bodyIndex]?.part ||
         !emotionParts[emotionIndex]?.part
       ) {
-        showTopAlert({ text: 'Пожалуйста, выберите голову, одежду и лицо.', variant: 'info' })
+        showTopAlert({ text: t('createUser.selectParts'), variant: 'info' })
+        setIsSaving(false)
         return
       }
+    }
 
-      const canvas = canvasRef.current
-      if (!canvas) return
+    const toIndex = (frameName?: string): number | null => {
+      if (!frameName) return null
+      const m = frameName.match(/_(\d+)$/)
+      return m ? Number(m[1]) : null
+    }
 
-      const blob: Blob | null = await new Promise((resolve) =>
-        canvas.toBlob((b) => resolve(b), 'image/png'),
-      )
+    const headPartId = isEditing ? null : toIndex(headParts[headIndex]?.part)
+    const bodyPartId = isEditing ? null : toIndex(bodyParts[bodyIndex]?.part)
+    const emotionPartId = isEditing ? null : toIndex(emotionParts[emotionIndex]?.part)
 
-      if (!blob) {
-        showTopAlert({ text: 'Ошибка при создании изображения.', variant: 'error' })
-        return
-      }
-
-      const formData = new FormData()
-      formData.append('file', new File([blob], 'avatar.png', { type: 'image/png' }))
-      formData.append('name', 'avatar')
-      formData.append('fileType', 'IMAGE')
-      formData.append('contentType', 'AVATAR_PROFESSOR')
-
-      try {
-        const resultUploadFile = await uploadFile({
-          url: `${import.meta.env.VITE_API_FILE}/upload`,
-          formData,
-          token: userStore.user?.token,
-        })
-
-        avatarFileId = resultUploadFile.id || null
-      } catch {
-        showTopAlert({ text: 'Ошибка загрузки изображения.', variant: 'error' })
-        return
-      }
+    if (!isEditing && (headPartId == null || bodyPartId == null || emotionPartId == null)) {
+      showTopAlert({ text: t('createUser.selectParts'), variant: 'info' })
+      setIsSaving(false)
+      return
     }
 
     try {
-      const { data } = await client.mutate({
-        mutation: USER_UPDATE,
-        variables: {
-          id: userStore.user?.id,
-          nameProfessor: trimmedName,
-          avatarFileId: avatarFileId ?? userStore.user?.avatar?.id ?? null,
-          isRegistered: true,
-        },
+      await userStore.updateUserProfile({
+        nameProfessor: trimmedName,
+        isRegistered: true,
+        avatarFileId: avatarFileId ?? userStore.user?.avatar?.id ?? null,
+        userSelectedParts: isEditing
+          ? undefined
+          : { bodyPartId: bodyPartId!, headPartId: headPartId!, emotionPartId: emotionPartId! },
       })
 
-      if (data?.UserUpdate) {
-        userStore.setUser(data.UserUpdate)
-        navigate('/laboratory')
-      } else {
-        showTopAlert({ text: 'Аватар загружен, но пользователь не обновлён.', variant: 'error' })
-      }
-    } catch (error) {
-      showTopAlert({ text: 'Ошибка сохранения. Попробуйте снова.', variant: 'error' })
+      navigate('/laboratory')
+    } catch {
+      showTopAlert({ text: t('createUser.saveError'), variant: 'error' })
+    } finally {
+      setIsSaving(false)
     }
+  }
+
+  const handlerUpdateLanguage = (lang: LanguageEnum) => {
+    userStore.setLanguage(lang, navigate)
   }
 
   useEffect(() => {
@@ -303,8 +322,13 @@ const CreateUser = observer(() => {
 
   return (
     <div className={styles.createUser}>
+      <IncubatorOverlay open={isSaving} text="Изменяем ваши внешние данные..." />
       <div className={styles.navigate}>
         <RoundButton onClick={() => navigate('/laboratory')} />
+        <LanguageDropdown
+          defaultLang={userStore.user?.language || LanguageEnum.RU}
+          onChange={handlerUpdateLanguage}
+        />
       </div>
 
       <div className={styles.centerContent}>
@@ -312,12 +336,15 @@ const CreateUser = observer(() => {
           <canvas ref={canvasRef} width={142} height={142} className={styles.avatarCanvas} />
         </div>
 
-        <MainInput
-          placeholder="_введите Имя"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onButtonClick={handleSaveAvatar}
-        />
+        <div className={styles.inputWrapper}>
+          <MainInput
+            label={t('createUser.name')}
+            placeholder={t('createUser.inputName')}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onButtonClick={handleSaveAvatar}
+          />
+        </div>
       </div>
 
       <div className={clsx(styles.partSelectorWrapper, { [styles.visible]: animateIn })}>
@@ -353,6 +380,9 @@ const CreateUser = observer(() => {
           activeTab={activeTab}
           onTabChange={setActiveTab}
           setIsEditing={setIsEditing}
+          spriteImg={spriteImgRef.current}
+          getFrame={getFrame}
+          iconSize={70}
         />
       </div>
     </div>

@@ -14,16 +14,39 @@ const StartApp = observer(() => {
   useEffect(() => {
     ;(async () => {
       const resultAuth = await authorizationAndInitTelegram(navigate)
+      let startParam: string | undefined
+
+      try {
+        const tg = (
+          window as { Telegram?: { WebApp?: { initDataUnsafe?: { start_param?: string } } } }
+        ).Telegram?.WebApp
+        startParam = tg?.initDataUnsafe?.start_param
+      } catch {
+        startParam = undefined
+      }
+
       if (resultAuth) {
         await monsterStore.fetchMonsters()
       }
 
       if (errorStore.error?.error) {
         navigate('/error')
-      } else if (userStore.user?.isRegistered) {
-        navigate('/laboratory')
-      } else {
+      } else if (!userStore.user?.isRegistered) {
         navigate('/create-user')
+      } else {
+        if (startParam === 'food-menu') {
+          navigate('/food-menu')
+        } else if (startParam && startParam.startsWith('arena-')) {
+          const uid = startParam.substring(startParam.indexOf('-') + 1)
+
+          if (uid) {
+            navigate(`/arena/${uid}`)
+          } else {
+            navigate('/laboratory')
+          }
+        } else {
+          navigate('/laboratory')
+        }
       }
 
       setIsLoading(false)

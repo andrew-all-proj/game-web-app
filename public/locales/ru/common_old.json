@@ -1,0 +1,56 @@
+{
+  "active": "Активный",
+  "arena": "Арена",
+  "buy more energy": "Приобрести",
+  "create": "Создать",
+  "createMonster": {
+    "creatingMonster": "Создание монстра…",
+    "inputName": "__введите Имя",
+    "name": "Имя"
+  },
+  "createUser": {
+    "inputName": "__введите Имя",
+    "name": "Имя"
+  },
+  "energy": "Энергия",
+  "energyMenu": {
+    "buyMoreEnergy": "Купить энергию",
+    "energy": "Энергия",
+    "powerUnitCapacity": "Емкость энергоблока"
+  },
+  "foodMenu": {
+    "errorLoading": "Ошибка загрузки",
+    "feed": "Кормить",
+    "feedingError": "Ошибка кормления",
+    "foodInStock": "Еды в запасе",
+    "full": "Сыт",
+    "getFood": "Попросить еды",
+    "mainMenu": "Главное Меню",
+    "monsterAlreadyFull": "Монстр уже сыт",
+    "name": "Имя",
+    "noFoodToFeed": "Нет еды для кормления",
+    "requestFoodHint": "Если дела плохи и нечем кормить монстров, попросите еду в социальных службах.",
+    "satiety": "Сытость"
+  },
+  "laboratory": {
+    "active": "Активный",
+    "arena": "Арена",
+    "create": "Создать",
+    "energy": "Энергия"
+  },
+  "name": "Имя",
+  "searchBattle": {
+    "accept": "Принять",
+    "laboratory": "Лаборатория",
+    "noOpponentsAvailable": "Нет доступных противников",
+    "notEnoughEnergyOrHungryMonster": "Недостаточно энергии или голоден монстр",
+    "selectAnOpponent": "Выбрать противника"
+  },
+  "stats": {
+    "defense": "Защита",
+    "evasion": "Уворот",
+    "health": "Жизнь",
+    "stamina": "Вынос.",
+    "strength": "Сила"
+  }
+}

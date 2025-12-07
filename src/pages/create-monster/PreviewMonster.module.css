@@ -1,7 +1,7 @@
 .monsterSlot {
-  --design-w: 390;
-  --design-h: 340;
-  --scale: 0.9;
+  --design-w: 490;
+  --design-h: 360;
+  --scale: 1;
   width: calc(var(--design-w) * 1px);
   height: calc(var(--design-h) * 1px);
   position: relative;
@@ -20,9 +20,9 @@
 
 :where(.monsterSlot) {
   --canvas-w-ratio: 0.6; /* 180 / 300 */
-  --canvas-h-ratio: 1; /* 380 / 380  */
-  --dot-outer-w-ratio: 1; /* 300 / 300 */
-  --dot-outer-h-ratio: 0.27; /* 81 / 300 —*/
+  --canvas-h-ratio: 1.1; /* 380 / 380  */
+  --dot-outer-w-ratio: 0.78; /* 300 / 300 */
+  --dot-outer-h-ratio: 0.2; /* 81 / 300 —*/
   --dot-inner-w-ratio: 0.6; /* 180 / 300 */
   --dot-inner-h-ratio: 0.1167; /* 35 / 300 */
   --dot-bottom-offset: -0.07;
@@ -61,7 +61,7 @@
 }
 @media (max-height: 670px) {
   .monsterSlot {
-    --scale: 0.7;
+    --scale: 0.65;
   }
 }
 @media (max-height: 590px) {

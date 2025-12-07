@@ -17,6 +17,7 @@ type Params = {
   width?: number
   height?: number
   scale?: number
+  opponentScale?: number
 }
 
 export function usePhaserBattleScene({
@@ -31,7 +32,8 @@ export function usePhaserBattleScene({
   opponentLabel = 'Соперник',
   width = 400,
   height = 300,
-  scale = 0.15,
+  scale = 0.7,
+  opponentScale = 0.6,
 }: Params) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
@@ -72,8 +74,6 @@ export function usePhaserBattleScene({
     let hitOverlayYou: Phaser.GameObjects.Ellipse
     let yourShadow: Phaser.GameObjects.Image
     let oppShadow: Phaser.GameObjects.Image
-    let youText: Phaser.GameObjects.Text
-    let oppText: Phaser.GameObjects.Text
     let bamCenter: Phaser.GameObjects.Image
     let powCenter: Phaser.GameObjects.Image
 
@@ -91,10 +91,12 @@ export function usePhaserBattleScene({
 
       this.load.on('progress', (value: number) => {
         loadingText.setText(`Loading... ${Math.floor(value * 100)}%`)
+        if (value > 0.5) {
+          setIsLoading(false)
+        }
       })
       this.load.on('complete', () => {
         loadingText.destroy()
-        setIsLoading(false)
       })
       this.load.on('loaderror', (file: Phaser.Loader.File) => {
         loadingText.setText(`Error loading: ${file.key}`)
@@ -134,7 +136,7 @@ export function usePhaserBattleScene({
         .sprite(width * 0.75, height * 0.6, 'opponent', Object.keys(atlasOpponent!.frames)[0])
         .setOrigin(0.5, 0.86)
         .setFlipX(true) // зеркалим противника
-        .setScale(0.13)
+        .setScale(opponentScale)
         .setName('opponentMonster')
 
       layerYou.add(yourMonster)
@@ -156,24 +158,6 @@ export function usePhaserBattleScene({
       layerOpp.add(oppShadow)
       layerYou.moveTo(yourShadow, 0) // низ слоя → под спрайтом
       layerOpp.moveTo(oppShadow, 0)
-
-      // ПОДПИСИ: над головой (y - displayHeight - gap), в UI-слое
-      const labelGap = 10
-      youText = this.add
-        .text(yourMonster.x, yourMonster.y - yourMonster.displayHeight - labelGap, youLabel, {
-          fontSize: '14px',
-          color: '#ffffff',
-        })
-        .setOrigin(0.5)
-      oppText = this.add
-        .text(
-          opponentMonster.x,
-          opponentMonster.y - opponentMonster.displayHeight - labelGap,
-          opponentLabel,
-          { fontSize: '14px', color: '#ffffff' },
-        )
-        .setOrigin(0.5)
-      layerUI.add([youText, oppText])
 
       // АНИМАЦИИ
       this.anims.create({
@@ -393,18 +377,6 @@ export function usePhaserBattleScene({
         opponentMonster.x,
         opponentMonster.y - opponentMonster.displayHeight * 0.5,
       )
-
-      // подписи над головой (если спрайты двигались/скейлились)
-      const labelGap = 10
-      youText.setPosition(yourMonster.x, yourMonster.y - yourMonster.displayHeight - labelGap)
-      oppText.setPosition(
-        opponentMonster.x,
-        opponentMonster.y - opponentMonster.displayHeight - labelGap,
-      )
-
-      // «смерть» поворотом
-      if (opponentHealthRef.current! <= 0) opponentMonster.angle = 90
-      if (yourHealthRef.current! <= 0) yourMonster.angle = -90
     }
 
     if (gameRef.current) {
@@ -413,11 +385,14 @@ export function usePhaserBattleScene({
     }
     gameRef.current = new Phaser.Game(config)
 
+    const api = apiRef.current
+    const game = gameRef.current
+
     return () => {
-      apiRef.current.animateYourHit = () => {}
-      apiRef.current.animateOpponentHit = () => {}
-      apiRef.current.showGameOver = () => {}
-      gameRef.current?.destroy(true)
+      api.animateYourHit = () => {}
+      api.animateOpponentHit = () => {}
+      api.showGameOver = () => {}
+      game?.destroy(true)
       gameRef.current = null
     }
   }, [
@@ -431,6 +406,7 @@ export function usePhaserBattleScene({
     width,
     height,
     scale,
+    opponentScale,
     yourHealthRef,
     opponentHealthRef,
   ])

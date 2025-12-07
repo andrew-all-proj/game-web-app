@@ -5,6 +5,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
+  max-width: var(--max-width);
   box-sizing: border-box;
 }
 

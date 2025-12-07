@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import MainButton from '../../components/Button/MainButton'
 import RoundButton from '../../components/Button/RoundButton'
 import { Skill, UserInventory } from '../../types/GraphResponse'
@@ -13,7 +14,10 @@ interface InfoPopupMutagenProps {
   monsterId?: string
 }
 
-function getEffectLines(skill: Skill) {
+function getEffectLines(
+  skill: Skill,
+  t: (key: string, options?: Record<string, unknown>) => string,
+) {
   const effects = []
   if (skill?.strength)
     effects.push(
@@ -23,7 +27,7 @@ function getEffectLines(skill: Skill) {
           {skill.strength}
         </b>
         <br />
-        от Силы
+        {t('skillMenu.fromStrength')}
       </div>,
     )
   if (skill?.defense)
@@ -34,7 +38,7 @@ function getEffectLines(skill: Skill) {
           {skill.defense}
         </b>
         <br />
-        от Защиты
+        {t('skillMenu.fromDefense')}
       </div>,
     )
   if (skill?.evasion)
@@ -45,10 +49,10 @@ function getEffectLines(skill: Skill) {
           {skill.evasion}
         </b>
         <br />
-        от Уворота
+        {t('skillMenu.fromEvasion')}
       </div>,
     )
-  if (!effects.length) effects.push(<div key="none">Без эффекта</div>)
+  if (!effects.length) effects.push(<div key="none">{t('skillMenu.noEffect')}</div>)
   return effects
 }
 
@@ -60,6 +64,8 @@ const InfoPopupSkill = ({
   onClickDelete,
   monsterId,
 }: InfoPopupMutagenProps) => {
+  const { t } = useTranslation()
+
   if (!userInventory || !showInfoPopupSkill) return null
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -72,17 +78,20 @@ const InfoPopupSkill = ({
               className={styles.icon}
             />
           </div>
-          <span className={styles.title}>{userInventory.skill?.name || 'Апгрейд'}</span>
+          <span className={styles.title}>
+            {userInventory.skill?.name || t('skillMenu.skillFallback')}
+          </span>
           <RoundButton type={'back'} onClick={onClose} className={styles.closeBtn} />
         </div>
         <div className={styles.body}>
           <div className={styles.desc}>
-            {userInventory.skill?.description || 'Описание мутагена...'} <br />
+            {userInventory.skill?.description || t('skillMenu.skillDescriptionFallback')} <br />
+            {t('skillMenu.energyCost', { cost: userInventory.skill?.energyCost })}
             <br />
-            Стоит ли?
+            {t('skillMenu.shouldApply')}
           </div>
           <div className={styles.effect}>
-            {getEffectLines(userInventory.skill).map((line, i) => (
+            {getEffectLines(userInventory.skill, t).map((line, i) => (
               <div key={i}>{line}</div>
             ))}
           </div>
@@ -93,7 +102,7 @@ const InfoPopupSkill = ({
           }}
           backgroundColor={`var(--green-primary-color)`}
         >
-          {monsterId ? 'Применить' : `Выбрать монстрика`}
+          {monsterId ? t('skillMenu.apply') : t('skillMenu.selectMonster')}
         </MainButton>
         <MainButton
           onClick={() => {
@@ -101,7 +110,7 @@ const InfoPopupSkill = ({
           }}
           backgroundColor={`var(--red-primary-color)`}
         >
-          Утилизировать
+          {t('skillMenu.dispose')}
         </MainButton>
       </div>
     </div>

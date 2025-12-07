@@ -7,10 +7,12 @@ import monsterStore from '../../stores/MonsterStore'
 import TitleSvg from '../../components/TitlteSvg/TitleSvg'
 import BattleReward from './BattleReward'
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const ResultBattle = observer(
   ({ win, battleReward }: { win: boolean; battleReward: GetBattleReward | null }) => {
     const navigate = useNavigate()
+    const { t } = useTranslation()
 
     useEffect(() => {
       if (!battleReward) {
@@ -30,7 +32,7 @@ const ResultBattle = observer(
         <div className={styles.header}>
           <TitleSvg
             fontSize={40}
-            text={win ? 'Победа!' : 'Поражение'}
+            text={win ? t('resultBattle.victory') : t('resultBattle.defeat')}
             fill={win ? 'var(--pink-secondary-color)' : 'var(--yellow-primary-color)'}
           />
         </div>
@@ -39,7 +41,7 @@ const ResultBattle = observer(
           ''
         ) : (
           <div className={styles.messageBubble}>
-            <span>В следующий раз точно получится!</span>
+            <span>{t('resultBattle.tryAgain')}</span>
           </div>
         )}
 
@@ -61,7 +63,7 @@ const ResultBattle = observer(
             backgroundColor={'var(--blue-primary-color)'}
             onClick={() => navigate('/laboratory')}
           >
-            Главное меню
+            {t('resultBattle.mainMenu')}
           </MainButton>
         </div>
       </div>

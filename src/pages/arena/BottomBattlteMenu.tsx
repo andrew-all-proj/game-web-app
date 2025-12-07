@@ -1,5 +1,5 @@
 import { useMemo, useState, useCallback } from 'react'
-import BattleButton from '../../components/Button/BattleButton'
+import BattleButton from '../../components/Button/BattleButton/BattleButton'
 import { Skill } from '../../types/GraphResponse'
 import iconAttack from '../../assets/icon/icon_attack.svg'
 import iconDefence from '../../assets/icon/icon_defence.svg'
@@ -67,6 +67,7 @@ const BottomBattlteMenu = ({
             availableSp={availableSp}
             selected={selectedAttackId === attack.id}
             onClick={() => setSelectedAttackId((prev) => (prev === attack.id ? null : attack.id))}
+            multiplier={attack.strength}
           />
         ) : (
           <BattleButton
@@ -93,6 +94,7 @@ const BottomBattlteMenu = ({
             onClick={() =>
               setSelectedDefenseId((prev) => (prev === defense.id ? null : defense.id))
             }
+            multiplier={defense.defense || defense.evasion}
           />
         ) : (
           <BattleButton

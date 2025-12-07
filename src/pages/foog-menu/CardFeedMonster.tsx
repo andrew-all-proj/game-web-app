@@ -1,8 +1,10 @@
+import { useTranslation } from 'react-i18next'
 import styles from './CardFeedMonster.module.css'
 
 interface CardFeedMonsterProps {
   url: string
   satiety: number
+  name: string
   disabled?: boolean
   onButtonClick: () => void
 }
@@ -17,11 +19,13 @@ function getSatietyClass(satiety: number) {
 export default function CardFeedMonster({
   url,
   satiety,
+  name,
   disabled = false,
   onButtonClick,
 }: CardFeedMonsterProps) {
   const isMax = satiety >= 100
   const isDisabled = isMax || disabled
+  const { t } = useTranslation()
 
   return (
     <div className={styles.cardFeedMonster}>
@@ -32,8 +36,12 @@ export default function CardFeedMonster({
       </div>
 
       <div className={styles.satietyInfo}>
-        <span>Сытость:</span>
-        <span>{satiety}/100</span>
+        <span>
+          {t('foodMenu.name')}: {name}
+        </span>
+        <span>
+          {t('foodMenu.satiety')}: {satiety}/100
+        </span>
       </div>
 
       <div className={styles.buttonWrapper}>
@@ -44,7 +52,7 @@ export default function CardFeedMonster({
           disabled={isDisabled}
           aria-disabled={isDisabled}
         >
-          {isMax ? 'Сыт' : 'Кормить'}
+          {isMax ? t('foodMenu.full') : t('foodMenu.feed')}
         </button>
       </div>
     </div>

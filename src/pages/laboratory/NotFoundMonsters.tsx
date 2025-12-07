@@ -4,15 +4,17 @@ import { useNavigate } from 'react-router-dom'
 import styles from './NotFoundMonsters.module.css'
 import MainButton from '../../components/Button/MainButton'
 import TitleSvg from '../../components/TitlteSvg/TitleSvg'
+import { useTranslation } from 'react-i18next'
 
 const NotFoundMonsters = observer(() => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   return (
     <div className={styles.notFoundMonsters}>
       <TitleSvg
         fontSize={35}
-        text={'Пришло время\nсоздать своего\nпервого монстрика!'}
+        text={t('laboratory.noMonstersTitle')}
         fill={'var(--yellow-primary-color)'}
         width={420}
         height={150}
@@ -28,7 +30,9 @@ const NotFoundMonsters = observer(() => {
         </div>
       </div>
       <div className={styles.buttonWrapper}>
-        <MainButton onClick={() => navigate('/create-monster')}>Создать</MainButton>
+        <MainButton onClick={() => navigate('/create-monster')}>
+          {t('laboratory.create')}
+        </MainButton>
       </div>
     </div>
   )

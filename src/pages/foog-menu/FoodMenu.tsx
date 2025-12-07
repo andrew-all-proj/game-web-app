@@ -1,6 +1,5 @@
-// FoodMenu.tsx
 import { observer } from 'mobx-react-lite'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useEffect, useState, useCallback } from 'react'
 import styles from './FoodMenu.module.css'
 import { authorizationAndInitTelegram } from '../../functions/authorization-and-init-telegram'
@@ -16,12 +15,15 @@ import inventoriesStore from '../../stores/InventoriesStore'
 import { UserInventoryTypeEnum } from '../../types/enums/UserInventoryTypeEnum'
 import HeaderBar from '../../components/Header/HeaderBar'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
+import CardGetFood from './CardGetFood'
+import { useTranslation } from 'react-i18next'
 
 const FoodMenu = observer(() => {
   const navigate = useNavigate()
-  const { monsterIdParams } = useParams()
   const [isLoading, setIsLoading] = useState(true)
   const [feedingIds, setFeedingIds] = useState<Set<string>>(new Set())
+  const [disableGetFood, setDisableGetFood] = useState(false)
+  const { t } = useTranslation()
 
   const fetchInventoriesAndMonsters = useCallback(
     async (withLoading: boolean) => {
@@ -34,16 +36,16 @@ const FoodMenu = observer(() => {
 
         setIsLoading(false)
       } catch {
-        showTopAlert({ open: true, text: 'Ошибка при загрузке', variant: 'error' })
+        showTopAlert({ open: true, text: t('foodMenu.errorLoading'), variant: 'error' })
         setIsLoading(false)
       }
     },
-    [navigate],
+    [navigate, t],
   )
 
   useEffect(() => {
     fetchInventoriesAndMonsters(true)
-  }, [monsterIdParams, fetchInventoriesAndMonsters])
+  }, [fetchInventoriesAndMonsters])
 
   if (isLoading && inventoriesStore.inventories.length === 0) {
     return <Loading />
@@ -57,7 +59,7 @@ const FoodMenu = observer(() => {
         inventory?.quantity > 0 && inventory.userInventoryType === UserInventoryTypeEnum.FOOD,
     )
     if (!food) {
-      showTopAlert({ text: 'Нет еды для кормления', open: true, variant: 'warning' })
+      showTopAlert({ text: t('foodMenu.noFoodToFeed'), open: true, variant: 'warning' })
       return
     }
 
@@ -81,9 +83,9 @@ const FoodMenu = observer(() => {
         message = String(error)
       }
       if (message.includes('The monster is already full')) {
-        showTopAlert({ text: 'Монстр уже сыт', open: true, variant: 'info' })
+        showTopAlert({ text: t('foodMenu.monsterAlreadyFull'), open: true, variant: 'info' })
       } else {
-        showTopAlert({ text: 'Ошибка при кормлении', open: true, variant: 'error' })
+        showTopAlert({ text: t('foodMenu.feedingError'), open: true, variant: 'error' })
       }
     } finally {
       setFeedingIds((prev) => {
@@ -94,10 +96,28 @@ const FoodMenu = observer(() => {
     }
   }
 
+  const handleGetFood = async () => {
+    setDisableGetFood(true)
+    const getFood = await inventoriesStore.fetchGetFood()
+    showTopAlert({ text: getFood.message, open: true, variant: 'info' })
+    if (getFood.quantity > 0) {
+      fetchInventoriesAndMonsters(true)
+    }
+    setDisableGetFood(false)
+  }
+
   return (
     <div className={styles.foodMenu}>
-      <HeaderBar icon={foodIcon} title={`Еда в наличии: ${inventoriesStore.quantityFood}`} />
+      <HeaderBar
+        icon={foodIcon}
+        title={`${t('foodMenu.foodInStock')} ${inventoriesStore.quantityFood}`}
+      />
       <div className={styles.content}>
+        {inventoriesStore.quantityFood === 0 ? (
+          <CardGetFood onButtonClick={handleGetFood} disabled={disableGetFood} />
+        ) : (
+          <></>
+        )}
         {monsterStore.monsters.map((monster) => {
           const isFeeding = feedingIds.has(monster.id)
           return (
@@ -105,6 +125,7 @@ const FoodMenu = observer(() => {
               key={monster.id}
               url={monster?.avatar || ''}
               satiety={monster.satiety}
+              name={monster.name || 'no name'}
               disabled={isFeeding}
               onButtonClick={() => !isFeeding && handlerFeedMonster(monster.id)}
             />
@@ -116,7 +137,7 @@ const FoodMenu = observer(() => {
             height={93}
             backgroundColor="var(--blue-primary-color)"
           >
-            Главное Меню
+            {t('foodMenu.mainMenu')}
           </MainButton>
         </div>
       </div>

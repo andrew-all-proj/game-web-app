@@ -2,6 +2,7 @@ import styles from './SelectMonster.module.css'
 import MainButton from '../../components/Button/MainButton'
 import { Monster } from '../../types/GraphResponse'
 import CardMenuMonster from '../../components/CardMenuMonster/CardMenuMonster'
+import { useTranslation } from 'react-i18next'
 
 type SelectMonsterProps = {
   monsters: Monster[]
@@ -10,6 +11,7 @@ type SelectMonsterProps = {
 }
 
 const SelectMonster = ({ monsters, onClose, onSelectMonster }: SelectMonsterProps) => {
+  const { t } = useTranslation()
   return (
     <div className={styles.content}>
       {monsters.map((monster) => (
@@ -18,7 +20,7 @@ const SelectMonster = ({ monsters, onClose, onSelectMonster }: SelectMonsterProp
           url={monster?.avatar || ''}
           level={monster.level || 0}
           onButtonClick={() => onSelectMonster(monster)}
-          textButton={'Выбрать'}
+          textButton={t('skillMenu.choose')}
         >
           <span>{monster.name}</span>
         </CardMenuMonster>
@@ -31,7 +33,7 @@ const SelectMonster = ({ monsters, onClose, onSelectMonster }: SelectMonsterProp
           height={93}
           backgroundColor="var(--green-secondary-color)"
         >
-          Назад
+          {t('skillMenu.back')}
         </MainButton>
       </div>
     </div>

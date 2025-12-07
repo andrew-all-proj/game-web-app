@@ -10,7 +10,9 @@ export default function TelegramViewportSync() {
   useEffect(() => {
     try {
       WebApp.ready()
-    } catch {}
+    } catch {
+      // WebApp может быть недоступен при локальной разработке
+    }
 
     const apply = () => {
       const h = readHeight()
@@ -31,7 +33,9 @@ export default function TelegramViewportSync() {
     return () => {
       try {
         WebApp.offEvent('viewportChanged', onViewportChanged)
-      } catch {}
+      } catch {
+        // Игнорируем отсутствие SDK в окружении
+      }
       window.removeEventListener('resize', onResize)
       window.visualViewport?.removeEventListener('resize', onResize)
       window.removeEventListener('orientationchange', onOrientation)

@@ -36,11 +36,6 @@ export function useBattleInitAndHeartbeat({
         battleId,
         monsterId: selectedMonsterId,
       })
-
-      socket.emit('startBattle', {
-        battleId,
-        monsterId: selectedMonsterId,
-      })
     })()
   }, [battleId, isLoading, selectedMonsterId, opponentMonsterId, userToken])
 

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import monsterStore from '../../stores/MonsterStore'
 import styles from './Fight.module.css'
 import { getSocket } from '../../api/socket'
@@ -14,11 +14,12 @@ import { useBattleInitAndHeartbeat } from './hooks/useBattleInitAndHeartbeat'
 import { useAutoPassTurn } from './hooks/useAutoPassTurn'
 import { useBattleResponse } from './hooks/useBattleResponse'
 import { usePhaserBattleScene } from './hooks/usePhaserBattleScene'
+import { useTranslation } from 'react-i18next'
 
 const DEFAULT_TURN_LIMIT = 15_000
 const CHECK_BATTLE_LIMIT = 18_000
 
-interface TestFightProps {
+interface FightProps {
   battleId: string
   atlas: SpriteAtlas
   atlasOpponent: SpriteAtlas
@@ -36,7 +37,10 @@ export default function Fight({
   spriteUrl,
   spriteUrlOpponent,
   setBattleResult,
-}: TestFightProps) {
+}: FightProps) {
+  const { t } = useTranslation()
+  const youName = monsterStore.selectedMonster?.name || t('arena.you')
+  const opponentName = monsterStore.opponentMonster?.name || t('arena.opponent')
   const yourHealthRef = useRef<number>(100)
   const opponentHealthRef = useRef<number>(100)
   const yourHealthBarRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>
@@ -107,7 +111,7 @@ export default function Fight({
     defaultTurnLimitMs: DEFAULT_TURN_LIMIT,
 
     onRejected: () => {
-      showTopAlert({ open: true, variant: 'error', text: 'Ошибка боя, бой отменен' })
+      showTopAlert({ open: true, variant: 'error', text: t('arena.battleErrorCanceled') })
       navigate('/search-battle')
     },
 
@@ -130,8 +134,8 @@ export default function Fight({
     setIsLoading,
     yourHealthRef,
     opponentHealthRef,
-    youLabel: monsterStore.selectedMonster?.name || 'Вы',
-    opponentLabel: monsterStore.opponentMonster?.name || 'Соперник',
+    youLabel: monsterStore.selectedMonster?.name || t('arena.you'),
+    opponentLabel: monsterStore.opponentMonster?.name || t('arena.opponent'),
   })
 
   // Sending selected actions
@@ -144,7 +148,7 @@ export default function Fight({
     const totalCost = costOf(attackId, myAttacks) + costOf(defenseId, myDefenses)
     if (totalCost > yourStamina) {
       //TODO make custom alert
-      alert(`Недостаточно SP: у вас ${yourStamina} SP, требуется ${totalCost} SP`)
+      alert(t('arena.notEnoughSp', { current: yourStamina, required: totalCost }))
       return
     }
 
@@ -177,6 +181,29 @@ export default function Fight({
     return () => window.removeEventListener('resize', setVars)
   }, [])
 
+  useEffect(() => {
+    if (isLoading) return
+    const socket = getSocket()
+    if (!socket) return
+    socket.emit('startBattle', {
+      battleId,
+      monsterId: monsterStore.selectedMonster?.id,
+    })
+  }, [battleId, isLoading])
+
+  const lastActionText = useMemo(() => {
+    if (!lastAction) return t('arena.waitingForAction')
+    const isUserAction = lastAction.monsterId === monsterStore.selectedMonster?.id
+    const actor = isUserAction ? youName : opponentName
+    const target = isUserAction ? opponentName : youName
+
+    return t('arena.lastActionText', {
+      actor,
+      action: lastAction.actionName || t('arena.actionUnknown'),
+      target,
+    })
+  }, [lastAction, opponentName, t, youName])
+
   return (
     <>
       <HeaderBattle
@@ -195,30 +222,34 @@ export default function Fight({
       />
 
       <div className={styles.battleCenter}>
-        {lastAction && (
-          <>
-            {lastAction.monsterId === monsterStore.selectedMonster?.id ? (
-              <>
-                <div className={`${styles.lastActionOverlay} ${styles.opponentOverlay}`}>
-                  -{lastAction.damage}HP
-                </div>
-                <div className={`${styles.lastActionOverlay} ${styles.yourOverlay}`}>
-                  +{lastAction.stamina}SP
-                </div>
-              </>
-            ) : (
-              <>
-                <div className={`${styles.lastActionOverlay} ${styles.yourOverlay}`}>
-                  -{lastAction.damage}HP
-                </div>
-                <div className={`${styles.lastActionOverlay} ${styles.opponentOverlay}`}>
-                  +{lastAction.stamina}SP
-                </div>
-              </>
-            )}
-          </>
-        )}
+        <div className={styles.actionBanner} aria-live="polite">
+          {lastActionText}
+        </div>
         <div className={styles.phaserContainerWrapper}>
+          {lastAction && (
+            <>
+              {lastAction.monsterId === monsterStore.selectedMonster?.id ? (
+                <>
+                  <div className={`${styles.lastActionOverlay} ${styles.opponentOverlay}`}>
+                    -{lastAction.damage}HP
+                  </div>
+                  <div className={`${styles.lastActionOverlay} ${styles.yourOverlay}`}>
+                    +{lastAction.stamina}SP
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={`${styles.lastActionOverlay} ${styles.yourOverlay}`}>
+                    -{lastAction.damage}HP
+                  </div>
+                  <div className={`${styles.lastActionOverlay} ${styles.opponentOverlay}`}>
+                    +{lastAction.stamina}SP
+                  </div>
+                </>
+              )}
+            </>
+          )}
+
           <div ref={containerRef} />
         </div>
       </div>

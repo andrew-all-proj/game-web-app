@@ -12,6 +12,8 @@
 }
 
 .header {
+  position: relative;
+  z-index: 100;
   display: grid;
   grid-template-columns: auto 1fr auto;
   grid-template-rows: auto auto;
@@ -29,6 +31,14 @@
   grid-row: 1;
 }
 
+.wrapperInputBox {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 200;
+  pointer-events: auto;
+}
+
 .avatarWrapper {
   grid-column: 2;
   grid-row: 1;
@@ -43,6 +53,7 @@
   background: #ffa260;
   overflow: hidden;
   margin-inline: auto;
+  z-index: 150;
 }
 
 .avatarWrapper img {

@@ -25,6 +25,7 @@ import CharacteristicMonster from '../../components/CharacteristicMonster/Charac
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
 import IncubatorOverlay from '../../components/IncubatorOverlay/IncubatorOverlay'
 import clsx from 'clsx'
+import { useTranslation } from 'react-i18next'
 
 declare global {
   interface Window {
@@ -39,7 +40,6 @@ export interface PartPreviewEntry {
 
 export interface SelectedPartInfo {
   key: string
-  attachPoint: { x: number; y: number }
   frameSize: { w: number; h: number; x: number; y: number }
 }
 
@@ -56,6 +56,12 @@ export interface PartPreviews {
   arms: { arm: { left: PartPreviewEntry; right: PartPreviewEntry } }[]
 }
 
+export interface PartIcons {
+  head: { id: string; key: string; frameData: FrameData }[]
+  body: { id: string; key: string; frameData: FrameData }[]
+  arms: { id: string; key: string; frameData: FrameData }[]
+}
+
 type PartTab = keyof PartPreviews
 
 type HeadBodyPart = PartPreviewEntry
@@ -63,10 +69,14 @@ type ArmPair = { arm: { left: PartPreviewEntry; right: PartPreviewEntry } }
 export type SelectablePart = HeadBodyPart | ArmPair | null
 
 const CreateMonster = observer(() => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [name, setName] = useState('')
   const [spriteAtlasJson, setSpriteAtlasJson] = useState<SpriteAtlas | null>(null)
-  const [partPreviews, setPartPreviews] = useState<PartPreviews>({ head: [], body: [], arms: [] })
+  const [partPreviews, setPartPreviews] = useState<{ parts: PartPreviews; icons: PartIcons }>({
+    parts: { head: [], body: [], arms: [] },
+    icons: { head: [], body: [], arms: [] },
+  })
   const [spriteUrl, setSpriteUrl] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -134,47 +144,80 @@ const CreateMonster = observer(() => {
     fetchMainSprite()
   }, [navigate])
 
-  const handlePartSelect = (part: SelectablePart) => {
-    if (!part) return
+  const handlePartSelect = (id: string) => {
+    if (!id) return
 
     setSelectedParts((prev) => {
-      const next = { ...prev }
+      const next: SelectedParts = { ...prev }
 
-      if (activeTab === 'arms' && 'arm' in part) {
-        next.leftArm = {
-          key: part.arm.left.key,
-          attachPoint: part.arm.left.frameData?.points?.attachToBody || { x: 0, y: 0 },
-          frameSize: part.arm.left.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
-        }
-        next.rightArm = {
-          key: part.arm.right.key,
-          attachPoint: part.arm.right.frameData?.points?.attachToBody || { x: 0, y: 0 },
-          frameSize: part.arm.right.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
-        }
-      } else if (part && 'frameData' in part) {
-        const attachPoint = part.frameData?.points?.attachToBody || { x: 0, y: 0 }
-        const partInfo: SelectedPartInfo = {
+      // HEAD
+      if (activeTab === 'head') {
+        const part = partPreviews.parts.head.find((item) => item.key === id)
+        if (!part) return prev
+
+        next.head = {
           key: part.key,
-          attachPoint,
-          frameSize: part.frameData?.frame || { w: 0, h: 0, x: 0, y: 0 },
+          frameSize: part.frameData?.frame ?? { x: 0, y: 0, w: 0, h: 0 },
         }
-        if (activeTab === 'head') next.head = partInfo
-        else if (activeTab === 'body') next.body = partInfo
+
+        return next
       }
-      return next
+
+      // BODY
+      if (activeTab === 'body') {
+        const part = partPreviews.parts.body.find((item) => item.key === id)
+        if (!part) return prev
+
+        next.body = {
+          key: part.key,
+          frameSize: part.frameData?.frame ?? { x: 0, y: 0, w: 0, h: 0 },
+        }
+
+        return next
+      }
+
+      if (activeTab === 'arms') {
+        const armPair = partPreviews.parts.arms.find(
+          (pair) => pair.arm.left.key === id || pair.arm.right.key === id,
+        )
+        if (!armPair) return prev
+
+        const left = armPair.arm.left
+        const right = armPair.arm.right
+
+        next.leftArm = {
+          key: left.key,
+          frameSize: left.frameData?.frame ?? { x: 0, y: 0, w: 0, h: 0 },
+        }
+
+        next.rightArm = {
+          key: right.key,
+          frameSize: right.frameData?.frame ?? { x: 0, y: 0, w: 0, h: 0 },
+        }
+
+        return next
+      }
+
+      return prev
     })
   }
 
   const handleSaveImage = async () => {
     if (isSaving) return
-    if (!name.trim()) return showTopAlert({ text: 'Введите имя монстра', variant: 'info' })
+    if (!name.trim()) return showTopAlert({ text: t('createMonster.enterName'), variant: 'info' })
     if (name.length > 10)
-      return showTopAlert({ text: 'Имя монстра не должно превышать 10 символов', variant: 'info' })
-    if (!selectedParts.body) return showTopAlert({ text: 'Выберите тело', variant: 'info' })
-    if (!selectedParts.head) return showTopAlert({ text: 'Выберите голову', variant: 'info' })
-    if (!selectedParts.leftArm) return showTopAlert({ text: 'Выберите руки', variant: 'info' })
+      return showTopAlert({
+        text: t('createMonster.nameTooLong'),
+        variant: 'info',
+      })
+    if (!selectedParts.body)
+      return showTopAlert({ text: t('createMonster.selectBody'), variant: 'info' })
+    if (!selectedParts.head)
+      return showTopAlert({ text: t('createMonster.selectHead'), variant: 'info' })
+    if (!selectedParts.leftArm)
+      return showTopAlert({ text: t('createMonster.selectArms'), variant: 'info' })
     if (!spriteAtlasJson || !spriteUrl) {
-      showTopAlert({ text: 'Спрайты не загружены', variant: 'error' })
+      showTopAlert({ text: t('createMonster.spritesNotLoaded'), variant: 'error' })
       return
     }
 
@@ -197,11 +240,14 @@ const CreateMonster = observer(() => {
 
       if (resultCreateMonster.errors) {
         if (resultCreateMonster.errors[0].message === 'Not enough energy to create a monster') {
-          showTopAlert({ text: 'Недостаточно энергии для создания монстра', variant: 'warning' })
+          showTopAlert({
+            text: t('createMonster.notEnoughEnergy'),
+            variant: 'warning',
+          })
         } else if (resultCreateMonster.errors[0].message === 'User already has 4 monsters') {
-          showTopAlert({ text: 'У вас уже есть 4 монстра', variant: 'warning' })
+          showTopAlert({ text: t('createMonster.maxMonstersReached'), variant: 'warning' })
         } else {
-          showTopAlert({ text: 'Ошибка при создании монстра', variant: 'error' })
+          showTopAlert({ text: t('createMonster.creationError'), variant: 'error' })
         }
         setIsSaving(false)
         return
@@ -215,7 +261,7 @@ const CreateMonster = observer(() => {
     } catch (err) {
       console.log('Error saving monster:', err)
       setIsSaving(false)
-      showTopAlert({ text: 'Ошибка при сохранении монстра', variant: 'error' })
+      showTopAlert({ text: t('createMonster.saveError'), variant: 'error' })
     }
   }
 
@@ -231,9 +277,8 @@ const CreateMonster = observer(() => {
 
   return (
     <div className={styles.createMonster}>
-      <IncubatorOverlay open={isSaving} text="Создание монстра…" />
+      <IncubatorOverlay open={isSaving} text={t('createMonster.creatingMonster')} />
 
-      {/* ВЕРХ */}
       <div className={styles.header}>
         <RoundButton
           onClick={() => navigate('/laboratory')}
@@ -255,7 +300,6 @@ const CreateMonster = observer(() => {
         <PreviewMonster
           spriteAtlas={spriteAtlasJson}
           spriteSheets={spriteUrl}
-          partPreviews={partPreviews}
           selectedParts={selectedParts}
           canvasRef={canvasRef}
         />
@@ -265,7 +309,8 @@ const CreateMonster = observer(() => {
         <MainInput
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="_введите имя"
+          label={t('createMonster.name')}
+          placeholder={t('createMonster.inputName')}
           type="text"
           onButtonClick={isSaving ? () => {} : handleSaveImage}
         />
@@ -277,7 +322,7 @@ const CreateMonster = observer(() => {
               key: 'head',
               icon: headIcon,
               alt: 'Head',
-              parts: partPreviews.head,
+              parts: partPreviews.icons.head,
               selectedIndex: headIndex,
               setSelectedIndex: setHeadIndex,
             },
@@ -285,7 +330,7 @@ const CreateMonster = observer(() => {
               key: 'body',
               icon: bodyIcon,
               alt: 'Body',
-              parts: partPreviews.body,
+              parts: partPreviews.icons.body,
               selectedIndex: bodyIndex,
               setSelectedIndex: setBodyIndex,
             },
@@ -293,7 +338,7 @@ const CreateMonster = observer(() => {
               key: 'arms',
               icon: armsIcon,
               alt: 'Arms',
-              parts: partPreviews.arms,
+              parts: partPreviews.icons.arms,
               selectedIndex: armsIndex,
               setSelectedIndex: setArmsIndex,
             },

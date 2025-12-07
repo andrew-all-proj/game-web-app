@@ -3,8 +3,8 @@ import { useEffect, useRef } from 'react'
 const SpriteCropper = ({
   spriteSrc,
   frame,
-  width = 64,
-  height = 64,
+  width = 70,
+  height = 70,
 }: {
   spriteSrc: string | null
   frame: { x: number; y: number; w: number; h: number }

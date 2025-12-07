@@ -6,6 +6,7 @@ import staminaIcon from '../../assets/icon/small-stamina-icon.svg'
 import strenghtIcon from '../../assets/icon/small-strength-icon.svg'
 import defenceIcon from '../../assets/icon/small-defence-icon.svg'
 import evasionIcon from '../../assets/icon/small-evasion-icon.svg'
+import { useTranslation } from 'react-i18next'
 
 type Mode = 'closed' | 'compact' | 'expanded'
 const order: Mode[] = ['closed', 'compact', 'expanded']
@@ -32,6 +33,7 @@ export default function CharacteristicMonster({
   className,
 }: Props) {
   const [mode, setMode] = useState<Mode>('closed')
+  const { t } = useTranslation()
 
   const toggle = () => setMode((prev) => order[(order.indexOf(prev) + 1) % order.length])
 
@@ -98,23 +100,23 @@ export default function CharacteristicMonster({
             <span>{level}/30</span>
           </div>
           <div className={styles.row}>
-            <span>Жизнь</span>
+            <span>{t('stats.health')}</span>
             <span>{hp}</span>
           </div>
           <div className={styles.row}>
-            <span>Выносл.</span>
+            <span>{t('stats.stamina')}</span>
             <span>{stamina}</span>
           </div>
           <div className={styles.row}>
-            <span>Сила</span>
+            <span>{t('stats.strength')}</span>
             <span>{strength}</span>
           </div>
           <div className={styles.row}>
-            <span>Защита</span>
+            <span>{t('stats.defense')}</span>
             <span>{defense}</span>
           </div>
           <div className={styles.row}>
-            <span>Уворот</span>
+            <span>{t('stats.evasion')}</span>
             <span>{evasion}</span>
           </div>
         </div>

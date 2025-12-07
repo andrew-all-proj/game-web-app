@@ -17,6 +17,7 @@ import PopupCardAppliedMutagen from '../../components/PopupCardAppliedMutagen/Po
 import { MonsterApplyMutagenResponse } from '../../types/GraphResponse'
 import { GetMonsterNewCharacteristicLines } from '../../components/GetMonsterNewCharacteristicLines/GetMonsterNewCharacteristicLines'
 import { showTopAlert } from '../../components/TopAlert/topAlertBus'
+import { useTranslation } from 'react-i18next'
 
 const getMonsterCharacteristicLines = (
   monster: Monster | null,
@@ -47,6 +48,7 @@ const MonsterApplyMutagen = observer(() => {
   const [openPopupCard, setOpenPopupCard] = useState(false)
   const [selectedInventory, setSelectedInventory] = useState<UserInventory | null>(null)
   const [newCharMonster, setNewCharMonster] = useState<MonsterApplyMutagenResponse | null>(null)
+  const { t } = useTranslation()
 
   const fetchInventoriesAndMonsters = useCallback(
     async (withLoading: boolean) => {
@@ -59,7 +61,11 @@ const MonsterApplyMutagen = observer(() => {
         )
 
         if (!inventory) {
-          showTopAlert({ text: 'Не найден мутаген', variant: 'warning', open: true })
+          showTopAlert({
+            text: t('monsterApplyMutagen.mutagenNotFound'),
+            variant: 'warning',
+            open: true,
+          })
           setIsLoading(false)
           return
         }
@@ -67,11 +73,11 @@ const MonsterApplyMutagen = observer(() => {
         setSelectedInventory(inventory)
         setIsLoading(false)
       } catch {
-        showTopAlert({ text: 'Ошибка при загрузке', open: true, variant: 'error' })
+        showTopAlert({ text: t('monsterApplyMutagen.errorLoading'), open: true, variant: 'error' })
         setIsLoading(false)
       }
     },
-    [navigate, inventoryIdParams],
+    [navigate, inventoryIdParams, t],
   )
 
   useEffect(() => {
@@ -107,9 +113,9 @@ const MonsterApplyMutagen = observer(() => {
         message = String(error)
       }
       if (message.includes('Mutagen not found in user inventory')) {
-        showTopAlert({ text: 'Мутаген не найден', variant: 'warning' })
+        showTopAlert({ text: t('monsterApplyMutagen.mutagenNotFound'), variant: 'warning' })
       } else {
-        showTopAlert({ text: 'Ошибка при мутации', variant: 'error' })
+        showTopAlert({ text: t('monsterApplyMutagen.mutationError'), variant: 'error' })
       }
     }
     setOpenPopupCard(true)

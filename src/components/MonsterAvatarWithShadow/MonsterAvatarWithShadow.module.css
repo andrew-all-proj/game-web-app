@@ -20,13 +20,14 @@
 }
 
 .monsterImage {
-  width: 70%;
+  width: 90%;
   height: auto;
   object-fit: contain;
   z-index: 2;
   cursor: pointer;
   position: relative;
   display: block;
+  transform: translateY(-20px);
 }
 
 .dotWrapper {

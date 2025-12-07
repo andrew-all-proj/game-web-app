@@ -11,10 +11,11 @@ import client from '../../api/apolloClient'
 import { FileItem, Monster, MonsterBattles } from '../../types/GraphResponse'
 import monsterStore from '../../stores/MonsterStore'
 import { SpriteAtlas } from '../../types/sprites'
-import errorStore from '../../stores/ErrorStore'
 import { GetBattleReward } from '../../types/BattleRedis'
 import ResultBattle from '../result-battle/ResultBattle'
 import Fight from './Fight'
+import { showTopAlert } from '../../components/TopAlert/topAlertBus'
+import { useTranslation } from 'react-i18next'
 
 const getSprite = async (
   monster?: Monster | null,
@@ -34,9 +35,9 @@ const getSprite = async (
 }
 
 const Arena = observer(() => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { battleId } = useParams()
-  //const [infoMessage, setInfoMessage] = useState('')
   const [startFight, setStartFight] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
   const [atlas, setAtlas] = useState<SpriteAtlas | null>(null)
@@ -62,13 +63,21 @@ const Arena = observer(() => {
         const battle = data.MonsterBattle
 
         if (battle.status === 'REJECTED') {
-          //setInfoMessage('Бой отменён')
+          showTopAlert({
+            open: true,
+            text: t('arena.battleRejected'),
+            variant: 'warning',
+          })
           setStartFight(false)
           navigate('/search-battle')
         }
 
         if (battle.status === 'FINISHED') {
-          //setInfoMessage('Бой завершён')
+          showTopAlert({
+            open: true,
+            text: t('arena.battleFinished'),
+            variant: 'warning',
+          })
           setStartFight(false)
           navigate('/search-battle')
         }
@@ -99,8 +108,12 @@ const Arena = observer(() => {
           setAtlas(atlasJson)
           setSpriteUrl(spriteFile.url)
         } else {
-          errorStore.setError({ error: true, message: 'Ошибка загрузки спрайтов' })
-          navigate('/error')
+          showTopAlert({
+            open: true,
+            text: t('arena.spriteLoadError'),
+            variant: 'warning',
+          })
+          return navigate('/search-battle')
         }
 
         const { atlasFile: opponentAtlasFile, spriteFile: opponentSpriteFile } = await getSprite(
@@ -111,19 +124,27 @@ const Arena = observer(() => {
           setAtlasOpponent(atlasJson)
           setSpriteUrlOpponent(opponentSpriteFile.url)
         } else {
-          errorStore.setError({ error: true, message: 'Ошибка загрузки спрайтов соперника' })
-          navigate('/error')
+          showTopAlert({
+            open: true,
+            text: t('arena.opponentSpriteLoadError'),
+            variant: 'warning',
+          })
+          return navigate('/search-battle')
         }
-      } catch (error) {
-        console.error('Ошибка при старте боя:', error)
-        //setInfoMessage('Ошибка при загрузке данных боя')
+      } catch {
+        showTopAlert({
+          open: true,
+          text: t('arena.battleNotFound'),
+          variant: 'warning',
+        })
+        return navigate('/search-battle')
       } finally {
         setIsLoading(false)
       }
     }
 
     startingFight()
-  }, [battleId, navigate])
+  }, [battleId, navigate, t])
 
   if (isLoading) {
     return <Loading />

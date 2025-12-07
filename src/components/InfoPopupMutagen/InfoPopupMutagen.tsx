@@ -3,6 +3,7 @@ import RoundButton from '../Button/RoundButton'
 import { Mutagen, UserInventory } from '../../types/GraphResponse'
 import styles from './InfoPopupMutagen.module.css'
 import mutagenIcon from '../../assets/icon/icon_mutagen.svg'
+import { useTranslation } from 'react-i18next'
 
 interface InfoPopupMutagenProps {
   userInventory: UserInventory | null
@@ -10,7 +11,10 @@ interface InfoPopupMutagenProps {
   onClick: (userInventory: UserInventory) => void
 }
 
-function getEffectLines(mutagen: Mutagen) {
+function getEffectLines(
+  mutagen: Mutagen,
+  t: (key: string, options?: Record<string, unknown>) => string,
+) {
   const effects = []
   if (mutagen.strength)
     effects.push(
@@ -19,7 +23,8 @@ function getEffectLines(mutagen: Mutagen) {
           {mutagen.strength > 0 ? '±' : ''}
           {mutagen.strength}
         </b>
-        <br />к Силе
+        <br />
+        {t('mutagensMenu.toStrength')}
       </div>,
     )
   if (mutagen.defense)
@@ -29,7 +34,8 @@ function getEffectLines(mutagen: Mutagen) {
           {mutagen.defense > 0 ? '±' : ''}
           {mutagen.defense}
         </b>
-        <br />к Защите
+        <br />
+        {t('mutagensMenu.toDefense')}
       </div>,
     )
   if (mutagen.evasion)
@@ -39,14 +45,17 @@ function getEffectLines(mutagen: Mutagen) {
           {mutagen.evasion > 0 ? '±' : ''}
           {mutagen.evasion}
         </b>
-        <br />к Увороту
+        <br />
+        {t('mutagensMenu.toEvasion')}
       </div>,
     )
-  if (!effects.length) effects.push(<div key="none">Без эффекта</div>)
+  if (!effects.length) effects.push(<div key="none">{t('mutagensMenu.noEffect')}</div>)
   return effects
 }
 
 const InfoPopupMutagen = ({ userInventory, onClose, onClick }: InfoPopupMutagenProps) => {
+  const { t } = useTranslation()
+
   if (!userInventory || !userInventory.mutagen.id) return null
 
   return (
@@ -58,17 +67,20 @@ const InfoPopupMutagen = ({ userInventory, onClose, onClick }: InfoPopupMutagenP
             alt=""
             className={styles.icon}
           />
-          <span className={styles.title}>{userInventory.mutagen.name || 'Мутаген'}</span>
+          <span className={styles.title}>
+            {userInventory.mutagen.name || t('mutagensMenu.mutagenFallback')}
+          </span>
           <RoundButton type={'back'} onClick={onClose} className={styles.closeBtn} />
         </div>
         <div className={styles.body}>
           <div className={styles.desc}>
-            {userInventory.mutagen.description || 'Описание мутагена...'} <br />
+            {userInventory.mutagen.description || t('mutagensMenu.mutagenDescriptionFallback')}{' '}
             <br />
-            Стоит ли?
+            <br />
+            {t('mutagensMenu.shouldApply')}
           </div>
           <div className={styles.effect}>
-            {getEffectLines(userInventory.mutagen).map((line, i) => (
+            {getEffectLines(userInventory.mutagen, t).map((line, i) => (
               <div key={i}>{line}</div>
             ))}
           </div>
@@ -79,7 +91,7 @@ const InfoPopupMutagen = ({ userInventory, onClose, onClick }: InfoPopupMutagenP
           }}
           backgroundColor={`var(--green-primary-color)`}
         >
-          Применить
+          {t('mutagensMenu.apply')}
         </MainButton>
       </div>
     </div>
