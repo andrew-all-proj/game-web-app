@@ -9,8 +9,7 @@ COPY package.json ./
 COPY yarn.lock* ./
 COPY .yarnrc.yml .yarnrc.yml
 COPY .yarn ./.yarn
-RUN --mount=type=ssh \
-  if [ -f .yarnrc.yml ]; then yarn install --immutable; else yarn install --frozen-lockfile; fi
+RUN if [ -f .yarnrc.yml ]; then yarn install --immutable; else yarn install --frozen-lockfile; fi
 
 FROM deps AS build
 WORKDIR /app

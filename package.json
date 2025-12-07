@@ -41,7 +41,7 @@
     "eslint": "^9.21.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
-    "game-db": "git+ssh://git@github.com/andrew-all-proj/game-db.git#v0.1.7",
+    "game-db": "https://github.com/andrew-all-proj/game-db.git#v0.1.7",
     "globals": "^15.15.0",
     "i18next-parser": "^9.3.0",
     "postcss": "^8.5.3",
