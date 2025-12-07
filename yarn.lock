@@ -2354,9 +2354,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"game-db@git+ssh://git@github.com/andrew-all-proj/game-db.git#v0.1.7":
+"game-db@https://github.com/andrew-all-proj/game-db.git#v0.1.7":
   version: 0.0.2
-  resolution: "game-db@git+ssh://git@github.com/andrew-all-proj/game-db.git#commit=f9571d271dd48f04a31f768a0e737979203e2563"
+  resolution: "game-db@https://github.com/andrew-all-proj/game-db.git#commit=f9571d271dd48f04a31f768a0e737979203e2563"
   dependencies:
     dotenv: "npm:^16.5.0"
     pg: "npm:^8.14.1"
@@ -2383,7 +2383,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^5.1.0"
     eslint-plugin-react-refresh: "npm:^0.4.19"
     framer-motion: "npm:^12.6.3"
-    game-db: "git+ssh://git@github.com/andrew-all-proj/game-db.git#v0.1.7"
+    game-db: "https://github.com/andrew-all-proj/game-db.git#v0.1.7"
     globals: "npm:^15.15.0"
     graphql: "npm:^16.10.0"
     i18next: "npm:^25.6.3"
