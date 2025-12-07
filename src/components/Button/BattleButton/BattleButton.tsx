@@ -22,7 +22,9 @@ const BattleButtonBase: React.FC<BattleButtonProps> = ({
   availableSp,
   multiplier,
 }) => {
-  const styleVars: React.CSSProperties = color ? ({ '--btn-color': color } as const) : {}
+  const styleVars: React.CSSProperties & { '--btn-color'?: string } = color
+    ? { '--btn-color': color }
+    : {}
 
   const isInsufficient = availableSp !== undefined && availableSp < spCost
   const isClickDisabled = !onClick
