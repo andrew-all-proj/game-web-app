@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { SpriteAtlas as BaseSpriteAtlas } from '../../types/sprites'
 import type { SelectedParts } from './CreateMonster'
 import styles from './PreviewMonster.module.css'
@@ -70,34 +70,24 @@ export default function PreviewMonster({
     return img
   }, [imgUrl])
 
-  const getStayFrame = (keyOrBase: string): string | null => {
-    const frames = spriteAtlas?.frames
-    if (!frames) return null
-    if (frames[keyOrBase]) return keyOrBase
-    const stayIdx = keyOrBase.indexOf('/stay/')
-    const baseKey = stayIdx !== -1 ? keyOrBase.slice(0, stayIdx) : keyOrBase.replace(/\/[^/]+$/, '')
-    const prefix = `${baseKey}/stay/`
-    const names = Object.keys(frames).filter((n) => n.startsWith(prefix))
-    if (!names.length) return null
-    names.sort()
-    return names[0]
-  }
+  const getStayFrame = useCallback(
+    (keyOrBase: string): string | null => {
+      const frames = spriteAtlas?.frames
+      if (!frames) return null
+      if (frames[keyOrBase]) return keyOrBase
+      const stayIdx = keyOrBase.indexOf('/stay/')
+      const baseKey =
+        stayIdx !== -1 ? keyOrBase.slice(0, stayIdx) : keyOrBase.replace(/\/[^/]+$/, '')
+      const prefix = `${baseKey}/stay/`
+      const names = Object.keys(frames).filter((n) => n.startsWith(prefix))
+      if (!names.length) return null
+      names.sort()
+      return names[0]
+    },
+    [spriteAtlas],
+  )
 
-  const drawFrame = (
-    ctx: CanvasRenderingContext2D,
-    img: HTMLImageElement,
-    frameName: string,
-    x: number,
-    y: number,
-    scale: number,
-  ) => {
-    const rec = spriteAtlas?.frames?.[frameName]
-    if (!rec) return
-    const { x: sx, y: sy, w, h } = rec.frame
-    ctx.drawImage(img, sx, sy, w, h, x, y, w * scale, h * scale)
-  }
-
-  const draw = () => {
+  const draw = useCallback(() => {
     const canvas = canvasRef.current
     if (!canvas || !spriteAtlas || !atlasImage) return
     const ctx = canvas.getContext('2d')
@@ -123,9 +113,10 @@ export default function PreviewMonster({
       const { x, y } = centerPart(canvas, rec.frame.w, rec.frame.h, SCALE)
 
       ctx.imageSmoothingEnabled = false
-      drawFrame(ctx, atlasImage, stayFrame, x, y, SCALE)
+      const { x: sx, y: sy, w, h } = rec.frame
+      ctx.drawImage(atlasImage, sx, sy, w, h, x, y, w * SCALE, h * SCALE)
     }
-  }
+  }, [atlasImage, canvasRef, getStayFrame, selectedParts, spriteAtlas])
 
   useEffect(() => {
     if (!atlasImage) return
@@ -133,11 +124,11 @@ export default function PreviewMonster({
     if (atlasImage.complete) draw()
     else atlasImage.addEventListener('load', onLoad)
     return () => atlasImage.removeEventListener('load', onLoad)
-  }, [atlasImage, spriteAtlas])
+  }, [atlasImage, draw])
 
   useEffect(() => {
     draw()
-  }, [spriteAtlas, selectedParts])
+  }, [draw])
 
   useLayoutEffect(() => {
     const canvas = canvasRef.current
@@ -149,7 +140,7 @@ export default function PreviewMonster({
     canvas.height = Math.round(cssH * dpr)
     const ctx = canvas.getContext('2d')
     if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-  }, [])
+  }, [canvasRef])
 
   return (
     <div className={styles.monsterSlot}>

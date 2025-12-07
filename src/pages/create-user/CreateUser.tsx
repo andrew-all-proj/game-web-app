@@ -167,7 +167,7 @@ const CreateUser = observer(() => {
     }
 
     loadSpriteAndAtlas()
-  }, [navigate])
+  }, [navigate, t])
 
   const getFrame = useCallback((name?: string) => {
     if (!name || !atlasRef.current) return null
@@ -255,7 +255,7 @@ const CreateUser = observer(() => {
       return
     }
     setIsSaving(true)
-    let avatarFileId = null
+    const avatarFileId = null
 
     if (!isEditing) {
       if (
@@ -299,7 +299,7 @@ const CreateUser = observer(() => {
       })
 
       navigate('/laboratory')
-    } catch (error) {
+    } catch {
       showTopAlert({ text: t('createUser.saveError'), variant: 'error' })
     } finally {
       setIsSaving(false)

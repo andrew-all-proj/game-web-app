@@ -210,8 +210,10 @@ const CreateMonster = observer(() => {
         text: t('createMonster.nameTooLong'),
         variant: 'info',
       })
-    if (!selectedParts.body) return showTopAlert({ text: t('createMonster.selectBody'), variant: 'info' })
-    if (!selectedParts.head) return showTopAlert({ text: t('createMonster.selectHead'), variant: 'info' })
+    if (!selectedParts.body)
+      return showTopAlert({ text: t('createMonster.selectBody'), variant: 'info' })
+    if (!selectedParts.head)
+      return showTopAlert({ text: t('createMonster.selectHead'), variant: 'info' })
     if (!selectedParts.leftArm)
       return showTopAlert({ text: t('createMonster.selectArms'), variant: 'info' })
     if (!spriteAtlasJson || !spriteUrl) {

@@ -189,7 +189,7 @@ export default function Fight({
       battleId,
       monsterId: monsterStore.selectedMonster?.id,
     })
-  }, [isLoading])
+  }, [battleId, isLoading])
 
   const lastActionText = useMemo(() => {
     if (!lastAction) return t('arena.waitingForAction')
@@ -200,7 +200,7 @@ export default function Fight({
     return t('arena.lastActionText', {
       actor,
       action: lastAction.actionName || t('arena.actionUnknown'),
-      target
+      target,
     })
   }, [lastAction, opponentName, t, youName])
 

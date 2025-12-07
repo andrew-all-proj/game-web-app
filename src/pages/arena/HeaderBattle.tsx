@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import styles from './HeaderBattle.module.css'
 import StatBar from '../../components/StatBar/StatBar'
 import smallEnergyIcon from '../../assets/icon/small-stamina-icon.svg'
@@ -58,10 +58,9 @@ const HeaderBattle = ({
     return () => cancelAnimationFrame(raf)
   }, [isCurrentTurn, turnEndsAtMs, turnTimeLimitMs, offset])
 
-  const fillStyle = useMemo(
-    () => ({ ['--fill' as any]: `${Math.round(progress * 100)}%` }),
-    [progress],
-  )
+  const fillStyle = useMemo(() => {
+    return { '--fill': `${Math.round(progress * 100)}%` } as CSSProperties
+  }, [progress])
 
   return (
     <div className={styles.header}>

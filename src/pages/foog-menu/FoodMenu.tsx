@@ -40,7 +40,7 @@ const FoodMenu = observer(() => {
         setIsLoading(false)
       }
     },
-    [navigate],
+    [navigate, t],
   )
 
   useEffect(() => {

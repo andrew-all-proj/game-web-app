@@ -44,7 +44,7 @@ const MutagensMenu = observer(() => {
         setIsLoading(false)
       }
     },
-    [navigate],
+    [navigate, t],
   )
 
   useEffect(() => {

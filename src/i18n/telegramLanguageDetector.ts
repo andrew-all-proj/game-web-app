@@ -6,9 +6,9 @@ const TG_KEYS = ['tg_webapp_lang', 'lang']
 function getTelegramLang(): string | undefined {
   try {
     const fromUnsafe = WebApp.initDataUnsafe?.user?.language_code as string | undefined
-    const fromI18n = (WebApp as any).i18nLanguageCode as string | undefined
+    const fromI18n = (WebApp as { i18nLanguageCode?: string }).i18nLanguageCode
     return fromUnsafe || fromI18n
-  } catch (_) {
+  } catch {
     return undefined
   }
 }
@@ -33,11 +33,15 @@ const TelegramLanguageDetector: LanguageDetectorModule = {
       'en'
     )
   },
-  init: () => {},
+  init: () => {
+    // нет инициализации
+  },
   cacheUserLanguage: (lng: string) => {
     try {
       localStorage.setItem('i18nextLng', lng)
-    } catch {}
+    } catch {
+      // нет доступа к localStorage
+    }
   },
 }
 

@@ -1,6 +1,6 @@
 import styles from './SecondButton.module.css'
 
-interface MainButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+type MainButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>
 
 export default function SecondButton({ children, className = '', ...rest }: MainButtonProps) {
   return (

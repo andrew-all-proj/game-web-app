@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import styles from './LanguageDropdown.module.css'
 import { LanguageEnum } from '../../types/enums/LanguageEnum'
 
-export const LANGUAGE_LIST: { code: LanguageEnum; label: string }[] = [
+const LANGUAGE_LIST: { code: LanguageEnum; label: string }[] = [
   { code: LanguageEnum.RU, label: 'RU' },
   { code: LanguageEnum.EN, label: 'EN' },
 ]

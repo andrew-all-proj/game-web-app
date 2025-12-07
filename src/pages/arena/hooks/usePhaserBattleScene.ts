@@ -385,11 +385,14 @@ export function usePhaserBattleScene({
     }
     gameRef.current = new Phaser.Game(config)
 
+    const api = apiRef.current
+    const game = gameRef.current
+
     return () => {
-      apiRef.current.animateYourHit = () => {}
-      apiRef.current.animateOpponentHit = () => {}
-      apiRef.current.showGameOver = () => {}
-      gameRef.current?.destroy(true)
+      api.animateYourHit = () => {}
+      api.animateOpponentHit = () => {}
+      api.showGameOver = () => {}
+      game?.destroy(true)
       gameRef.current = null
     }
   }, [
@@ -403,6 +406,7 @@ export function usePhaserBattleScene({
     width,
     height,
     scale,
+    opponentScale,
     yourHealthRef,
     opponentHealthRef,
   ])

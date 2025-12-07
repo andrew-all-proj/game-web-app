@@ -17,9 +17,11 @@ const StartApp = observer(() => {
       let startParam: string | undefined
 
       try {
-        const tg = (window as any).Telegram?.WebApp
+        const tg = (
+          window as { Telegram?: { WebApp?: { initDataUnsafe?: { start_param?: string } } } }
+        ).Telegram?.WebApp
         startParam = tg?.initDataUnsafe?.start_param
-      } catch (e) {
+      } catch {
         startParam = undefined
       }
 

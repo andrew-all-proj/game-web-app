@@ -61,7 +61,11 @@ const MonsterApplyMutagen = observer(() => {
         )
 
         if (!inventory) {
-          showTopAlert({ text: t('monsterApplyMutagen.mutagenNotFound'), variant: 'warning', open: true })
+          showTopAlert({
+            text: t('monsterApplyMutagen.mutagenNotFound'),
+            variant: 'warning',
+            open: true,
+          })
           setIsLoading(false)
           return
         }

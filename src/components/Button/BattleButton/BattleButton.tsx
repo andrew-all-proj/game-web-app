@@ -22,7 +22,7 @@ const BattleButtonBase: React.FC<BattleButtonProps> = ({
   availableSp,
   multiplier,
 }) => {
-  const styleVars: React.CSSProperties = color ? { ['--btn-color' as any]: color } : {}
+  const styleVars: React.CSSProperties = color ? ({ '--btn-color': color } as const) : {}
 
   const isInsufficient = availableSp !== undefined && availableSp < spCost
   const isClickDisabled = !onClick
@@ -49,9 +49,7 @@ const BattleButtonBase: React.FC<BattleButtonProps> = ({
       <div className={styles.attackContent}>
         <img alt={name} src={img} />
 
-        {multiplier && (
-          <div className={styles.attackMultiplier}>x{multiplier}</div>
-        )}
+        {multiplier && <div className={styles.attackMultiplier}>x{multiplier}</div>}
       </div>
     </div>
   )

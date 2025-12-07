@@ -110,7 +110,7 @@ export default function PartSelector({
 }: PartSelectorProps) {
   const currentTab = useMemo(() => tabs.find((tab) => tab.key === activeTab), [tabs, activeTab])
 
-  const parts = currentTab?.parts || []
+  const parts = useMemo(() => currentTab?.parts || [], [currentTab])
   const selectedIndex = currentTab?.selectedIndex ?? -1
   const onSelect = currentTab?.setSelectedIndex ?? (() => {})
 

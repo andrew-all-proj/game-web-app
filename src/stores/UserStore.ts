@@ -115,7 +115,14 @@ class UserStore {
   }): Promise<User | null> {
     if (!this.user?.id) return null
 
-    const variables: Record<string, any> = {
+    const variables: {
+      id: string
+      nameProfessor?: string
+      isRegistered?: boolean
+      avatarFileId?: string | null
+      userSelectedParts?: UserSelectedPartsInput | null
+      language?: LanguageEnum
+    } = {
       id: this.user.id,
       ...(args.nameProfessor !== undefined && { nameProfessor: args.nameProfessor }),
       ...(args.isRegistered !== undefined && { isRegistered: args.isRegistered }),

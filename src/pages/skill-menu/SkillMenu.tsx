@@ -112,7 +112,8 @@ const SkillMenu = observer(() => {
   }
 
   const handleExit = () => {
-    const idx = (window.history.state && (window.history.state as any).idx) ?? 0
+    const state = window.history.state as { idx?: number } | null
+    const idx = state?.idx ?? 0
     const canGoBack = idx > 0 || window.history.length > 1
 
     if (canGoBack) {

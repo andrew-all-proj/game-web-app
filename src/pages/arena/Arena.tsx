@@ -131,7 +131,7 @@ const Arena = observer(() => {
           })
           return navigate('/search-battle')
         }
-      } catch (error) {
+      } catch {
         showTopAlert({
           open: true,
           text: t('arena.battleNotFound'),
@@ -144,7 +144,7 @@ const Arena = observer(() => {
     }
 
     startingFight()
-  }, [battleId, navigate])
+  }, [battleId, navigate, t])
 
   if (isLoading) {
     return <Loading />

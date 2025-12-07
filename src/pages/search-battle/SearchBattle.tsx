@@ -39,6 +39,7 @@ const SearchBattle = observer(() => {
   // const [nextCursor, setNextCursor] = useState('0')
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const selectedMonsterId = monsterStore.selectedMonster?.id
 
   useEffect(() => {
     const initSearch = async () => {
@@ -162,7 +163,7 @@ const SearchBattle = observer(() => {
 
     const intervalId = setInterval(updateOpponents, 10000)
     return () => clearInterval(intervalId)
-  }, [monsterStore.selectedMonster?.id])
+  }, [selectedMonsterId])
 
   const handleDuelAccepted = (opponent: MonsterOpponent) => {
     getSocket()?.emit('duelAccepted', {
